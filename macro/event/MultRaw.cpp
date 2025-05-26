@@ -15,7 +15,6 @@ void MultRaw(TString path_input = "../input.root",
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
-  vector<RResultHandle> gRResultHandlesFastProfile;
   ROOT::RDataFrame rdf(*tree_event);
 
   auto rdf_witTrigger =
@@ -59,26 +58,35 @@ void MultRaw(TString path_input = "../input.root",
   auto profile_fNumContribRun = rdf_fullTrigger.Profile1D(
       {"fNumContribPileup", "fNumContribPileup;run; fNumContrib", 1, 0., 1.},
       "RunNumber", "fNumContrib");
-  gRResultHandlesFastProfile.push_back(profile_fNumContribRun);
+  gRResultHandlesFast.push_back(profile_fNumContribRun);
   auto profile_fNumContribVtxZ = rdf_fullTrigger.Profile1D(
       {"fNumContribVtxZ", "fNumContribVtxZ;fVtxZ; fNumContrib", 10, -10, 10.},
       "fVtxZ", "fNumContrib");
-  gRResultHandlesFastProfile.push_back(profile_fNumContribVtxZ);
+  gRResultHandlesFast.push_back(profile_fNumContribVtxZ);
   /* #endregion */
-  vector<RResultHandle> gRResultHandlesFastAll;
-  gRResultHandlesFastAll.insert(gRResultHandlesFastAll.end(),
-                                gRResultHandlesFast.begin(),
-                                gRResultHandlesFast.end());
-  gRResultHandlesFastAll.insert(gRResultHandlesFastAll.end(),
-                                gRResultHandlesFastProfile.begin(),
-                                gRResultHandlesFastProfile.end());
-  RunGraphs(gRResultHandlesFastAll);
+  RunGraphs(gRResultHandlesFast);
   profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
 
   fOutput->cd();
-  RResultWrite(gRResultHandlesFastAll);
-//   for (auto &handle : gRResultHandlesFastProfile) {
-//     handle.GetPtr<TProfile>()->Write();
-//   }
+  RResultWrite(gRResultHandlesFast);
   fOutput->Close();
+}
+
+int main(int argc, char **argv) {
+  TString path_input = "../input.root";
+  TString path_output = "output.root";
+  int runNumber = 0;
+
+  if (argc > 1) {
+    path_input = argv[1];
+  }
+  if (argc > 2) {
+    path_output = argv[2];
+  }
+  if (argc > 3) {
+    runNumber = atoi(argv[3]);
+  }
+
+  MultRaw(path_input, path_output, runNumber);
+  return 0;
 }
