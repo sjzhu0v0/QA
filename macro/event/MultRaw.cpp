@@ -15,6 +15,7 @@ void MultRaw(TString path_input = "../input.root",
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
+  vector<RResultHandle> gRResultHandlesFastProfile;
   ROOT::RDataFrame rdf(*tree_event);
 
   auto rdf_witTrigger =
@@ -58,14 +59,26 @@ void MultRaw(TString path_input = "../input.root",
   auto profile_fNumContribRun = rdf_fullTrigger.Profile1D(
       {"fNumContribPileup", "fNumContribPileup;run; fNumContrib", 1, 0., 1.},
       "RunNumber", "fNumContrib");
-  gRResultHandlesFast.push_back(profile_fNumContribRun);
+  gRResultHandlesFastProfile.push_back(profile_fNumContribRun);
   auto profile_fNumContribVtxZ = rdf_fullTrigger.Profile1D(
-      {"fNumContribVtxZ", "fNumContribVtxZ;fVtxZ; fNumContrib", 100, -50., 50.},
+      {"fNumContribVtxZ", "fNumContribVtxZ;fVtxZ; fNumContrib", 10, -10, 10.},
       "fVtxZ", "fNumContrib");
+  gRResultHandlesFastProfile.push_back(profile_fNumContribVtxZ);
   /* #endregion */
-  RunGraphs(gRResultHandlesFast);
+  vector<RResultHandle> gRResultHandlesFastAll;
+  gRResultHandlesFastAll.insert(gRResultHandlesFastAll.end(),
+                                gRResultHandlesFast.begin(),
+                                gRResultHandlesFast.end());
+  gRResultHandlesFastAll.insert(gRResultHandlesFastAll.end(),
+                                gRResultHandlesFastProfile.begin(),
+                                gRResultHandlesFastProfile.end());
+  RunGraphs(gRResultHandlesFastAll);
   profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
+
   fOutput->cd();
   RResultWrite(gRResultHandlesFast);
+  for (auto &handle : gRResultHandlesFastProfile) {
+    handle.GetPtr<TProfile>()->Write();
+  }
   fOutput->Close();
 }
