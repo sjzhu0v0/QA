@@ -76,9 +76,9 @@ void MultRaw(TString path_input = "../input.root",
   profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
 
   fOutput->cd();
-  RResultWrite(gRResultHandlesFast);
-  for (auto &handle : gRResultHandlesFastProfile) {
-    handle.GetPtr<TProfile>()->Write();
-  }
+  RResultWrite(gRResultHandlesFastAll);
+//   for (auto &handle : gRResultHandlesFastProfile) {
+//     handle.GetPtr<TProfile>()->Write();
+//   }
   fOutput->Close();
 }
