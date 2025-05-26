@@ -27,7 +27,8 @@ void MultRaw(TString path_input = "../input.root",
                   {"fSelection"})
           .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder,
                   {"fSelection"})
-          .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"});
+          .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
+          .Define("RunNumber", []{return float(0.5);});
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
