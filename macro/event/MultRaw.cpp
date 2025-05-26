@@ -28,7 +28,7 @@ void MultRaw(TString path_input = "../input.root",
           .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder,
                   {"fSelection"})
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
-          .Define("RunNumber", []{return float(0.5);});
+          .Define("RunNumber", [] { return float(0.5); });
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
@@ -61,8 +61,9 @@ void MultRaw(TString path_input = "../input.root",
       "RunNumber", "fNumContrib");
   gRResultHandlesFast.push_back(profile_fNumContribRun);
   auto profile_fNumContribVtxZ = rdf_fullTrigger.Profile1D(
-      {"fNumContribVtxZ", "fNumContribVtxZ;fVtxZ; fNumContrib", 10, -10, 10.},
-      "fVtxZ", "fNumContrib");
+      {"fNumContribfPosZ", "fNumContribVtxZ;fPosZ [cm]; fNumContrib", 10, -10,
+       10.},
+      "fPosZ", "fNumContrib");
   gRResultHandlesFast.push_back(profile_fNumContribVtxZ);
   /* #endregion */
   RunGraphs(gRResultHandlesFast);
