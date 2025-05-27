@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
   TString path_output = "output.root";
   TString path_calib =
       "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultCalibration_LHC22pass4_dqfilter.root";
+        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
   int runNumber = 0;
 
   if (argc > 1) {
