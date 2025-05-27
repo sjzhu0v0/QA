@@ -9,17 +9,13 @@
 void MultCalib(
     TString path_input = "../input.root", TString path_output = "output.root",
     int runNumber = 0,
-    TString path_hist_calib1 =
+    TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-        "MultCalibration_LHC22pass4_dqfilter.root:h_NumContribPosZ_calibration",
-    TString path_hist_calib2 =
-        "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribRun") {
+        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_") {
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
-  Calib_NumContrib_fPosZ_Run::GetHistCali(path_hist_calib1, path_hist_calib2,
-                                          runNumber);
+  Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
 
   TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
   TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
@@ -108,12 +104,9 @@ void MultCalib(
 int main(int argc, char **argv) {
   TString path_input = "../input.root";
   TString path_output = "output.root";
-  TString path_calib_hist1 =
+  TString path_calib =
       "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultCalibration_LHC22pass4_dqfilter.root:h_NumContribPosZ_calibration";
-  TString path_calib_hist2 =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultCalibration_LHC22pass4_dqfilter.root:fNumContribRun";
+      "MultCalibration_LHC22pass4_dqfilter.root";
   int runNumber = 0;
 
   if (argc > 1) {
@@ -126,13 +119,9 @@ int main(int argc, char **argv) {
     runNumber = atoi(argv[3]);
   }
   if (argc > 4) {
-    path_calib_hist1 = argv[4];
-  }
-  if (argc > 5) {
-    path_calib_hist2 = argv[5];
+    path_calib = argv[4];
   }
 
-  MultCalib(path_input, path_output, runNumber, path_calib_hist1,
-            path_calib_hist2);
+  MultCalib(path_input, path_output, runNumber, path_calib);
   return 0;
 }
