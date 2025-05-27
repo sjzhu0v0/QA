@@ -65,10 +65,14 @@ void MultRaw(TString path_input = "../input.root",
        10.},
       "fPosZ", "fNumContrib");
   gRResultHandlesFast.push_back(profile_fNumContribVtxZ);
+  auto profile_fNumContribVtxZRun = rdf_fullTrigger.Profile2D(
+      {"fNumContribfPosZRun", "fNumContribVtxZ;fPosZ [cm];Run;fNumContrib", 10,
+       -10, 10., 1, 0., 1.},
+      "fPosZ", "RunNumber", "fNumContrib");
   /* #endregion */
   RunGraphs(gRResultHandlesFast);
   profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
-
+  profile_fNumContribVtxZRun->GetYaxis()->SetBinLabel(1, Form("%d", runNumber));
   fOutput->cd();
   RResultWrite(gRResultHandlesFast);
   fOutput->Close();
