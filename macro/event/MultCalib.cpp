@@ -98,7 +98,8 @@ void MultCalib(
   /* #endregion */
   RunGraphs(gRResultHandlesFast);
   profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
-
+  profile_fNumContribCalibRun->GetXaxis()->SetBinLabel(1,
+                                                       Form("%d", runNumber));
   fOutput->cd();
   RResultWrite(gRResultHandlesFast);
   fOutput->Close();
