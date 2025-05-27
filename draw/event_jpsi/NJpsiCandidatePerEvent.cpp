@@ -19,7 +19,7 @@ void NJpsiCandidatePerEvent(
 
   TCanvas *c1 = new TCanvas("c1", "c1", 600, 600);
   gPad->SetLogy();
-  MRootGraphic::StyleHistCommon1D(NJpsiCandidata);
+  MRootGraphic::StyleHistCommonHist(NJpsiCandidata);
   NJpsiCandidata->GetXaxis()->SetTitle("N_{J/#psi candidates}");
   NJpsiCandidata->SetTitle(
       "N_{J/#psi candidates}: 2.5 GeV/c^{2} < M_{e^{+}e^{-}} < 3.2 GeV/c^{2}");

@@ -38,7 +38,10 @@ void MultCalib(
           .Define("RunNumber", [] { return float(0.5); })
           .DefineSlot("NumContribCalib",
                       Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
-                      {"fNumContrib", "fPosZ"});
+                      {"fNumContrib", "fPosZ"})
+          .DefineSlot("isntSelfDefinedPileup",
+                      Cut_MultTPC_NumContrib::isInCutSlot,
+                      {"NumContribCalib", "fMultTPC"});
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
@@ -49,13 +52,18 @@ void MultCalib(
       rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
           .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
           .Filter("isntTimeFrameBorder", "no Time Frame border")
-          .Filter("isntSameBunchPileup", "no same bunch pileup");
+          .Filter("isntSameBunchPileup", "no same bunch pileup")
+          .Filter("isntSelfDefinedPileup", "no self defined pileup");
   ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
 
   /* #region mult */
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo1D(
       {"fNumContrib", "fNumContrib;Counts;NumContrib", 300, 0, 300},
       "fNumContrib"));
+  gRResultHandlesFast.push_back(rdf_fullTrigger.Histo1D(
+      {"NumContribCalib", "NumContribCalib;Counts;NumContrib Calib", 300, 0,
+       300},
+      "NumContribCalib"));
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
       {"fNumContrib_fMultTPC",
        "fNumContrib_fMultTPC;fNumContrib;fMultTPC;Counts", 300, 0, 300, 300, 0,
@@ -105,7 +113,8 @@ int main(int argc, char **argv) {
   TString path_input = "../input.root";
   TString path_output = "output.root";
   TString path_calib =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
+      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+      "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
   int runNumber = 0;
 
   if (argc > 1) {

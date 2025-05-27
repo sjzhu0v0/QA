@@ -16,7 +16,7 @@ void MultCalibration(
       MRootIO::GetObjectDiectly<TProfile2D>(path + ":fNumContribfPosZRun");
   TFile *file_output = new TFile(path_output, "RECREATE");
 
-  MRootGraphic::StyleHistCommon1D(fNumContribfPosZ);
+  MRootGraphic::StyleHistCommonHist(fNumContribfPosZ);
 
   TCanvas *c_fNumContribfPosZ =
       new TCanvas("c_fNumContribfPosZ", "c_fNumContribfPosZ", 600, 600);
@@ -40,7 +40,7 @@ void MultCalibration(
   fNumContribRun->GetXaxis()->SetTitle("");
   fNumContribRun->GetYaxis()->SetTitle("<fNumContrib>");
   fNumContribRun->GetYaxis()->SetLabelSize(0.02);
-  MRootGraphic::StyleHistCommon1D(fNumContribRun);
+  MRootGraphic::StyleHistCommonHist(fNumContribRun);
   fNumContribRun->GetYaxis()->SetRangeUser(30, 60);
   fNumContribRun->Draw();
   c_fNumContribRun->Modified();
@@ -89,7 +89,7 @@ void MultCalibration(
     // fNumContribfPosZRun->GetListOfFunctions()->Add((TF1 *)fit_func->Clone());
     file_output->WriteObject<TF1>(
         fit_func, Form("fNumContribfPosZRun_calib_%s", label.Data()));
-    MRootGraphic::StyleHistCommon1D(h_NumContribPosZ_calibration);
+    MRootGraphic::StyleHistCommonHist(h_NumContribPosZ_calibration);
     gPad->SetTopMargin(0.1);
     h_NumContribPosZ_calibration->SetTitle(Form("Run %s", label.Data()));
     h_NumContribPosZ_calibration->Draw();
