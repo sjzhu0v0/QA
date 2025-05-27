@@ -26,7 +26,7 @@ void MultCalib(
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
-  ROOT::RDataFrame rdf(*tree_event);
+  ROOT::RDataFme rdf(*tree_event);
 
   auto rdf_witTrigger =
       rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"})
@@ -94,6 +94,7 @@ void MultCalib(
       {"fNumContribCalibRun", "fNumContribCalibRun;run; fNumContrib Calib", 1,
        0., 1.},
       "RunNumber", "NumContribCalib");
+  gRResultHandlesFast.push_back(profile_fNumContribCalibRun);
   /* #endregion */
   RunGraphs(gRResultHandlesFast);
   profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
