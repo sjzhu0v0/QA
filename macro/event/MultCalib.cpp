@@ -6,17 +6,19 @@
 #include "MRootIO.h"
 #include <ROOT/RDataFrame.hxx>
 
-void MultCalib(TString path_input = "../input.root",
-               TString path_output = "output.root", int runNumber = 0,
-               TString path_file_calib =
-                   "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-                   "MultCalibration_LHC22pass4_dqfilter.root") {
+void MultCalib(
+    TString path_input = "../input.root", TString path_output = "output.root",
+    int runNumber = 0,
+    TString path_hist_calib1 =
+        "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+        "MultCalibration_LHC22pass4_dqfilter.root:h_NumContribPosZ_calibration",
+    TString path_hist_calib2 =
+        "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribRun") {
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
-  Calib_NumContrib_fPosZ_Run::GetHistCali(
-      path_file_calib + ":h_NumContribPosZ_calibration",
-      path_file_calib + ":fNumContribRun", runNumber);
+  Calib_NumContrib_fPosZ_Run::GetHistCali(path_hist_calib1, path_hist_calib2);
 
   TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
   TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
@@ -103,6 +105,12 @@ void MultCalib(TString path_input = "../input.root",
 int main(int argc, char **argv) {
   TString path_input = "../input.root";
   TString path_output = "output.root";
+  TString path_calib_hist1 =
+      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+      "MultCalibration_LHC22pass4_dqfilter.root:h_NumContribPosZ_calibration";
+  TString path_calib_hist2 =
+      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+      "MultCalibration_LHC22pass4_dqfilter.root:fNumContribRun";
   int runNumber = 0;
 
   if (argc > 1) {
@@ -114,7 +122,14 @@ int main(int argc, char **argv) {
   if (argc > 3) {
     runNumber = atoi(argv[3]);
   }
+  if (argc > 4) {
+    path_calib_hist1 = argv[4];
+  }
+  if (argc > 5) {
+    path_calib_hist2 = argv[5];
+  }
 
-  MultCalib(path_input, path_output, runNumber);
+  MultCalib(path_input, path_output, runNumber, path_calib_hist1,
+            path_calib_hist2);
   return 0;
 }
