@@ -57,7 +57,7 @@ void MultRaw(TString path_input = "../input.root",
        300, 0, 300},
       "fMultNTracksPV", "fMultTPC"));
   auto profile_fNumContribRun = rdf_fullTrigger.Profile1D(
-      {"fNumContribPileup", "fNumContribPileup;run; fNumContrib", 1, 0., 1.},
+      {"fNumContribRun", "fNumContribRun;run; fNumContrib", 1, 0., 1.},
       "RunNumber", "fNumContrib");
   gRResultHandlesFast.push_back(profile_fNumContribRun);
   auto profile_fNumContribVtxZ = rdf_fullTrigger.Profile1D(
