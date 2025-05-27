@@ -18,7 +18,8 @@ void MultCalib(
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
-  Calib_NumContrib_fPosZ_Run::GetHistCali(path_hist_calib1, path_hist_calib2);
+  Calib_NumContrib_fPosZ_Run::GetHistCali(path_hist_calib1, path_hist_calib2,
+                                          runNumber);
 
   TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
   TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
