@@ -26,7 +26,7 @@ void MultCalib(
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
-  ROOT::RDataFme rdf(*tree_event);
+  ROOT::RDataFrame rdf(*tree_event);
 
   auto rdf_witTrigger =
       rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"})
