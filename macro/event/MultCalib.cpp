@@ -85,13 +85,13 @@ void MultCalib(
        10.},
       "fPosZ", "fNumContrib");
   gRResultHandlesFast.push_back(profile_fNumContribVtxZ);
-  auto profile_NumContribCalib = rdf_fullTrigger.Profile1D(
-      {"NumContribCalib", "NumContribCalib;fPosZ [cm]; fNumContrib Calib", 10,
-       -10, 10.},
+  auto profile_NumContribCalibVtxZ = rdf_fullTrigger.Profile1D(
+      {"NumContribCalibPosZ", "NumContribCalib;fPosZ [cm]; fNumContrib Calib",
+       10, -10, 10.},
       "fPosZ", "NumContribCalib");
-  gRResultHandlesFast.push_back(profile_NumContribCalib);
+  gRResultHandlesFast.push_back(profile_NumContribCalibVtxZ);
   auto profile_fNumContribCalibRun = rdf_fullTrigger.Profile1D(
-      {"fNumContribCalibRun", "fNumContribCalibRun;run; fNumContrib Calib", 1,
+      {"NumContribCalibRun", "fNumContribCalibRun;run; fNumContrib Calib", 1,
        0., 1.},
       "RunNumber", "NumContribCalib");
   gRResultHandlesFast.push_back(profile_fNumContribCalibRun);
