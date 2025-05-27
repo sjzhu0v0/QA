@@ -69,6 +69,7 @@ void MultRaw(TString path_input = "../input.root",
       {"fNumContribfPosZRun", "fNumContribVtxZ;fPosZ [cm];Run;fNumContrib", 10,
        -10, 10., 1, 0., 1.},
       "fPosZ", "RunNumber", "fNumContrib");
+  gRResultHandlesFast.push_back(profile_fNumContribVtxZRun);
   /* #endregion */
   RunGraphs(gRResultHandlesFast);
   profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
