@@ -19,6 +19,7 @@ void MultPileupCut(
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
+  Cut_MultTPC_NumContrib::init(path_pileup);
 
   TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
   TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
