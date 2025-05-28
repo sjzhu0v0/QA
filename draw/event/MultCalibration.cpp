@@ -84,7 +84,7 @@ void MultCalibration(
       h_NumContribPosZ_calibration->SetBinContent(i_vtxz, content1);
       h_NumContribPosZ_calibration->SetBinError(i_vtxz, error1);
     }
-    TF1 *fit_func = new TF1(Form("pol4_%s", label.Data()), "pol4", -10, 10);
+    TF1 *fit_func = new TF1(Form("pol6_%s", label.Data()), "pol6", -10, 10);
     h_NumContribPosZ_calibration->Fit(fit_func, "Q", "", -10, 10);
     // fNumContribfPosZRun->GetListOfFunctions()->Add((TF1 *)fit_func->Clone());
     file_output->WriteObject<TF1>(

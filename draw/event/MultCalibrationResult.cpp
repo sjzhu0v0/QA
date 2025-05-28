@@ -255,10 +255,10 @@ void MultCalibrationResult(
   TF1 *fit_func_upedge =
       new TF1("fit_func_upedge", "pol1", graph_upedge->GetXaxis()->GetXmin(),
               graph_upedge->GetXaxis()->GetXmax());
-  file_output->WriteObject<TF1>(fit_func_upedge, "fit_func_upedge");
   ((TGraph *)graph_upedge->Clone())
       ->Fit(fit_func_upedge, "Q", "", graph_upedge->GetXaxis()->GetXmin(),
             graph_upedge->GetXaxis()->GetXmax());
+  file_output->WriteObject<TF1>(fit_func_upedge, "fit_func_upedge");
   NumContribCalib_fMultTPC->Draw("colz");
   fit_func_upedge->SetLineColor(kBlue);
   fit_func_upedge->Draw("same");
