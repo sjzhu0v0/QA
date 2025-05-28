@@ -5,7 +5,8 @@ FLAGS_MINUIT=-lMinuit
 
 all: \
 	macro/event/MultRaw.exe \
-	macro/event/MultCalib.exe
+	macro/event/MultCalib.exe \
+	macro/event/MultPileupCut.exe
 
 macro/event/MultRaw.exe: macro/event/MultRaw.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
@@ -13,5 +14,5 @@ macro/event/MultRaw.exe: macro/event/MultRaw.cpp
 macro/event/MultCalib.exe: macro/event/MultCalib.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
-macro/event/MultPileupCut.exe: macro/event/MultRaw.cpp
+macro/event/MultPileupCut.exe: macro/event/MultPileupCut.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
