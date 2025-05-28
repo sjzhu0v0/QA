@@ -6,12 +6,15 @@
 #include "MRootIO.h"
 #include <ROOT/RDataFrame.hxx>
 
-void MultCalib(
+void MultPileupCut(
     TString path_input = "../input.root", TString path_output = "output.root",
     int runNumber = 0,
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_") {
+        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
+    TString path_pileup =
+        " /home/szhu/work/alice/analysis/QA/output/event/"
+        "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
@@ -112,10 +115,13 @@ void MultCalib(
 int main(int argc, char **argv) {
   TString path_input = "../input.root";
   TString path_output = "output.root";
+  int runNumber = 0;
   TString path_calib =
       "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
       "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
-  int runNumber = 0;
+  TString path_pileup =
+      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+      "MultPileup_LHC22pass4_dqfilter.root:fit_func_upedge";
 
   if (argc > 1) {
     path_input = argv[1];
@@ -129,7 +135,10 @@ int main(int argc, char **argv) {
   if (argc > 4) {
     path_calib = argv[4];
   }
+  if (argc > 5) {
+    path_pileup = argv[5];
+  }
 
-  MultCalib(path_input, path_output, runNumber, path_calib);
+  MultPileupCut(path_input, path_output, runNumber, path_calib, path_pileup);
   return 0;
 }
