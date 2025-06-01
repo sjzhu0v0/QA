@@ -65,7 +65,7 @@ void MultPileupCut(
 
                 return vec_levelTrigger;
               },
-              {"isTriggerTVX", "isntITSROFrameBorder", "isntTimeFrameBorder",
+              {"isTriggerTVX", "isntTimeFrameBorder", "isntITSROFrameBorder",
                "isntSameBunchPileup", "isntSelfDefinedPileup"});
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
