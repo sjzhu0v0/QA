@@ -86,9 +86,9 @@ void MultPileupCut(
           .Filter("isntSameBunchPileup", "no same bunch pileup");
   ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
 
-  gRResultHandlesFast.push_back(rdf_fullTrigger.Histo1D(
+  gRResultHandlesFast.push_back(rdf_witTrigger.Histo1D(
       {"LevelTrigger", "Trigger Level; Trigger Level", 6, -0.5, 5.5},
-      "levelTrigger"));
+      "LevelTrigger"));
 
   StrVar4Hist var_fPosX("fPosX", "fPosX", "cm", 200, {-0.1, 0.1});
   StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-0.1, 0.1});
