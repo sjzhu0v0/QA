@@ -70,6 +70,17 @@ void NJpsiCandidatePerEvent(
                 return mass2;
               },
               {"mass_pair"})
+          .Define(
+              "mass_pair_together",
+              [](const ROOT::VecOps::RVec<std::pair<double, double>> pairs) {
+                ROOT::VecOps::RVec<double> mass_together;
+                for (const auto &pair : pairs) {
+                  mass_together.push_back(pair.first);
+                  mass_together.push_back(pair.second);
+                }
+                return mass_together;
+              },
+              {"mass_pair"})
           .Define("k_star",
                   [](const ROOT::RVec<float> &mass,
                      const ROOT::RVec<float> &phi, const ROOT::RVec<float> &eta,
@@ -105,10 +116,9 @@ void NJpsiCandidatePerEvent(
       "NJpsiCandidata"));
   gRResultHandlesFast.push_back(rdf_all.Histo1D(
       {"k_star", "k* (GeV); k* (GeV)", 11000, -2, 10}, "k_star"));
-  gRResultHandlesFast.push_back(
-      rdf_all.Histo2D({"pair_mass", "Mass Pair; Mass (GeV); Mass (GeV)", 10, 1.,
-                       5., 10, 1., 5.},
-                      "mass_pair1", "mass_pair2"));
+  gRResultHandlesFast.push_back(rdf_all.Histo1D(
+      {"pair_mass1d", "Mass Pair; Mass (GeV); Counts", 80, 1., 5.},
+      "mass_pair_together"));
 
   RunGraphs(gRResultHandlesFast);
 
