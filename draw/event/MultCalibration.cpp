@@ -6,7 +6,8 @@ void MultCalibration(
     TString path = "/home/szhu/work/alice/analysis/QA/input/event/"
                    "MultRaw_LHC22pass4_dqfilter.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event/"
-                          "MultCalibration_LHC22pass4_dqfilter.root") {
+                          "MultCalibration_LHC22pass4_dqfilter.root",
+    TString tag_period = "LHC22pass4_dqfilter") {
   // fNumContribfPosZ
   gROOT->SetBatch(true);
   MRootGraphic::StyleCommon();
@@ -26,12 +27,12 @@ void MultCalibration(
   fNumContribfPosZ->GetYaxis()->SetRangeUser(0, 60);
   fNumContribfPosZ->Draw();
   c_fNumContribfPosZ->Modified();
-  c_fNumContribfPosZ->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribfPosZ_LHC22pass4_dqfilter.pdf");
-  c_fNumContribfPosZ->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribfPosZ_LHC22pass4_dqfilter.json");
+  c_fNumContribfPosZ->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                             "MultCalibration_fNumContribfPosZ_" +
+                             tag_period + ".pdf");
+  c_fNumContribfPosZ->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                             "MultCalibration_fNumContribfPosZ_" +
+                             tag_period + ".json");
 
   TCanvas *c_fNumContribRun =
       new TCanvas("c_fNumContribRun", "c_fNumContribRun", 1200, 600);
@@ -44,12 +45,12 @@ void MultCalibration(
   fNumContribRun->GetYaxis()->SetRangeUser(30, 60);
   fNumContribRun->Draw();
   c_fNumContribRun->Modified();
-  c_fNumContribRun->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribRun_LHC22pass4_dqfilter.pdf");
-  c_fNumContribRun->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribRun_LHC22pass4_dqfilter.json");
+  c_fNumContribRun->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                           "MultCalibration_fNumContribRun_" +
+                           tag_period + ".pdf");
+  c_fNumContribRun->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                           "MultCalibration_fNumContribRun_" +
+                           tag_period + ".json");
 
   TCanvas *c_fNumContribfPosZRun =
       new TCanvas("c_fNumContribfPosZRun", "c_fNumContribfPosZRun", 800, 600);
@@ -61,12 +62,12 @@ void MultCalibration(
   fNumContribfPosZRun->GetYaxis()->SetTitle("Run");
   fNumContribfPosZRun->Draw("colz");
   c_fNumContribfPosZRun->Modified();
-  c_fNumContribfPosZRun->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribfPosZRun_LHC22pass4_dqfilter.pdf");
-  c_fNumContribfPosZRun->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribfPosZRun_LHC22pass4_dqfilter.json");
+  c_fNumContribfPosZRun->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                                "MultCalibration_fNumContribfPosZRun_" +
+                                tag_period + ".pdf");
+  c_fNumContribfPosZRun->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                                "MultCalibration_fNumContribfPosZRun_" +
+                                tag_period + ".json");
 
   TCanvas *c_fNumContribfPosZRun_calib = new TCanvas(
       "c_fNumContribfPosZRun_calib", "c_fNumContribfPosZRun_calib", 600, 600);
@@ -98,19 +99,20 @@ void MultCalibration(
     if (i_run == 1) {
       c_fNumContribfPosZRun_calib->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibration_fNumContribfPosZRun_calib_LHC22pass4_dqfilter.pdf(",
+          "MultCalibration_fNumContribfPosZRun_calib_" +
+              tag_period + ".pdf(",
           Form("Title: Run%s", label.Data()));
     } else if (i_run == fNumContribfPosZRun->GetNbinsY()) { // last run
       c_fNumContribfPosZRun_calib->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibration_fNumContribfPosZRun_calib_LHC22pass4_dqfilter."
-          "pdf)",
+          "MultCalibration_fNumContribfPosZRun_calib_" +
+              tag_period + ".pdf)",
           Form("Title: Run%s", label.Data()));
     } else {
       c_fNumContribfPosZRun_calib->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibration_fNumContribfPosZRun_calib_LHC22pass4_dqfilter."
-          "pdf",
+          "MultCalibration_fNumContribfPosZRun_calib_" +
+              tag_period + ".pdf",
           Form("Title: Run%s", label.Data()));
     }
   }
@@ -136,12 +138,12 @@ void MultCalibration(
   h_fNumContribfPosZ->Fit("pol4", "Q", "", -10, 10);
   h_fNumContribfPosZ->GetYaxis()->SetRangeUser(0, 1.3);
   h_fNumContribfPosZ->Draw();
-  c_h_fNumContribfPosZ->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribfPosZ_Calibration_LHC22pass4_dqfilter.pdf");
-  c_h_fNumContribfPosZ->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibration_fNumContribfPosZ_Calibration_LHC22pass4_dqfilter.json");
+  c_h_fNumContribfPosZ->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                               "MultCalibration_fNumContribfPosZ_Calibration_" +
+                               tag_period + ".pdf");
+  c_h_fNumContribfPosZ->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                               "MultCalibration_fNumContribfPosZ_Calibration_" +
+                               tag_period + ".json");
 
   file_output->cd();
   h_fNumContribfPosZ->Write();

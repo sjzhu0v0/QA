@@ -100,6 +100,7 @@ TCanvas *EventSelectionDraw(
 
   TCanvas *c1 = new TCanvas(Form("canvas%d", GenerateUID()),
                             Form("canvas%d", GenerateUID()), 1200, 600);
+  c1->SetMargin(0.1, 0.1, 0.15, 0.05);
   hist2->GetYaxis()->SetRangeUser(0, 1.2);
   hist2->Draw("hist text");
   // TLatex *latex = new TLatex();
@@ -156,7 +157,15 @@ void Comparison_mb_dqfilter(
 
   /* #region :event selection comparison */
   TCanvas *c_mb = EventSelectionDraw(path_hist_mb + ":map_trigger");
+  c_mb->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+               "Comparison_mb_dqfilter_effectiveTrigger_mb.pdf");
+  c_mb->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+               "Comparison_mb_dqfilter_effectiveTrigger_mb.json");
   TCanvas *c_dqfilter = EventSelectionDraw(path_hist_dqfilter + ":map_trigger");
+  c_dqfilter->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                     "Comparison_mb_dqfilter_effectiveTrigger_dqfilter.pdf");
+  c_dqfilter->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                     "Comparison_mb_dqfilter_effectiveTrigger_dqfilter.json");
   // TH1D *hist_mb = GetObjectFromCanvas<TH1D>(c_mb, 1);
   // TH1D *hist_dqfilter = GetObjectFromCanvas<TH1D>(c_dqfilter, 0);
   // TCanvas *c_mb_dqfilter =

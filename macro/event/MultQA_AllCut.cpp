@@ -106,9 +106,9 @@ void MultPileupCut(
   StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
                                  150, {0, 150});
   vector<StrVar4Hist> vec_var_pos = {var_fPosX, var_fPosY, var_fPosZ};
-  vector<StrVar4Hist> vec_var_mult = {var_fMultTPC,  var_fMultFV0A,
-                                      var_fMultFT0A, var_fMultFT0C,
-                                      var_fMultFDDA, var_fMultNTracksPV};
+  vector<StrVar4Hist> vec_var_mult = {
+      var_fNumContrib, var_fMultTPC,  var_fMultFV0A,     var_fMultFT0A,
+      var_fMultFT0C,   var_fMultFDDA, var_fMultNTracksPV};
 
 #define localDefineHis1D(fVar, fTag)                                           \
   gRResultHandlesFast.push_back(                                               \

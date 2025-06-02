@@ -80,10 +80,6 @@ void Trigger_Mult(TString path_input = "../input.root",
   RunGraphs(gRResultHandlesFast);
 
   fOutput->cd();
-  for (auto handle : gRResultHandlesFast) {
-    auto hist = handle.GetPtr<TH1D>();
-    hist->Write();
-  }
-
+  RResultWrite(gRResultHandlesFast);
   fOutput->Close();
 }

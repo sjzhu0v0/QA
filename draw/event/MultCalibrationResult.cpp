@@ -20,7 +20,8 @@ void MultCalibrationResult(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event/"
                          "MultCalib_LHC22pass4_dqfilter.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event/"
-                          "MultCalibrationResult_LHC22pass4_dqfilter.root") {
+                          "MultCalibrationResult_LHC22pass4_dqfilter.root",
+    TString tag_period = "LHC22pass4_dqfilter") {
   gROOT->SetBatch(true);
   MRootGraphic::StyleCommon();
   TFile *file_output = new TFile(path_output, "RECREATE");
@@ -70,11 +71,11 @@ void MultCalibrationResult(
   fNumContribfPosZ->Draw();
   NumContribCalibPosZ->Draw("same");
   c_NumContrib->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-                       "MultCalibrationResult_NumContrib_RawCalibComparison_"
-                       "LHC22pass4_dqfilter.pdf");
+                       "MultCalibrationResult_NumContrib_RawCalibComparison_" +
+                       tag_period + ".pdf");
   c_NumContrib->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-                       "MultCalibrationResult_NumContrib_RawCalibComparison_"
-                       "LHC22pass4_dqfilter.json");
+                       "MultCalibrationResult_NumContrib_RawCalibComparison_" +
+                       tag_period + ".json");
 
   TCanvas *c_fNumContrib_fMultTPC =
       new TCanvas("c_fNumContrib_fMultTPC", "c_fNumContrib_fMultTPC", 800, 400);
@@ -102,12 +103,12 @@ void MultCalibrationResult(
   NumContribCalib_fMultTPC->Draw("colz");
   c_fNumContrib_fMultTPC->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibrationResult_NumContrib_fMultTPC_RawCalibComparison_"
-      "LHC22pass4_dqfilter.pdf");
+      "MultCalibrationResult_NumContrib_fMultTPC_RawCalibComparison_" +
+      tag_period + ".pdf");
   c_fNumContrib_fMultTPC->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibrationResult_NumContrib_fMultTPC_RawCalibComparison_"
-      "LHC22pass4_dqfilter.json");
+      "MultCalibrationResult_NumContrib_fMultTPC_RawCalibComparison_" +
+      tag_period + ".json");
 
   TCanvas *c_fMultNTracksPV_fMultTPC_diff_fineBin =
       new TCanvas("c_fMultNTracksPV_fMultTPC_diff_fineBin",
@@ -134,20 +135,20 @@ void MultCalibrationResult(
     if (i == 1) {
       c_fMultNTracksPV_fMultTPC_diff_fineBin->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_fineBin_"
-          "LHC22pass4_dqfilter.pdf(",
+          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_fineBin_" +
+              tag_period + ".pdf(",
           Form("Title: NumContribCalib%d", i));
     } else if (i == NumContribCalib_fMultTPC_clone2->GetNbinsX()) {
       c_fMultNTracksPV_fMultTPC_diff_fineBin->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_fineBin_"
-          "LHC22pass4_dqfilter.pdf)",
+          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_fineBin_" +
+              tag_period + ".pdf)",
           Form("Title: NumContribCalib%d", i));
     } else {
       c_fMultNTracksPV_fMultTPC_diff_fineBin->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_fineBin_"
-          "LHC22pass4_dqfilter.pdf",
+          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_fineBin_" +
+              tag_period + ".pdf",
           Form("Title: NumContribCalib%d", i));
     }
   }
@@ -203,20 +204,20 @@ void MultCalibrationResult(
     if (i == 1) {
       c_fMultNTracksPV_fMultTPC_diff->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_"
-          "LHC22pass4_dqfilter.pdf(",
+          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_" +
+              tag_period + ".pdf(",
           Form("Title: NumContribCalib%d", i));
     } else if (i == NumContribCalib_fMultTPC_clone->GetNbinsX()) {
       c_fMultNTracksPV_fMultTPC_diff->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_"
-          "LHC22pass4_dqfilter.pdf)",
+          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_" +
+              tag_period + ".pdf)",
           Form("Title: NumContribCalib%d", i));
     } else {
       c_fMultNTracksPV_fMultTPC_diff->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
-          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_"
-          "LHC22pass4_dqfilter.pdf",
+          "MultCalibrationResult_NumContribCalib_fMultTPC_Diff_" +
+              tag_period + ".pdf",
           Form("Title: NumContribCalib%d", i));
     }
   }
@@ -276,11 +277,11 @@ void MultCalibrationResult(
   legend_upedge->Draw();
   c_fMultNTracksPV_fMultTPC_upedge->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibrationResult_NumContribCalib_fMultTPC_UpEdge_"
-      "LHC22pass4_dqfilter.pdf");
+      "MultCalibrationResult_NumContribCalib_fMultTPC_UpEdge_" +
+      tag_period + ".pdf");
   c_fMultNTracksPV_fMultTPC_upedge->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/event/"
-      "MultCalibrationResult_NumContribCalib_fMultTPC_UpEdge_"
-      "LHC22pass4_dqfilter.json");
+      "MultCalibrationResult_NumContribCalib_fMultTPC_UpEdge_" +
+      tag_period + ".json");
   file_output->Close();
 }
