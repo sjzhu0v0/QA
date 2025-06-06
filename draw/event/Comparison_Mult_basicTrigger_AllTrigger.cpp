@@ -28,7 +28,14 @@ void Comparison_Mult_basicTrigger_AllTrigger(
   LevelTrigger->GetXaxis()->SetLabelSize(0.04);
   LevelTrigger->GetYaxis()->SetRangeUser(0, 1.2);
   gPad->SetGridy();
+  gPad->SetRightMargin(0.150376);
   LevelTrigger->Draw("hist text");
+  c_levelTrigger->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/plot/event/"
+      "Comparison_Mult_basicTrigger_AllTrigger_LevelTrigger.pdf");
+  c_levelTrigger->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/plot/event/"
+      "Comparison_Mult_basicTrigger_AllTrigger_LevelTrigger.json");
 
   vector<string> vec_name_hist;
   vector<string> vec_name_hist_sort1d;
@@ -103,7 +110,7 @@ void Comparison_Mult_basicTrigger_AllTrigger(
     latex->DrawLatex(0.6, 0.9, "Basic Trigger");
     // show z axis
     // save the canvas
-    if (i == 1) {
+    if (i == 0) {
       c_comparison_2d->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
           "Comparison_Mult_basicTrigger_AllTrigger_comparison2d.pdf(",
@@ -163,7 +170,7 @@ void Comparison_Mult_basicTrigger_AllTrigger(
     legend->AddEntry(hist_basicTrigger, "Basic Trigger", "l");
     legend->Draw();
 
-    if (i == 1) {
+    if (i == 0) {
       c_comparison_1d->SaveAs(
           "/home/szhu/work/alice/analysis/QA/plot/event/"
           "Comparison_Mult_basicTrigger_AllTrigger_comparison1d.pdf(",
@@ -180,4 +187,6 @@ void Comparison_Mult_basicTrigger_AllTrigger(
           Form("Title: %s", name_hist.Data()));
     }
   }
+  for (auto name : vec_name_hist_sort1d)
+    cout << name << endl;
 }

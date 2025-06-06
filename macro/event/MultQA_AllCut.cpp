@@ -118,12 +118,12 @@ void MultPileupCut(
   localDefineHis1D(fPosY, basicTrigger);
   localDefineHis1D(fPosZ, basicTrigger);
   localDefineHis1D(fNumContrib, basicTrigger);
-  localDefineHis1D(fMultTPC, basicTrigger);
   localDefineHis1D(fMultFV0A, basicTrigger);
   localDefineHis1D(fMultFT0A, basicTrigger);
   localDefineHis1D(fMultFT0C, basicTrigger);
   localDefineHis1D(fMultFDDA, basicTrigger);
   localDefineHis1D(fMultNTracksPV, basicTrigger);
+  localDefineHis1D(fMultTPC, basicTrigger);
 
   localDefineHis1D(fPosX, fullTrigger);
   localDefineHis1D(fPosY, fullTrigger);

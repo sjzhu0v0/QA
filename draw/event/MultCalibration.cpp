@@ -55,6 +55,7 @@ void MultCalibration(
   TCanvas *c_fNumContribfPosZRun =
       new TCanvas("c_fNumContribfPosZRun", "c_fNumContribfPosZRun", 800, 600);
   c_fNumContribfPosZRun->cd();
+  gPad->SetRightMargin(0.15);
   c_fNumContribfPosZRun->SetGrid();
   fNumContribfPosZRun->SetTitle(
       "fNumContribfPosZRun;fPosZ [cm];Run;<fNumContrib>");
@@ -94,7 +95,11 @@ void MultCalibration(
     gPad->SetTopMargin(0.1);
     h_NumContribPosZ_calibration->SetTitle(Form("Run %s", label.Data()));
     h_NumContribPosZ_calibration->Draw();
-    cout << "Run: " << label.Data() << endl;
+    TLatex *latex = new TLatex();
+    latex->SetNDC();
+    latex->SetTextSize(0.04);
+    latex->SetTextAlign(12);
+    latex->DrawLatex(0.7, 0.8, Form("Run %s", label.Data()));
 
     if (i_run == 1) {
       c_fNumContribfPosZRun_calib->SaveAs(

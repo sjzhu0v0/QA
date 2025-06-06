@@ -261,6 +261,7 @@ void MultCalibrationResult(
             graph_upedge->GetXaxis()->GetXmax());
   file_output->WriteObject<TF1>(fit_func_upedge, "fit_func_upedge");
   NumContribCalib_fMultTPC->Draw("colz");
+  line_lowlimit->Draw("same");
   fit_func_upedge->SetLineColor(kBlue);
   fit_func_upedge->Draw("same");
   c_fMultNTracksPV_fMultTPC_upedge->cd(1);
