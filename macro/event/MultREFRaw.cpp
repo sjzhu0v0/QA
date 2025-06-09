@@ -8,7 +8,6 @@
 
 void MultREF(
     TString path_input_flowVecd = "../input.root",
-    TString path_input_event = "../input.root",
     TString path_output = "output.root", int runNumber = 0,
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
@@ -17,18 +16,13 @@ void MultREF(
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
-  TFile *file_event = TFile::Open(path_input_event);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   Cut_MultTPC_NumContrib::init(path_pileup);
 
   TTree *tree_flowVecd = (TTree *)file_flowVecd->Get("O2dqflowvecd");
-  TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
-  TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
 
-  tree_flowVecd->AddFriend(tree_event);
-  tree_flowVecd->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
   ROOT::RDataFrame rdf(*tree_flowVecd);
 
@@ -75,16 +69,6 @@ void MultREF(
        300, 0, 300, 100, 0, 100},
       "fNumContrib", "MultREF"));
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
-      {"fNumContrib_fMultVtxContri",
-       "fNumContrib_fMultVtxContri;fNumContrib;fMultVtxContri;Counts", 300, 0,
-       300, 300, 0, 300},
-      "fNumContrib", "MultREF"));
-  gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
-      {"fMultVtxContri_MultREF",
-       "fMultVtxContri_MultREF;fMultVtxContri;MultREF;Counts", 300, 0, 300, 100,
-       0, 100},
-      "fMultVtxContri", "MultREF"));
-  gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
       {"NumContribCalib_MultREF",
        "NumContribCalib_MultREF;NumContribCalib;MultREF;Counts", 300, 0, 300,
        100, 0, 100},
@@ -129,7 +113,6 @@ void MultREF(
 
 int main(int argc, char **argv) {
   TString path_input_flowVecd = "../input.root";
-  TString path_input_event = "../input.root";
   TString path_output = "output.root";
   int runNumber = 0;
   TString path_calib =
@@ -143,22 +126,18 @@ int main(int argc, char **argv) {
     path_input_flowVecd = argv[1];
   }
   if (argc > 2) {
-    path_input_event = argv[2];
+    path_output = argv[2];
   }
   if (argc > 3) {
-    path_output = argv[3];
+    runNumber = atoi(argv[3]);
   }
   if (argc > 4) {
-    runNumber = atoi(argv[4]);
+    path_calib = argv[4];
   }
   if (argc > 5) {
-    path_calib = argv[5];
+    path_pileup = argv[5];
   }
-  if (argc > 6) {
-    path_pileup = argv[6];
-  }
+  MultREF(path_input_flowVecd, path_output, runNumber, path_calib, path_pileup);
 
-  MultREF(path_input_flowVecd, path_input_event, path_output, runNumber,
-          path_calib, path_pileup);
   return 0;
 }
