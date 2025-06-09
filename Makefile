@@ -8,7 +8,8 @@ all: \
 	macro/event/MultCalib.exe \
 	macro/event/MultPileupCut.exe \
 	macro/event_jpsi/NJpsiCandidatePerEvent.exe \
-	macro/event/MultQA_AllCut.exe
+	macro/event/MultQA_AllCut.exe \
+	macro/event/MultREFRaw.exe
 
 macro/event/MultRaw.exe: macro/event/MultRaw.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
