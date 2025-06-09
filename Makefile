@@ -24,3 +24,6 @@ macro/event_jpsi/NJpsiCandidatePerEvent.exe: macro/event_jpsi/NJpsiCandidatePerE
 
 macro/event/MultQA_AllCut.exe: macro/event/MultQA_AllCut.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+
+macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
+	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)

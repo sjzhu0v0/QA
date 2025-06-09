@@ -72,17 +72,17 @@ void MultREF(
       "fNumContrib"));
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
       {"fNumContrib_MultREF", "fNumContrib_MultREF;fNumContrib;MultREF;Counts",
-       300, 0, 300, 300, 0, 300},
+       300, 0, 300, 100, 0, 100},
       "fNumContrib", "MultREF"));
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
       {"NumContribCalib_MultREF",
        "NumContribCalib_MultREF;NumContribCalib;MultREF;Counts", 300, 0, 300,
-       300, 0, 300},
+       100, 0, 100},
       "NumContribCalib", "MultREF"));
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
       {"fMultNTracksPV_MultREF",
-       "fMultNTracksPV_MultREF;fMultNTracksPV;MultREF;Counts", 150, 0, 150, 300,
-       0, 300},
+       "fMultNTracksPV_MultREF;fMultNTracksPV;MultREF;Counts", 150, 0, 150, 100,
+       0, 100},
       "fMultNTracksPV", "MultREF"));
 
   // auto profile_fNumContribRun = rdf_fullTrigger.Profile1D(
