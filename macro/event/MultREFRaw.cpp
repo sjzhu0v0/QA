@@ -75,6 +75,11 @@ void MultREF(
        300, 0, 300, 100, 0, 100},
       "fNumContrib", "MultREF"));
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
+      {"fNumContrib_fMultVtxContri",
+       "fNumContrib_fMultVtxContri;fNumContrib;fMultVtxContri;Counts", 300, 0,
+       300, 300, 0, 300},
+      "fNumContrib", "MultREF"));
+  gRResultHandlesFast.push_back(rdf_fullTrigger.Histo2D(
       {"fMultVtxContri_MultREF",
        "fMultVtxContri_MultREF;fMultVtxContri;MultREF;Counts", 300, 0, 300, 100,
        0, 100},
