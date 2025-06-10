@@ -85,7 +85,7 @@ void MultREF(
         rdf_PartTrigger.Filter(condition[0].c_str(), condition[1].c_str());
     TString tag_cond = condition[1];
     for (int i_mult = 0; i_mult < vec_var_mult.size(); i_mult++) {
-      TString title = tag_cond;
+      TString title = condition[0];
       TString title_x = vec_var_mult[i_mult].fTitle;
       if (vec_var_mult[i_mult].fUnit != "") {
         title_x += " (" + vec_var_mult[i_mult].fUnit + ")";
