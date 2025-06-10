@@ -69,8 +69,9 @@ void MultREF(
   StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
                                  150, {0, 150});
 
-  vector<StrVar4Hist> vec_var_mult = {var_fMultTPC, var_fMultFT0C,
-                                      var_fMultNTracksPV, var_fMultREF};
+  vector<StrVar4Hist> vec_var_mult = {var_fNumContrib, var_fMultTPC,
+                                      var_fMultFT0C, var_fMultNTracksPV,
+                                      var_fMultREF};
 
   vector<array<string, 2>> conditions = {
       {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},
