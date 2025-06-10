@@ -62,6 +62,8 @@ void MultREF(
   StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("fPosZ", "fPosZ", "cm", 200, {-10, 10});
   StrVar4Hist var_fNumContrib("fNumContrib", "fNumContrib", "", 300, {0, 300});
+  StrVar4Hist var_NumContribCalib("NumContribCalib", "NumContrib Calibrated",
+                                  "", 300, {0, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "fMultTPC", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "fMultREF", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "fMultFT0C", "", 130,
@@ -69,9 +71,9 @@ void MultREF(
   StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
                                  150, {0, 150});
 
-  vector<StrVar4Hist> vec_var_mult = {var_fNumContrib, var_fMultTPC,
-                                      var_fMultFT0C, var_fMultNTracksPV,
-                                      var_fMultREF};
+  vector<StrVar4Hist> vec_var_mult = {var_fNumContrib,    var_NumContribCalib,
+                                      var_fMultTPC,       var_fMultFT0C,
+                                      var_fMultNTracksPV, var_fMultREF};
 
   vector<array<string, 2>> conditions = {
       {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},

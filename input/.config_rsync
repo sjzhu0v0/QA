@@ -2,3 +2,4 @@ virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultRaw/Mu
 virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultCalib/MultCalib.root ./event/MultCalib_LHC22pass4_dqfilter.root
 virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultPileupCut/MultPileupCut.root ./event/MultPileupCut_LHC22pass4_dqfilter.root
 virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultQA_AllCut/MultQA_AllCut.root ./event/MultQA_AllCut_LHC22pass4_dqfilter.root
+virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultREFRaw/merge.root ./event/MultREFRaw_LHC22pass4_dqfilter.root
