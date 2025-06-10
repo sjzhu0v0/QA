@@ -37,7 +37,7 @@ void MultREF(
           .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder,
                   {"fSelection"})
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
-          .Alias("MultREF", "fPTREF_size")
+          .Alias("fMultREF", "fPTREF_size")
           .Define("RunNumber", [] { return float(0.5); })
           .DefineSlot("NumContribCalib",
                       Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
