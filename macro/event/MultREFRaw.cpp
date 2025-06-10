@@ -91,16 +91,16 @@ void MultREF(
       gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo1D(
           GetTH1DModelWithTitle(vec_var_mult[i_mult], title1d, tag_cond),
           vec_var_mult[i_mult].fName));
-      // for (int j_mult = i_mult + 1; j_mult < vec_var_mult.size(); j_mult++) {
-      //   TString title_y = vec_var_mult[j_mult].fTitle;
-      //   if (vec_var_mult[j_mult].fUnit != "") {
-      //     title_y += " (" + vec_var_mult[j_mult].fUnit + ")";
-      //   }
-      //   TString title2d = title + ";" + title_x + ";" + title_y;
-      //   gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo2D(
-      //       GetTH2DModelWithTitle(vec_var_mult[i_mult], vec_var_mult[j_mult],
-      //                             title2d, tag_cond)));
-      // }
+      for (int j_mult = i_mult + 1; j_mult < vec_var_mult.size(); j_mult++) {
+        TString title_y = vec_var_mult[j_mult].fTitle;
+        if (vec_var_mult[j_mult].fUnit != "") {
+          title_y += " (" + vec_var_mult[j_mult].fUnit + ")";
+        }
+        TString title2d = title + ";" + title_x + ";" + title_y;
+        gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo2D(
+            GetTH2DModelWithTitle(vec_var_mult[i_mult], vec_var_mult[j_mult],
+                                  title2d, tag_cond)));
+      }
     }
   }
 
