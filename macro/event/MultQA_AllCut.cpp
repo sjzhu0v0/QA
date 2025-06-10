@@ -90,8 +90,8 @@ void MultPileupCut(
       {"LevelTrigger", "Trigger Level; Trigger Level", 6, -0.5, 5.5},
       "LevelTrigger"));
 
-  StrVar4Hist var_fPosX("fPosX", "fPosX", "cm", 200, {-0.1, 0.1});
-  StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-0.1, 0.1});
+  StrVar4Hist var_fPosX("fPosX", "fPosX", "cm", 200, {-10, 10});
+  StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("fPosZ", "fPosZ", "cm", 200, {-10, 10});
   StrVar4Hist var_fNumContrib("fNumContrib", "fNumContrib", "a.u.", 300,
                               {0, 300});
