@@ -66,13 +66,11 @@ void MultREF(
   StrVar4Hist var_fMultREF("fMultREF", "fMultREF", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "fMultFT0C", "", 130,
                             {-1000., 12000.});
-  StrVar4Hist var_fMultFDDA("fMultFDDA", "fMultFDDA", "", 360, {-1000, 35000});
   StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
                                  150, {0, 150});
 
   vector<StrVar4Hist> vec_var_mult = {var_fMultTPC, var_fMultFT0C,
-                                      var_fMultFDDA, var_fMultNTracksPV,
-                                      var_fMultREF};
+                                      var_fMultNTracksPV, var_fMultREF};
 
   vector<array<string, 2>> conditions = {
       {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},
