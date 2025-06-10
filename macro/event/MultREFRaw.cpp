@@ -90,7 +90,7 @@ void MultREF(
       if (vec_var_mult[i_mult].fUnit != "") {
         title_x += " (" + vec_var_mult[i_mult].fUnit + ")";
       }
-      TString title1d = title + ";" + title_x;
+      TString title1d = title + ";" + title_x + ";Counts";
       gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo1D(
           GetTH1DModelWithTitle(vec_var_mult[i_mult], title1d, tag_cond),
           vec_var_mult[i_mult].fName));
