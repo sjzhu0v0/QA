@@ -46,65 +46,65 @@ void MultREF(
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
       ;
-  // auto rdf_isntITSROFrameBorder =
-  //     rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
-  // auto rdf_isntTimeFrameBorder =
-  //     rdf_witTrigger.Filter("isntTimeFrameBorder", "no Time Frame border");
-  // auto rdf_isTriggerTVX =
-  //     rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX");
-  // auto rdf_PartTrigger =
-  //     rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
-  //         .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
-  //         .Filter("isntTimeFrameBorder", "no Time Frame border")
-  //     /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
+  auto rdf_isntITSROFrameBorder =
+      rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
+  auto rdf_isntTimeFrameBorder =
+      rdf_witTrigger.Filter("isntTimeFrameBorder", "no Time Frame border");
+  auto rdf_isTriggerTVX =
+      rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX");
+  auto rdf_PartTrigger =
+      rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
+          .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
+          .Filter("isntTimeFrameBorder", "no Time Frame border")
+      /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
-  // StrVar4Hist var_fPosX("fPosX", "fPosX", "cm", 200, {-10, 10});
-  // StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-10, 10});
-  // StrVar4Hist var_fPosZ("fPosZ", "fPosZ", "cm", 200, {-10, 10});
-  // StrVar4Hist var_fNumContrib("fNumContrib", "fNumContrib", "", 300, {0, 300});
-  // StrVar4Hist var_fMultTPC("fMultTPC", "fMultTPC", "", 600, {0, 600});
-  // StrVar4Hist var_fMultREF("fMultREF", "fMultREF", "", 100, {0, 100});
-  // StrVar4Hist var_fMultFT0C("fMultFT0C", "fMultFT0C", "", 130,
-  //                           {-1000., 12000.});
-  // StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
-  //                                150, {0, 150});
+  StrVar4Hist var_fPosX("fPosX", "fPosX", "cm", 200, {-10, 10});
+  StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-10, 10});
+  StrVar4Hist var_fPosZ("fPosZ", "fPosZ", "cm", 200, {-10, 10});
+  StrVar4Hist var_fNumContrib("fNumContrib", "fNumContrib", "", 300, {0, 300});
+  StrVar4Hist var_fMultTPC("fMultTPC", "fMultTPC", "", 600, {0, 600});
+  StrVar4Hist var_fMultREF("fMultREF", "fMultREF", "", 100, {0, 100});
+  StrVar4Hist var_fMultFT0C("fMultFT0C", "fMultFT0C", "", 130,
+                            {-1000., 12000.});
+  StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
+                                 150, {0, 150});
 
-  // vector<StrVar4Hist> vec_var_mult = {var_fMultTPC, var_fMultFT0C,
-  //                                     var_fMultNTracksPV, var_fMultREF};
+  vector<StrVar4Hist> vec_var_mult = {var_fMultTPC, var_fMultFT0C,
+                                      var_fMultNTracksPV, var_fMultREF};
 
-  // vector<array<string, 2>> conditions = {
-  //     {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},
-  //     {"isntSameBunchPileup", "NoSameBunchPileup"},
-  //     {"!isntSameBunchPileup", "AllSameBunchPileup"}};
+  vector<array<string, 2>> conditions = {
+      {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},
+      {"isntSameBunchPileup", "NoSameBunchPileup"},
+      {"!isntSameBunchPileup", "AllSameBunchPileup"}};
 
-  // for (const auto &condition : conditions) {
-  //   auto rdf_PartTrigger_cond =
-  //       rdf_PartTrigger.Filter(condition[0].c_str(), condition[1].c_str());
-  //   TString tag_cond = condition[1];
-  //   for (int i_mult = 0; i_mult < vec_var_mult.size(); i_mult++) {
-  //     TString title = tag_cond;
-  //     TString title_x = vec_var_mult[i_mult].fTitle;
-  //     if (vec_var_mult[i_mult].fUnit != "") {
-  //       title_x += " (" + vec_var_mult[i_mult].fUnit + ")";
-  //     }
-  //     TString title1d = title + ";" + title_x;
-  //     gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo1D(
-  //         GetTH1DModelWithTitle(vec_var_mult[i_mult], title1d, tag_cond),
-  //         vec_var_mult[i_mult].fName));
-  //     for (int j_mult = i_mult + 1; j_mult < vec_var_mult.size(); j_mult++) {
-  //       TString title_y = vec_var_mult[j_mult].fTitle;
-  //       if (vec_var_mult[j_mult].fUnit != "") {
-  //         title_y += " (" + vec_var_mult[j_mult].fUnit + ")";
-  //       }
-  //       TString title2d = title + ";" + title_x + ";" + title_y;
-  //       gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo2D(
-  //           GetTH2DModelWithTitle(vec_var_mult[i_mult], vec_var_mult[j_mult],
-  //                                 title2d, tag_cond)));
-  //     }
-  //   }
-  // }
+  for (const auto &condition : conditions) {
+    auto rdf_PartTrigger_cond =
+        rdf_PartTrigger.Filter(condition[0].c_str(), condition[1].c_str());
+    TString tag_cond = condition[1];
+    for (int i_mult = 0; i_mult < vec_var_mult.size(); i_mult++) {
+      TString title = tag_cond;
+      TString title_x = vec_var_mult[i_mult].fTitle;
+      if (vec_var_mult[i_mult].fUnit != "") {
+        title_x += " (" + vec_var_mult[i_mult].fUnit + ")";
+      }
+      TString title1d = title + ";" + title_x;
+      gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo1D(
+          GetTH1DModelWithTitle(vec_var_mult[i_mult], title1d, tag_cond),
+          vec_var_mult[i_mult].fName));
+      for (int j_mult = i_mult + 1; j_mult < vec_var_mult.size(); j_mult++) {
+        TString title_y = vec_var_mult[j_mult].fTitle;
+        if (vec_var_mult[j_mult].fUnit != "") {
+          title_y += " (" + vec_var_mult[j_mult].fUnit + ")";
+        }
+        TString title2d = title + ";" + title_x + ";" + title_y;
+        gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo2D(
+            GetTH2DModelWithTitle(vec_var_mult[i_mult], vec_var_mult[j_mult],
+                                  title2d, tag_cond)));
+      }
+    }
+  }
 
-  // RunGraphs(gRResultHandlesFast);
+  RunGraphs(gRResultHandlesFast);
 
   fOutput->cd();
   RResultWrite(gRResultHandlesFast);
