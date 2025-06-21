@@ -21,7 +21,7 @@ void JpsiQA(
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   Cut_MultTPC_NumContrib::init(path_pileup);
 
-  TTree *tree_flowVecd = (TTree *)file_flowVecd->Get("O2dqflowvecd");
+  TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
 
   vector<RResultHandle> gRResultHandlesFast;
   ROOT::RDataFrame rdf(*tree_flowVecd);
