@@ -55,11 +55,19 @@ void MultREFRaw(
   MRootGraphic::StyleCommon();
 
   TCanvas *c_fNumContrib_fMultREF = new TCanvas(
-      "c_fNumContrib_fMultREF", "c_fNumContrib_fMultREF", 1200, 800);
+      "c_fNumContrib_fMultREF", "c_fNumContrib_fMultREF", 900, 900);
   c_fNumContrib_fMultREF->Divide(3, 3);
   gStyle->SetOptStat("e");
 
   vector<TH1D *> vec_proj_lowNumContrib;
+
+  auto setTitleSize = [](TH1 *hist, double size) {
+    hist->GetXaxis()->SetTitleSize(size);
+    hist->GetYaxis()->SetTitleSize(size);
+    hist->GetYaxis()->SetTitleOffset(0.9);
+    hist->GetZaxis()->SetTitleSize(size);
+  };
+
   for (int i_CondSameBunchPileup = 0; i_CondSameBunchPileup < 3;
        i_CondSameBunchPileup++) {
     auto fNumContrib_fMultREF = MRootIO::GetObjectDiectly<TH2D>(
@@ -74,6 +82,7 @@ void MultREFRaw(
     gPad->SetRightMargin(0.11);
     gPad->SetTopMargin(0.1);
     // get the pavestats from the canvas
+    setTitleSize(fNumContrib_fMultREF, 0.05);
     fNumContrib_fMultREF->Draw("colz");
     gPad->Update();
     TPaveStats *st = (TPaveStats *)fNumContrib_fMultREF->FindObject("stats");
@@ -95,7 +104,13 @@ void MultREFRaw(
     gPad->SetLeftMargin(0.1);
     gPad->SetRightMargin(0.11);
     gPad->SetTopMargin(0.1);
+    setTitleSize(proj_lowNumContrib_y, 0.05);
     proj_lowNumContrib_y->Draw();
+    TLatex *latex = new TLatex();
+    latex->SetTextSize(0.05);
+    latex->SetTextAlign(12);
+    latex->SetNDC();
+    latex->DrawLatex(0.55, 0.85, "#it{N}_{contrib}<4");
     gPad->Update();
     st = (TPaveStats *)proj_lowNumContrib_y->FindObject("stats");
     if (st) {
@@ -107,5 +122,34 @@ void MultREFRaw(
     }
     gPad->Modified();
     vec_proj_lowNumContrib.push_back(proj_lowNumContrib_y);
+    c_fNumContrib_fMultREF->cd(i_CondSameBunchPileup + 7);
+    auto proj_lowNumContrib_x = (TH1D *)fNumContrib_fMultREF->ProjectionX(
+        GetHistName1D(var_fMultREF,
+                      conditions_samePileup[i_CondSameBunchPileup][1]),
+        1, 4);
+    MRootGraphic::StyleHistCommonHist(proj_lowNumContrib_x);
+    gPad->SetLogy();
+    gPad->SetLeftMargin(0.1);
+    gPad->SetRightMargin(0.11);
+    gPad->SetTopMargin(0.1);
+    setTitleSize(proj_lowNumContrib_x, 0.05);
+    proj_lowNumContrib_x->Draw();
+    latex->DrawLatex(0.55, 0.85, "MultREF<4");
+    gPad->Update();
+    st = (TPaveStats *)proj_lowNumContrib_x->FindObject("stats");
+    if (st) {
+      st->SetTextSize(0.03);
+      st->SetX1NDC(0.2);
+      st->SetX2NDC(0.5);
+      st->SetY1NDC(0.8);
+      st->SetY2NDC(0.9);
+    }
+    gPad->Modified();
   }
+  c_fNumContrib_fMultREF->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                                 "MultREFRaw_NumContrib_vs_MultREF_" +
+                                 tag_period + ".pdf");
+  c_fNumContrib_fMultREF->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                                 "MultREFRaw_NumContrib_vs_MultREF_" +
+                                 tag_period + ".json");
 }
