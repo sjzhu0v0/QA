@@ -65,6 +65,9 @@ void JpsiQA(
                               {0, 300});
   StrVar4Hist var_NumContribCalib(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
+  StrVar4Hist var_NumContribCalibBinned(
+      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
+      {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
@@ -81,12 +84,17 @@ void JpsiQA(
   TupleTHnDModel tuple_jpsiQA =
       GetTHnDModelWithTitle({var_fPosZ, var_MassJpsiCandidate,
                              var_PtJpsiCandidate, var_NumContribCalib});
+  TupleTHnDModel tuple_jpsiQA_Binned =
+      GetTHnDModelWithTitle({var_fPosZ, var_MassJpsiCandidate,
+                             var_PtJpsiCandidate, var_NumContribCalibBinned},
+                            "", "Binned");
 
 #define obj2push_thnd(tuple_thnd, rdf2push)                                    \
   gRResultHandles.push_back(                                                   \
       rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));
 
   obj2push_thnd(tuple_jpsiQA, rdf_PartTrigger);
+  obj2push_thnd(tuple_jpsiQA_Binned, rdf_PartTrigger);
 
   RunGraphs(gRResultHandles);
 

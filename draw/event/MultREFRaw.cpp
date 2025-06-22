@@ -74,7 +74,7 @@ void MultREFRaw(
     hist->GetYaxis()->SetTitleOffset(0.9);
     hist->GetZaxis()->SetTitleSize(size);
   };
-
+  vector<TH2D *> vec_fNumContrib_fMultREF;
   for (int i_CondSameBunchPileup = 0; i_CondSameBunchPileup < 3;
        i_CondSameBunchPileup++) {
     auto fNumContrib_fMultREF = MRootIO::GetObjectDiectly<TH2D>(
@@ -82,6 +82,7 @@ void MultREFRaw(
         GetHistName2D(
             var_NumContribCalib, var_fMultREF,
             (TString)conditions_samePileup[i_CondSameBunchPileup][1]));
+    vec_fNumContrib_fMultREF.push_back(fNumContrib_fMultREF);
     TString title_x = var_NumContribCalib.fTitle;
     if (var_NumContribCalib.fUnit != "")
       title_x += " (" + var_NumContribCalib.fUnit + ")";
@@ -167,4 +168,55 @@ void MultREFRaw(
   c_fNumContrib_fMultREF->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
                                  "MultREFRaw_NumContrib_vs_MultREF_" +
                                  tag_period + ".json");
+
+  TCanvas *c_NumContrib = new TCanvas("c_NumContrib", "c_NumContrib", 800, 800);
+  auto fNumContrib_isntSameBunchPileup =
+      (TH1D *)vec_fNumContrib_fMultREF[1]->ProjectionX(
+          GetHistName1D(var_NumContribCalib, "isntSameBunchPileup"));
+  c_NumContrib->cd();
+  gPad->SetLogy();
+  gStyle->SetOptStat(0);
+  MRootGraphic::StyleHistCommonHist(fNumContrib_isntSameBunchPileup);
+  fNumContrib_isntSameBunchPileup->SetTitle("");
+  fNumContrib_isntSameBunchPileup->Draw();
+
+  double sum = fNumContrib_isntSameBunchPileup->Integral();
+  double sum_per_bin = sum / 10;
+  double mean = fNumContrib_isntSameBunchPileup->GetMean();
+
+  vector<double> vec_bin;
+
+  vec_bin.push_back(0.);
+  double sum_bin = 0.;
+  for (int i = 1; i <= fNumContrib_isntSameBunchPileup->GetNbinsX(); i++) {
+    sum_bin += fNumContrib_isntSameBunchPileup->GetBinContent(i);
+    if (sum_bin >= sum_per_bin * vec_bin.size()) {
+      vec_bin.push_back(fNumContrib_isntSameBunchPileup->GetBinLowEdge(i + 1));
+    }
+  }
+
+  for (auto value : vec_bin) {
+    cout << value << ",";
+  }
+
+  for (auto &value : vec_bin) {
+    double fraction = value / mean;
+    cout << "Bin value: " << value << ", Fraction of mean: " << fraction
+         << endl;
+  }
+
+  for (int i = 0; i < vec_bin.size() - 1; i++) {
+    double x = vec_bin[i];
+    double y = fNumContrib_isntSameBunchPileup->GetBinContent(
+        fNumContrib_isntSameBunchPileup->FindBin(x));
+    TLine *line = new TLine(x, 0, x, y);
+    line->SetLineColor(kRed);
+    line->Draw();
+  }
+  c_NumContrib->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                       "MultREFRaw_NumContribCalibBinning_" +
+                       tag_period + ".pdf");
+  c_NumContrib->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
+                       "MultREFRaw_NumContribCalibBinning_" +
+                       tag_period + ".json");
 }
