@@ -26,15 +26,22 @@ void MultREFRaw(
     TString tag_period = "LHC22pass4_dqfilter") {
   //   gROOT->SetBatch(true);
 
-  StrVar4Hist var_fNumContrib("fNumContrib", "fNumContrib", "", 300, {0, 300});
-  StrVar4Hist var_NumContribCalib("NumContribCalib", "NumContrib Calibrated",
-                                  "", 300, {0, 300});
-  StrVar4Hist var_fMultTPC("fMultTPC", "fMultTPC", "", 600, {0, 600});
-  StrVar4Hist var_fMultREF("fMultREF", "fMultREF", "", 100, {0, 100});
-  StrVar4Hist var_fMultFT0C("fMultFT0C", "fMultFT0C", "", 130,
+  StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
+  StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
+  StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 200, {-10, 10});
+  StrVar4Hist var_fNumContrib("fNumContrib", "#it{N}_{vtx contrib} ", "", 300,
+                              {0, 300});
+  StrVar4Hist var_NumContribCalib(
+      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
+  StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
+  StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
+  StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
                             {-1000., 12000.});
-  StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
-                                 150, {0, 150});
+  StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
+                                {0, 150});
+  StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
+                                    {1., 5.});
+  StrVar4Hist var_PtJpsiCandidate("fPT", "M_{ee}", "GeV/c", 10, {0., 10.});
 
   vector<array<string, 2>> conditions_samePileup = {
       {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},
@@ -54,8 +61,8 @@ void MultREFRaw(
   TFile *file_output = new TFile(path_output, "RECREATE");
   MRootGraphic::StyleCommon();
 
-  TCanvas *c_fNumContrib_fMultREF = new TCanvas(
-      "c_fNumContrib_fMultREF", "c_fNumContrib_fMultREF", 900, 900);
+  TCanvas *c_fNumContrib_fMultREF =
+      new TCanvas("c_fNumContrib_fMultREF", "c_fNumContrib_fMultREF", 900, 900);
   c_fNumContrib_fMultREF->Divide(3, 3);
   gStyle->SetOptStat("e");
 
@@ -75,6 +82,14 @@ void MultREFRaw(
         GetHistName2D(
             var_NumContribCalib, var_fMultREF,
             (TString)conditions_samePileup[i_CondSameBunchPileup][1]));
+    TString title_x = var_NumContribCalib.fTitle;
+    if (var_NumContribCalib.fUnit != "")
+      title_x += " (" + var_NumContribCalib.fUnit + ")";
+    TString title_y = var_fMultREF.fTitle;
+    if (var_fMultREF.fUnit != "")
+      title_y += " (" + var_fMultREF.fUnit + ")";
+    fNumContrib_fMultREF->GetXaxis()->SetTitle(title_x);
+    fNumContrib_fMultREF->GetYaxis()->SetTitle(title_y);
     MRootGraphic::StyleHistCommonHist(fNumContrib_fMultREF);
     c_fNumContrib_fMultREF->cd(i_CondSameBunchPileup + 1);
     gPad->SetLogz();

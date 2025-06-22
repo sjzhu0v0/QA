@@ -29,6 +29,8 @@ void Comparison_Mult_basicTrigger_AllTrigger(
   LevelTrigger->GetYaxis()->SetRangeUser(0, 1.2);
   gPad->SetGridy();
   gPad->SetRightMargin(0.150376);
+  LevelTrigger->SetTitle("");
+  LevelTrigger->GetYaxis()->SetTitle("Events normaliezed to all events");
   LevelTrigger->Draw("hist text");
   c_levelTrigger->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/event/"
@@ -36,6 +38,18 @@ void Comparison_Mult_basicTrigger_AllTrigger(
   c_levelTrigger->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/event/"
       "Comparison_Mult_basicTrigger_AllTrigger_LevelTrigger.json");
+
+  TCanvas *c_levelTrigger_0_5 =
+      new TCanvas("c_levelTrigger_0_5", "c_levelTrigger", 800, 600);
+  gPad->SetRightMargin(0.15);
+  LevelTrigger->GetXaxis()->SetRangeUser(-0.5, 4.5);
+  LevelTrigger->Draw("hist text");
+  c_levelTrigger_0_5->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/plot/event/"
+      "Comparison_Mult_basicTrigger_AllTrigger_LevelTrigger_0to5.pdf");
+  c_levelTrigger_0_5->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/plot/event/"
+      "Comparison_Mult_basicTrigger_AllTrigger_LevelTrigger_0to5.json");
 
   vector<string> vec_name_hist;
   vector<string> vec_name_hist_sort1d;
