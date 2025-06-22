@@ -80,21 +80,19 @@ void JpsiQA(
 
   // red = {"fVtxZ", "fMass", "fPT",
   //                                          "fNumContribCalibrated"};
+#define obj2push_thnd(rdf2push, ...)                                           \
+  do {                                                                         \
+    TupleTHnDModel tuple_thnd = GetTHnDModelWithTitle(__VA_ARGS__);            \
+    gRResultHandles.push_back(                                                 \
+        rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
+  } while (0)
 
-  TupleTHnDModel tuple_jpsiQA =
-      GetTHnDModelWithTitle({var_fPosZ, var_MassJpsiCandidate,
-                             var_PtJpsiCandidate, var_NumContribCalib});
-  TupleTHnDModel tuple_jpsiQA_Binned =
-      GetTHnDModelWithTitle({var_fPosZ, var_MassJpsiCandidate,
-                             var_PtJpsiCandidate, var_NumContribCalibBinned},
-                            "", "Binned");
-
-#define obj2push_thnd(tuple_thnd, rdf2push)                                    \
-  gRResultHandles.push_back(                                                   \
-      rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));
-
-  obj2push_thnd(tuple_jpsiQA, rdf_PartTrigger);
-  obj2push_thnd(tuple_jpsiQA_Binned, rdf_PartTrigger);
+  obj2push_thnd(rdf_PartTrigger, {var_fPosZ, var_MassJpsiCandidate,
+                                  var_PtJpsiCandidate, var_NumContribCalib});
+  obj2push_thnd(rdf_PartTrigger,
+                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
+                 var_NumContribCalibBinned},
+                "", "Binned");
 
   RunGraphs(gRResultHandles);
 
