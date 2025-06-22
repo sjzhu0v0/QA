@@ -23,7 +23,6 @@ void JpsiQA(
 
   TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
 
-  vector<RResultHandle> gRResultHandlesFast;
   ROOT::RDataFrame rdf(*tree_flowVecd);
 
   auto rdf_witTrigger =
@@ -89,10 +88,10 @@ void JpsiQA(
 
   obj2push_thnd(tuple_jpsiQA, rdf_PartTrigger);
 
-  RunGraphs(gRResultHandlesFast);
+  RunGraphs(gRResultHandles);
 
   fOutput->cd();
-  RResultWrite(gRResultHandlesFast);
+  RResultWrite(gRResultHandles);
   fOutput->Close();
 }
 
