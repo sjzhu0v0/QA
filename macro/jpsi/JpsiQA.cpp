@@ -78,8 +78,6 @@ void JpsiQA(
                                     {1., 5.});
   StrVar4Hist var_PtJpsiCandidate("fPT", "M_{ee}", "GeV/c", 10, {0., 10.});
 
-  // red = {"fVtxZ", "fMass", "fPT",
-  //                                          "fNumContribCalibrated"};
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
     TupleTHnDModel tuple_thnd = GetTHnDModelWithTitle(__VA_ARGS__);            \
@@ -89,6 +87,7 @@ void JpsiQA(
 
   obj2push_thnd(rdf_PartTrigger, {var_fPosZ, var_MassJpsiCandidate,
                                   var_PtJpsiCandidate, var_NumContribCalib});
+  obj2push_thnd(rdf_PartTrigger, {var_fPosZ});
   obj2push_thnd(rdf_PartTrigger,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned},
