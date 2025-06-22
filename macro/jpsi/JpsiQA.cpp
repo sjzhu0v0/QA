@@ -66,7 +66,7 @@ void JpsiQA(
   StrVar4Hist var_NumContribCalib(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
-  StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}F", "", 100, {0, 100});
+  StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
                             {-1000., 12000.});
   StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
