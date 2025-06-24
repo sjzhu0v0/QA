@@ -2,5 +2,6 @@ include/
 kit/
 output/
 plot/
+test/
 *.root
 *.pdf
