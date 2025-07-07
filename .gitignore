@@ -3,5 +3,6 @@ kit/
 output/
 plot/
 test/
+backup/
 *.root
 *.pdf
