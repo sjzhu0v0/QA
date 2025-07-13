@@ -70,8 +70,9 @@ void JpsiFitPtMult() {
 
   auto hist = hn_tool.Project(1, {0, 0, 0});
 
-  gPublisherCanvas =
-      new MPublisherCanvas("/home/szhu/work/alice/analysis/QA/plot/jpsi/jpsi_fit_pt_mult.pdf", 1, 1, 600, 600);
+  gPublisherCanvas = new MPublisherCanvas(
+      "/home/szhu/work/alice/analysis/QA/plot/jpsi/jpsi_fit_pt_mult.pdf", 1, 1,
+      600, 600);
   MRootGraphic::StyleCommon();
   // RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
@@ -133,6 +134,12 @@ void JpsiFitPtMult() {
     //   signal_fit.chi2Fit(false);
     //   signal_fit >> (gPublisherCanvas->NewPad());
     // }
+    gPublisherCanvas->SetCanvasNwNh(2, 1);
+    for (int i_mult = 1; i_mult <= hn_tool.GetNbins(3); i_mult++) {
+      auto hist_pt_mult = hn_tool.Project(1, {0, i_pt, i_mult});
+      gPublisherCanvas->Draw(hist_pt_mult);
+    }
+    gPublisherCanvas->SetCanvasNwNh(1, 1);
   }
   gPublisherCanvas->finalize();
 }
