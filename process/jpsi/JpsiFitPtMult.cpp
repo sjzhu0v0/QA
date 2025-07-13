@@ -122,22 +122,24 @@ void JpsiFitPtMult() {
     signal_fit_pt >> (gPublisherCanvas->NewPad());
     gPublisherCanvas->AddText(Form("pT: %d, Mult: 1", i_pt), 0.55,
                               0.86 - 0.045 * 6, kBlack, 0.04);
-    // for (int i_mult = 1.; i_mult <= hn_tool.GetNbins(3); i_mult++) {
-    //   MSignalFit signal_fit(Form("JpsiFit_%d_%d", i_pt, i_mult),
-    //                         ProxyTemplate(i_pt, 0), ProxyTemplate(i_pt,
-    //                         1), 1., 5.);
-    //   auto hist_pt = hn_tool.Project(1, {0, i_pt, i_mult});
-    //   signal_fit << hist_pt;
-    //   signal_fit.chi2Fit();
-    //   signal_fit.chi2Fit(false);
-    //   signal_fit.RemoveLimit();
-    //   signal_fit.chi2Fit(false);
-    //   signal_fit >> (gPublisherCanvas->NewPad());
-    // }
     gPublisherCanvas->SetCanvasNwNh(2, 1);
     for (int i_mult = 1; i_mult <= hn_tool.GetNbins(3); i_mult++) {
       auto hist_pt_mult = hn_tool.Project(1, {0, i_pt, i_mult});
       gPublisherCanvas->Draw(hist_pt_mult);
+      MSignalFit signal_fit_pt_mult(Form("JpsiFit_pt_%d_mult_%d", i_pt, i_mult),
+                                    ProxyTemplate(i_pt, 0),
+                                    ProxyTemplate(i_pt, 1), 1.7, 5.);
+      signal_fit_pt_mult.InputData(hist_pt_mult);
+      signal_fit_pt_mult.CopySignal(signal_fit_pt);
+      signal_fit_pt_mult.CopyBkg(signal_fit_pt);
+      signal_fit_pt_mult.FixSignal();
+      signal_fit_pt_mult.FixBkg();
+      signal_fit_pt_mult.Fit();
+      signal_fit_pt_mult.FixBkg(false);
+      signal_fit_pt_mult.Fit();
+      signal_fit_pt_mult.FixSignal(false);
+      signal_fit_pt_mult.Fit();
+      signal_fit_pt_mult >> (gPublisherCanvas->NewPad());
     }
     gPublisherCanvas->SetCanvasNwNh(1, 1);
   }
