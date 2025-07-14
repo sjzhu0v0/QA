@@ -1,14 +1,15 @@
 #define MRDF
 #include "MALICE.h"
 #include "MCalibration.h"
+#include "MEventMixing.h"
 #include "MHead.h"
 #include "MHist.h"
 #include "MRootIO.h"
 #include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
-#include "MEventMixing.h"
 
-vector<EventData> MixEvent(const int id, const EventData &event_info) {
+vector<EventData> MixEvent(unsigned int, const int id,
+                           const EventData &event_info) {
   return MixVec<EventData, EventData>(
       id, event_info, [](const EventData &a, const EventData &b) {
         EventData event;
@@ -133,7 +134,7 @@ void EventMixingJpsiAsso(
                     return int(index1 * bins_mix_posZ.size() + index2);
                   },
                   {"NumContribCalib", "fPosZ"})
-          .Define("MixedEvent", MixEvent, {"IndexMixing", "EventData"})
+          .DefineSlot("MixedEvent", MixEvent, {"IndexMixing", "EventData"})
           .Snapshot("EventMixing", "EventMixingJpsiAsso.root", {"MixedEvent"});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
