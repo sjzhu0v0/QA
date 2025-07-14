@@ -38,5 +38,5 @@ macro/jpsi/JpsiQA.exe: macro/jpsi/JpsiQA.cpp
 macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/MRootDict.cxx
 	g++ -o $@ $^ opt/MRootDict.cxx opt/EventData.h $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./
 
-opt/MRootDict.cxx: opt/LinkDef.h opt/MixJpsiAsso.h
-	rootcint -f $@ -c opt/MixJpsiAsso.h opt/LinkDef.h $(FLAGS_INCLUDE)
+opt/MRootDict.cxx: opt/LinkDef.h opt/EventData.h
+	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
