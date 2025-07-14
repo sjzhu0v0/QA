@@ -35,9 +35,11 @@ macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
 macro/jpsi/JpsiQA.exe: macro/jpsi/JpsiQA.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
-macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/libMRootDict.so
-	g++ -o $@ $^ opt/libMRootDict.so opt/EventData.cxx $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./
+macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/libMRootDict.so opt/EventData.cxx
+	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./
 
-opt/libMRootDict.so: opt/LinkDef.h opt/EventData.h
-	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
-	g++ opt/MRootDict.cxx -o $@ -I./ -shared -fPIC `root-config --cflags --libs`
+opt/MRootDict.cxx: opt/LinkDef.h opt/EventData.h
+	rootcint -f $@ -c $^ $(FLAGS_INCLUDE)
+
+opt/libMRootDict.so: opt/MRootDict.cxx
+	g++ -o $@ $^ -I./ -shared -fPIC `root-config --cflags --libs`
