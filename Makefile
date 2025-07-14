@@ -40,4 +40,4 @@ macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.c
 
 opt/libMRootDict.so: opt/LinkDef.h opt/EventData.h
 	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
-	g++ MRootDict.cxx -o $@ -I./ -shared -fPIC `root-config --cflags --libs`
+	g++ opt/MRootDict.cxx -o $@ -I./ -shared -fPIC `root-config --cflags --libs`
