@@ -17,7 +17,7 @@ struct EventInfo {
   Float_t fPosX = 0;
   Float_t fPosY = 0;
   Float_t fPosZ = 0;
-  Long64_t fSelection = 0;
+  unsigned long long fSelection = 0;
   Float_t fHadronicRate = 0;
 
   void Copy(EventInfo other);
@@ -88,7 +88,7 @@ struct EventData {
 EventData CreateEventData(Int_t fMultTPC, Int_t fMultTracklets,
                           Int_t fMultNTracksPV, Float_t fMultFT0C,
                           unsigned short fNumContrib, Float_t fPosX, Float_t fPosY,
-                          Float_t fPosZ, Long64_t fSelection,
+                          Float_t fPosZ, unsigned long long fSelection,
                           Float_t fHadronicRate,
                           const ROOT::VecOps::RVec<Float_t> &fPT,
                           const ROOT::VecOps::RVec<Float_t> &fEta,
