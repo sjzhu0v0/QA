@@ -4,7 +4,7 @@
 #include "MHead.h"
 #include "MHist.h"
 #include "MRootIO.h"
-#include "MixJpsiAsso.h"
+#include "opt/MixJpsiAsso.h"
 #include <ROOT/RDataFrame.hxx>
 
 void EventMixingJpsiAsso(
