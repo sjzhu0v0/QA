@@ -4,8 +4,21 @@
 #include "MHead.h"
 #include "MHist.h"
 #include "MRootIO.h"
-#include "opt/MixJpsiAsso.h"
+#include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
+#include "MEventMixing.h"
+
+vector<EventData> MixEvent(const int id, const EventData &event_info) {
+  return MixVec<EventData, EventData>(
+      id, event_info, [](const EventData &a, const EventData &b) {
+        EventData event;
+        event.event_info.Copy(a.event_info);
+        event.event_info2.Copy(b.event_info);
+        event.jpsi_info.Copy(a.jpsi_info);
+        event.track_info.Copy(b.track_info);
+        return event;
+      });
+}
 
 void EventMixingJpsiAsso(
     TString path_input_flowVecd = "../input.root",
