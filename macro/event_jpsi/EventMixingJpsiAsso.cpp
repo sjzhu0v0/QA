@@ -94,7 +94,7 @@ void EventMixingJpsiAsso(
   const vector<double> bins_mix_posZ = var_fPosZMix.fBins;
 
   auto rdf_PartTriggerWithJpsiWithEventWithEventMixing =
-      rdf_PartTriggerWithJpsi
+      rdf_PartTriggerWithJpsiWithEvent
           .Define("IndexMixing",
                   [bins_mix_numContrib, bins_mix_posZ](double numContrib,
                                                        float posZ) {
