@@ -120,7 +120,8 @@ void EventMixingJpsiAsso(
                     return int(index1 * bins_mix_posZ.size() + index2);
                   },
                   {"NumContribCalib", "fPosZ"})
-          .Define("MixedEvent", MixEvent, {"IndexMixing", "EventData"});
+          .Define("MixedEvent", MixEvent, {"IndexMixing", "EventData"})
+          .Snapshot("EventMixing", "EventMixingJpsiAsso.root", {"MixedEvent"});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
