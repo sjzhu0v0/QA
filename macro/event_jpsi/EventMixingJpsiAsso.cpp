@@ -23,7 +23,8 @@ vector<EventData> MixEvent(unsigned int, const int id,
 
 void EventMixingJpsiAsso(
     TString path_input_flowVecd = "../input.root",
-    TString path_output = "output.root", int runNumber = 0,
+    TString path_output = "output.root",
+    TString path_output_tree = "output_tree.root", int runNumber = 0,
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
         "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
@@ -191,7 +192,7 @@ void EventMixingJpsiAsso(
                   {"MixedEvent"});
 
   rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
-      "EventMixing", "EventMixingJpsiAsso.root", {"MixedEvent"});
+      "EventMixing", path_output_tree, {"MixedEvent"});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -246,6 +247,7 @@ void EventMixingJpsiAsso(
 int main(int argc, char **argv) {
   TString path_input_flowVecd = "../input.root";
   TString path_output = "output.root";
+  TString path_output_tree = "output_tree.root";
   int runNumber = 0;
   TString path_calib =
       "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
@@ -261,16 +263,19 @@ int main(int argc, char **argv) {
     path_output = argv[2];
   }
   if (argc > 3) {
-    runNumber = atoi(argv[3]);
+    path_output_tree = argv[3];
   }
   if (argc > 4) {
-    path_calib = argv[4];
+    runNumber = atoi(argv[4]);
   }
   if (argc > 5) {
-    path_pileup = argv[5];
+    path_calib = argv[5];
   }
-  EventMixingJpsiAsso(path_input_flowVecd, path_output, runNumber, path_calib,
-                      path_pileup);
+  if (argc > 6) {
+    path_pileup = argv[6];
+  }
+  EventMixingJpsiAsso(path_input_flowVecd, path_output, path_output_tree,
+                      runNumber, path_calib, path_pileup);
 
   return 0;
 }
