@@ -209,6 +209,8 @@ void EventMixingJpsiAsso(
 
   StrRResult str_rresult(gRResultHandles);
   str_rresult
+      .push_back(rdf_PartTriggerWithJpsiWithEventWithEventMixing.Histo1D(
+          "IndexMixing"))
       .push_back(rdf_PartTriggerWithJpsiWithEventWithEventMixing.Histo2D(
           {"IndexMixing_NumContribCalib_IndexMixing_PosZ",
            ";IndexMixing_NumContribCalib;IndexMixing_PosZ", 10, -0.5, 9.5, 10,
