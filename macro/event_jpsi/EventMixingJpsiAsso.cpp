@@ -202,10 +202,6 @@ void EventMixingJpsiAsso(
 
   obj2push_thnd(rdf_PartTrigger, {var_fPosZ, var_MassJpsiCandidate,
                                   var_PtJpsiCandidate, var_NumContribCalib});
-  obj2push_thnd(rdf_PartTrigger, {var_fPosZ});
-  obj2push_thnd(rdf_PartTrigger, {var_MassJpsiCandidate});
-  obj2push_thnd(rdf_PartTrigger, {var_PtJpsiCandidate});
-  obj2push_thnd(rdf_PartTrigger, {var_NumContribCalib}, "title_test");
   obj2push_thnd(rdf_PartTrigger,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned},
