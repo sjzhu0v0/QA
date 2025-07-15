@@ -166,7 +166,7 @@ void EventMixingJpsiAsso(
                     ROOT::VecOps::RVec<float> mixedNumContribCalib;
                     for (const auto &event : events) {
                       mixedNumContribCalib.push_back(
-                          event.event_info2.fNumContrib);
+                          event.event_info.fNumContrib);
                     }
                     return mixedNumContribCalib;
                   },
@@ -175,7 +175,7 @@ void EventMixingJpsiAsso(
                   [](const vector<EventData> &events) {
                     ROOT::VecOps::RVec<float> mixedPosZ;
                     for (const auto &event : events) {
-                      mixedPosZ.push_back(event.event_info.fPosZ);
+                      mixedPosZ.push_back(event.event_info2.fPosZ);
                     }
                     return mixedPosZ;
                   },
