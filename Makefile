@@ -35,7 +35,7 @@ macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
 macro/jpsi/JpsiQA.exe: macro/jpsi/JpsiQA.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
-macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/libMRootDict.cxx opt/EventData.cxx
+macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/MRootDict.cxx opt/EventData.cxx
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -wl,
 
 opt/MRootDict.cxx:  opt/EventData.h opt/LinkDef.h
