@@ -236,6 +236,11 @@ void EventMixingJpsiAsso(
                             var_fPosZMix.fNbins, var_fPosZMix.fBins.data(),
                             var_fPosZMix.fNbins, var_fPosZMix.fBins.data()},
                            "MixedEvent_fPosZ1", "MixedEvent_fPosZ2"));
+  str_rresult_push(Histo2D({"MixedEvent_fPosZ1_MixedEvent_fPosZ2_fineBin",
+                            ";MixedEvent_fPosZ1;MixedEvent_fPosZ2",
+                            var_fPosZ.fNbins, var_fPosZ.fBins.data(),
+                            var_fPosZ.fNbins, var_fPosZ.fBins.data()},
+                           "MixedEvent_fPosZ1", "MixedEvent_fPosZ2"));
 
 #undef str_rresult_push
 
