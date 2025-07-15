@@ -104,38 +104,94 @@ void EventMixingJpsiAsso(
                                     {1., 5.});
   StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 10.});
 
-  const vector<double> bins_mix_numContrib = var_fPosZMix.fBins;
+  const vector<double> bins_mix_numContrib = var_NumContribCalibBinned.fBins;
   const vector<double> bins_mix_posZ = var_fPosZMix.fBins;
 
   auto rdf_PartTriggerWithJpsiWithEventWithEventMixing =
       rdf_PartTriggerWithJpsiWithEvent
-          .Define("IndexMixing",
-                  [bins_mix_numContrib, bins_mix_posZ](double numContrib,
-                                                       float posZ) {
-                    int index1 = -1;
+          .Define("IndexMixing_NumContribCalib",
+                  [bins_mix_numContrib](double numContrib) {
+                    int index = -1;
                     for (int i = 0; i < bins_mix_numContrib.size() - 1; i++) {
                       if (numContrib >= bins_mix_numContrib[i] &&
                           numContrib < bins_mix_numContrib[i + 1]) {
-                        index1 = i;
+                        index = i;
                         break;
                       }
                     }
-                    int index2 = -1;
+                    if (index == -1) {
+                      return -1; // Invalid index
+                    }
+                    return int(index);
+                  },
+                  {"NumContribCalib"})
+          .Define("IndexMixing_PosZ",
+                  [bins_mix_posZ](float posZ) {
+                    int index = -1;
                     for (int i = 0; i < bins_mix_posZ.size() - 1; i++) {
                       if (posZ >= bins_mix_posZ[i] &&
                           posZ < bins_mix_posZ[i + 1]) {
-                        index2 = i;
+                        index = i;
                         break;
                       }
                     }
-                    if (index1 == -1 || index2 == -1) {
+                    if (index == -1) {
                       return -1; // Invalid index
                     }
-                    return int(index1 * bins_mix_posZ.size() + index2);
+                    return int(index);
                   },
-                  {"NumContribCalib", "fPosZ"})
+                  {"fPosZ"})
+          .Define("IndexMixing",
+                  [bins_mix_posZ](int indexNumContrib, int indexPosZ) {
+                    if (indexNumContrib < 0 || indexPosZ < 0) {
+                      return -1; // Invalid index
+                    }
+                    return int(indexPosZ +
+                               indexNumContrib * bins_mix_posZ.size());
+                  },
+                  {"IndexMixing_NumContribCalib", "IndexMixing_PosZ"})
           .DefineSlot("MixedEvent", MixEvent, {"IndexMixing", "EventData"})
-          .Snapshot("EventMixing", "EventMixingJpsiAsso.root", {"MixedEvent"});
+          .Define("MixedEvent_fPosZ1",
+                  [](const vector<EventData> &events) {
+                    ROOT::VecOps::RVec<float> mixedPosZ;
+                    for (const auto &event : events) {
+                      mixedPosZ.push_back(event.event_info.fPosZ);
+                    }
+                    return mixedPosZ;
+                  },
+                  {"MixedEvent"})
+          .Define("MixedEvent_NumContribCalib1",
+                  [](const vector<EventData> &events) {
+                    ROOT::VecOps::RVec<float> mixedNumContribCalib;
+                    for (const auto &event : events) {
+                      mixedNumContribCalib.push_back(
+                          event.event_info2.fNumContrib);
+                    }
+                    return mixedNumContribCalib;
+                  },
+                  {"MixedEvent"})
+          .Define("MixedEvent_fPosZ2",
+                  [](const vector<EventData> &events) {
+                    ROOT::VecOps::RVec<float> mixedPosZ;
+                    for (const auto &event : events) {
+                      mixedPosZ.push_back(event.event_info.fPosZ);
+                    }
+                    return mixedPosZ;
+                  },
+                  {"MixedEvent"})
+          .Define("MixedEvent_NumContribCalib2",
+                  [](const vector<EventData> &events) {
+                    ROOT::VecOps::RVec<float> mixedNumContribCalib;
+                    for (const auto &event : events) {
+                      mixedNumContribCalib.push_back(
+                          event.event_info2.fNumContrib);
+                    }
+                    return mixedNumContribCalib;
+                  },
+                  {"MixedEvent"});
+
+  rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
+      "EventMixing", "EventMixingJpsiAsso.root", {"MixedEvent"});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -154,6 +210,35 @@ void EventMixingJpsiAsso(
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned},
                 "", "Binned");
+
+  StrRResult str_rresult(gRResultHandles);
+  str_rresult
+      .push_back(rdf_PartTriggerWithJpsiWithEventWithEventMixing.Histo2D(
+          {"IndexMixing_NumContribCalib_IndexMixing_PosZ",
+           ";IndexMixing_NumContribCalib;IndexMixing_PosZ", 10, -0.5, 9.5, 10,
+           -0.5, 9.5},
+          "IndexMixing_NumContribCalib", "IndexMixing_PosZ"))
+      .push_back(rdf_PartTriggerWithJpsiWithEventWithEventMixing.Histo2D(
+          {"MixedEvent_NumContribCalib1_MixedEvent_fPosZ1",
+           ";MixedEvent_NumContribCalib1;MixedEvent_fPosZ1",
+           var_NumContribCalibBinned.fNbins,
+           var_NumContribCalibBinned.fBins.data(), var_fPosZMix.fNbins,
+           var_fPosZMix.fBins.data()},
+          "MixedEvent_NumContribCalib1", "MixedEvent_fPosZ1"))
+      .push_back(rdf_PartTriggerWithJpsiWithEventWithEventMixing.Histo2D(
+          {"MixedEvent_NumContribCalib1_MixedEvent_NumContribCalib2",
+           ";MixedEvent_NumContribCalib1;MixedEvent_NumContribCalib2",
+           var_NumContribCalibBinned.fNbins,
+           var_NumContribCalibBinned.fBins.data(),
+           var_NumContribCalibBinned.fNbins,
+           var_NumContribCalibBinned.fBins.data()},
+          "MixedEvent_NumContribCalib1", "MixedEvent_NumContribCalib2"))
+      .push_back(rdf_PartTriggerWithJpsiWithEventWithEventMixing.Histo2D(
+          {"MixedEvent_fPosZ1_MixedEvent_fPosZ2",
+           ";MixedEvent_fPosZ1;MixedEvent_fPosZ2", var_fPosZMix.fNbins,
+           var_fPosZMix.fBins.data(), var_fPosZMix.fNbins,
+           var_fPosZMix.fBins.data()},
+          "MixedEvent_fPosZ1", "MixedEvent_fPosZ2"));
 
   fOutput->cd();
   RResultWrite(gRResultHandles);
