@@ -209,7 +209,7 @@ void EventMixingJpsiAsso(
                 "", "Binned");
 
 #define str_rresult_push(...)                                                  \
-  gRResultHandles.push_back(                                                       \
+  gRResultHandles.push_back(                                                   \
       rdf_PartTriggerWithJpsiWithEventWithEventMixing.__VA_ARGS__)
 
   str_rresult_push(
