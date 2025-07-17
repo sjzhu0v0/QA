@@ -104,9 +104,9 @@ void EventMixingJpsiAsso(
   auto rdf_PartTriggerWithJpsiWithEvent = rdf_PartTriggerWithJpsi.Define(
       "EventData", CreateEventData,
       {"fMultTPC", "fMultTracklets", "fMultNTracksPV", "fMultFT0C",
-       "fNumContrib", "fPosX", "fPosY", "fPosZ", "fSelection", "fHadronicRate",
-       "fPT", "fEta", "fPhi", "fMass", "fSign", "fPTREF", "fEtaREF",
-       "fPhiREF"});
+       "fNumContrib", "NumContribCalib", "fPosX", "fPosY", "fPosZ",
+       "fSelection", "fHadronicRate", "fPT", "fEta", "fPhi", "fMass", "fSign",
+       "fPTREF", "fEtaREF", "fPhiREF"});
 
   auto rdf_PartTriggerWithJpsiWithEventWithEventMixing =
       rdf_PartTriggerWithJpsiWithEvent

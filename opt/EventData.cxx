@@ -15,9 +15,9 @@ void EventInfo::Copy(EventInfo other) {
 
 EventData CreateEventData(Int_t fMultTPC, Int_t fMultTracklets,
                           Int_t fMultNTracksPV, Float_t fMultFT0C,
-                          unsigned short fNumContrib, Float_t fPosX, Float_t fPosY,
-                          Float_t fPosZ, unsigned long long fSelection,
-                          Float_t fHadronicRate,
+                          unsigned short fNumContrib, Float_t fNumContribCalib,
+                          Float_t fPosX, Float_t fPosY, Float_t fPosZ,
+                          unsigned long long fSelection, Float_t fHadronicRate,
                           const ROOT::VecOps::RVec<Float_t> &fPT,
                           const ROOT::VecOps::RVec<Float_t> &fEta,
                           const ROOT::VecOps::RVec<Float_t> &fPhi,
@@ -34,6 +34,7 @@ EventData CreateEventData(Int_t fMultTPC, Int_t fMultTracklets,
   event.event_info.fMultNTracksPV = fMultNTracksPV;
   event.event_info.fMultFT0C = fMultFT0C;
   event.event_info.fNumContrib = fNumContrib;
+  event.event_info.fNumContribCalib = fNumContribCalib;
   event.event_info.fPosX = fPosX;
   event.event_info.fPosY = fPosY;
   event.event_info.fPosZ = fPosZ;

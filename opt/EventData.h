@@ -14,6 +14,7 @@ struct EventInfo {
   Int_t fMultNTracksPV = 0;
   Float_t fMultFT0C = 0;
   unsigned short fNumContrib = 0;
+  Float_t fNumContribCalib = 0; // Calibrated number of contributors
   Float_t fPosX = 0;
   Float_t fPosY = 0;
   Float_t fPosZ = 0;
@@ -87,9 +88,9 @@ struct EventData {
 
 EventData CreateEventData(Int_t fMultTPC, Int_t fMultTracklets,
                           Int_t fMultNTracksPV, Float_t fMultFT0C,
-                          unsigned short fNumContrib, Float_t fPosX, Float_t fPosY,
-                          Float_t fPosZ, unsigned long long fSelection,
-                          Float_t fHadronicRate,
+                          unsigned short fNumContrib, Float_t fNumContribCalib,
+                          Float_t fPosX, Float_t fPosY, Float_t fPosZ,
+                          unsigned long long fSelection, Float_t fHadronicRate,
                           const ROOT::VecOps::RVec<Float_t> &fPT,
                           const ROOT::VecOps::RVec<Float_t> &fEta,
                           const ROOT::VecOps::RVec<Float_t> &fPhi,
