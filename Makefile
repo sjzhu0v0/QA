@@ -42,4 +42,4 @@ opt/MRootDict.cxx: opt/EventData.h opt/LinkDef.h opt/EventData.cxx
 	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
 
 opt/libMRootDict.so: opt/MRootDict.cxx opt/EventData.cxx
-	g++ -o $@ -c $^ -I./ `root-config --cflags --libs` -shared -fPIC
+	g++ -o $@ $^ -I./ `root-config --cflags --libs` -shared -fPIC
