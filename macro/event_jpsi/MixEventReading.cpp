@@ -106,7 +106,27 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                     }
                     return ROOT::VecOps::RVec<array<float, 6>>(vec2return);
                   },
-                  {"MixedEvent"});
+                  {"MixedEvent"})
+          .Alias("fPosZ", "fPosZ1")
+          .Alias("NumContribCalib", "NumContribCalib1")
+          .Define("fMass",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &vec) {
+                    ROOT::VecOps::RVec<float> mass_vec;
+                    for (const auto &item : vec) {
+                      mass_vec.push_back(item[1]);
+                    }
+                    return mass_vec;
+                  },
+                  {"vector_Eta_Mass_Pt_Sign_DeltaPhi_DeltaEta"})
+          .Define("fPT",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &vec) {
+                    ROOT::VecOps::RVec<float> pt_vec;
+                    for (const auto &item : vec) {
+                      pt_vec.push_back(item[2]);
+                    }
+                    return pt_vec;
+                  },
+                  {"vector_Eta_Mass_Pt_Sign_DeltaPhi_DeltaEta"});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -116,7 +136,10 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   } while (0)
 
   obj2push_thnd(rdf, {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                      var_NumContribCalib});
+                      var_NumContribCalibBinned});
+  fOutput->cd();
+  RResultWrite(gRResultHandles);
+  fOutput->Close();
 }
 
 int main(int argc, char **argv) {
