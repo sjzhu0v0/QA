@@ -6,6 +6,7 @@ void EventInfo::Copy(EventInfo other) {
   fMultNTracksPV = other.fMultNTracksPV;
   fMultFT0C = other.fMultFT0C;
   fNumContrib = other.fNumContrib;
+  fNumContribCalib = other.fNumContribCalib; // Calibrated number of contributors
   fPosX = other.fPosX;
   fPosY = other.fPosY;
   fPosZ = other.fPosZ;
