@@ -6,7 +6,7 @@
 #include "MRootIO.h"
 #include <ROOT/RDataFrame.hxx>
 
-void JpsiQA(
+void JpsiAsso(
     TString path_input_flowVecd = "../input.root",
     TString path_output = "output.root", int runNumber = 0,
     TString path_calib =
@@ -95,6 +95,9 @@ void JpsiQA(
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned},
                 "", "Binned");
+  obj2push_thnd(rdf_PartTrigger,
+                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
+                 var_NumContribCalibBinned, var_DeltaPhi, var_DeltaEta});
 
   RunGraphs(gRResultHandles);
 
@@ -129,7 +132,8 @@ int main(int argc, char **argv) {
   if (argc > 5) {
     path_pileup = argv[5];
   }
-  JpsiQA(path_input_flowVecd, path_output, runNumber, path_calib, path_pileup);
+  JpsiAsso(path_input_flowVecd, path_output, runNumber, path_calib,
+           path_pileup);
 
   return 0;
 }

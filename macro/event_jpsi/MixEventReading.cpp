@@ -107,6 +107,16 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                     return ROOT::VecOps::RVec<array<float, 6>>(vec2return);
                   },
                   {"MixedEvent"});
+
+#define obj2push_thnd(rdf2push, ...)                                           \
+  do {                                                                         \
+    TupleTHnDModel tuple_thnd = GetTHnDModelWithTitle(__VA_ARGS__);            \
+    gRResultHandles.push_back(                                                 \
+        rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
+  } while (0)
+
+  obj2push_thnd(rdf, {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
+                      var_NumContribCalib});
 }
 
 int main(int argc, char **argv) {
