@@ -4,6 +4,7 @@
 #include "MHead.h"
 #include "MHist.h"
 #include "MRootIO.h"
+#include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
 
 void JpsiQA(
@@ -58,6 +59,44 @@ void JpsiQA(
           .Filter("isntSameBunchPileup", "no Time Frame border")
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
+  auto rdf_PartTrigger4Jpsi =
+      rdf_PartTrigger
+          .Define("EventData", CreateEventData,
+                  {"fMultTPC", "fMultTracklets", "fMultNTracksPV", "fMultFT0C",
+                   "fNumContrib", "NumContribCalib", "fPosX", "fPosY", "fPosZ",
+                   "fSelection", "fHadronicRate", "fPT", "fEta", "fPhi",
+                   "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
+          .Define("JpsiInfoUS",
+                  [](const EventData &eventData) {
+                    ROOT::VecOps::RVec<array<float, 2>> vec2return;
+                    for (size_t i = 0; i < eventData.jpsi_info.fPT.size();
+                         ++i) {
+                      if (eventData.jpsi_info.fSign[i] == 0) {
+                        vec2return.push_back({eventData.jpsi_info.fMass[i],
+                                              eventData.jpsi_info.fPT[i]});
+                      }
+                    }
+                  },
+                  {"EventData"})
+          .Define("MassUS",
+                  [](const ROOT::VecOps::RVec<array<float, 2>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> massUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      massUS.push_back(pair[0]);
+                    }
+                    return massUS;
+                  },
+                  {"JpsiInfoUS"})
+          .Define("PtUS",
+                  [](const ROOT::VecOps::RVec<array<float, 2>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> ptUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      ptUS.push_back(pair[1]);
+                    }
+                    return ptUS;
+                  },
+                  {"JpsiInfoUS"});
+
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 200, {-10, 10});
@@ -74,9 +113,9 @@ void JpsiQA(
                             {-1000., 12000.});
   StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
                                 {0, 150});
-  StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
+  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 100,
                                     {1., 5.});
-  StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -88,9 +127,6 @@ void JpsiQA(
   obj2push_thnd(rdf_PartTrigger, {var_fPosZ, var_MassJpsiCandidate,
                                   var_PtJpsiCandidate, var_NumContribCalib});
   obj2push_thnd(rdf_PartTrigger, {var_fPosZ});
-  obj2push_thnd(rdf_PartTrigger, {var_MassJpsiCandidate});
-  obj2push_thnd(rdf_PartTrigger, {var_PtJpsiCandidate});
-  obj2push_thnd(rdf_PartTrigger, {var_NumContribCalib}, "title_test");
   obj2push_thnd(rdf_PartTrigger,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned},

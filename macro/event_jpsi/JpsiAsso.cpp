@@ -56,42 +56,7 @@ void JpsiAsso(
           .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
           .Filter("isntTimeFrameBorder", "no Time Frame border")
           .Filter("isntSameBunchPileup", "no Time Frame border")
-          .Define("DeltaPhi",
-                  [](const ROOT::RVec<float> &phi,
-                     const ROOT::RVec<float> &phi_ref) {
-                    ROOT::RVec<float> delta_phi;
-                    for (size_t i = 0; i < phi.size(); ++i)
-                      for (size_t j = 0; j < phi_ref.size(); ++j) {
-                        double delta = phi[i] - phi_ref[j];
-                        int n = 0;
-                        while (delta > 1.5 * M_PI && n < 10) {
-                          n++;
-                          delta -= 2 * M_PI;
-                        }
-                        while (delta < -0.5 * M_PI && n < 10) {
-                          n++;
-                          delta += 2 * M_PI;
-                        }
-                        if (n >= 10)
-                          delta = -999.;
-                        delta_phi.emplace_back(delta);
-                      }
-                    return delta_phi;
-                  },
-                  {"fPhi", "fPhiREF"})
-          .Define("DeltaEta",
-                  [](const ROOT::RVec<float> &eta,
-                     const ROOT::RVec<float> &eta_ref) {
-                    ROOT::RVec<float> delta_eta;
-                    for (size_t i = 0; i < eta.size(); ++i)
-                      for (size_t j = 0; j < eta_ref.size(); ++j) {
-                        double delta = eta[i] - eta_ref[j];
-                        delta_eta.emplace_back(delta);
-                      }
-                    return delta_eta;
-                  },
-                  {"fEta", "fEtaREF"});
-  /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
+      /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
