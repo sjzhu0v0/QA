@@ -53,34 +53,34 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                  {"MixedEvent"})
           .Define("fPosZ2",
                   [](const vector<EventData> &events) {
-                    vector<float> vec2return;
+                    ROOT::RVec<float> vec2return;
                     for (const auto &event : events) {
                       vec2return.push_back(event.event_info2.fPosZ);
                     }
-                    return ROOT::VecOps::RVec<float>(vec2return);
+                    return vec2return;
                   },
                   {"MixedEvent"})
           .Define("NumContribCalib1",
                   [](const vector<EventData> &events) {
-                    vector<float> vec2return;
+                    ROOT::RVec<float> vec2return;
                     for (const auto &event : events) {
                       vec2return.push_back(event.event_info.fNumContrib);
                     }
-                    return ROOT::VecOps::RVec<float>(vec2return);
+                    return vec2return;
                   },
                   {"MixedEvent"})
           .Define("NumContribCalib2",
                   [](const vector<EventData> &events) {
-                    vector<float> vec2return;
+                    ROOT::RVec<float> vec2return;
                     for (const auto &event : events) {
                       vec2return.push_back(event.event_info2.fNumContrib);
                     }
-                    return ROOT::VecOps::RVec<float>(vec2return);
+                    return vec2return;
                   },
                   {"MixedEvent"})
           .Define("vector_Eta_Mass_Pt_Sign_DeltaPhi_DeltaEta",
                   [](const vector<EventData> &events) {
-                    vector<array<float, 6>> vec2return;
+                    ROOT::VecOps::RVec<array<float, 6>> vec2return;
                     for (const auto &event : events) {
                       for (size_t i = 0; i < event.jpsi_info.fPT.size(); ++i) {
                         for (size_t j = i + 1; j < event.jpsi_info.fPT.size();
@@ -104,6 +104,7 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                         }
                       }
                     }
+                    return ROOT::VecOps::RVec<array<float, 6>>(vec2return);
                   },
                   {"MixedEvent"});
 }
