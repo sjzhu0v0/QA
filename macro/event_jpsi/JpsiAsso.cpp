@@ -99,7 +99,7 @@ void JpsiAsso(
                   },
                   {"EventData"})
           .Define("MassUS",
-                  [](const ROOT::VecOps::RVec<array<float, 2>> &jpsiInfoUS) {
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> massUS;
                     for (const auto &pair : jpsiInfoUS) {
                       massUS.push_back(pair[0]);
@@ -108,7 +108,7 @@ void JpsiAsso(
                   },
                   {"JpsiInfoUS"})
           .Define("PtUS",
-                  [](const ROOT::VecOps::RVec<array<float, 2>> &jpsiInfoUS) {
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> ptUS;
                     for (const auto &pair : jpsiInfoUS) {
                       ptUS.push_back(pair[1]);
