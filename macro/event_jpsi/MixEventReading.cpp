@@ -112,12 +112,12 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
       {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 100,
-                                    {1., 5.});
+  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
+                                    {1.4, 5.});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 20,
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
                              {-4., 4.});
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 30,
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
@@ -128,8 +128,8 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   } while (0)
 
   obj2push_thnd(rdf_AllVar, {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
-                             var_fPosZ, var_MassJpsiCandidate,
-                             var_PtJpsiCandidate, var_NumContribCalibBinned});
+                             var_MassJpsiCandidate, var_PtJpsiCandidate,
+                             var_NumContribCalibBinned});
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();
