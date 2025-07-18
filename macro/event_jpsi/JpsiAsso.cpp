@@ -166,17 +166,10 @@ void JpsiAsso(
         rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
   } while (0)
 
-  obj2push_thnd(rdf_PartTrigger, {var_fPosZ, var_MassJpsiCandidate,
-                                  var_PtJpsiCandidate, var_NumContribCalib});
-  obj2push_thnd(rdf_PartTrigger, {var_fPosZ});
-  obj2push_thnd(rdf_PartTrigger, {var_MassJpsiCandidate});
-  obj2push_thnd(rdf_PartTrigger, {var_PtJpsiCandidate});
-  obj2push_thnd(rdf_PartTrigger, {var_NumContribCalib}, "title_test");
-  obj2push_thnd(rdf_PartTrigger,
+  obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalibBinned},
-                "", "Binned");
-  obj2push_thnd(rdf_PartTrigger,
+                 var_NumContribCalibBinned});
+  obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned, var_DeltaPhiUS, var_DeltaEtaUS});
 
