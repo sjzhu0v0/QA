@@ -167,10 +167,10 @@ void JpsiAsso(
   } while (0)
 
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
+                {/* var_fPosZ, var_MassJpsiCandidate,  */var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
+                {/* var_fPosZ, var_MassJpsiCandidate, */ var_PtJpsiCandidate,
                  var_NumContribCalibBinned, var_DeltaPhiUS, var_DeltaEtaUS});
 
   RunGraphs(gRResultHandles);
