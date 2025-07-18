@@ -66,43 +66,63 @@ void JpsiAsso(
                    "fNumContrib", "NumContribCalib", "fPosX", "fPosY", "fPosZ",
                    "fSelection", "fHadronicRate", "fPT", "fEta", "fPhi",
                    "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
-          .Define("JpsiInfoUS",
-                  [](const EventData &eventData) {
-                    ROOT::VecOps::RVec<array<float, 4>> vec2return;
-                    for (size_t i = 0; i < eventData.jpsi_info.fPT.size();
-                         ++i) {
-                      if (eventData.jpsi_info.fSign[i] == 0) {
-                        for (size_t j = 0;
-                             j < eventData.track_info.fEtaREF.size(); ++j) {
-                          float delta_eta = eventData.jpsi_info.fEta[i] -
-                                            eventData.track_info.fEtaREF[j];
-                          float delta_phi = eventData.jpsi_info.fPhi[i] -
-                                            eventData.track_info.fPhiREF[j];
-                          int n = 0;
-                          while (delta_phi > 1.5 * M_PI && n < 10) {
-                            n++;
-                            delta_phi -= 2 * M_PI;
-                          }
-                          while (delta_phi < -0.5 * M_PI && n < 10) {
-                            n++;
-                            delta_phi += 2 * M_PI;
-                          }
-                          if (n >= 10)
-                            delta_phi = -999.;
-                          vec2return.push_back({eventData.jpsi_info.fMass[i],
-                                                eventData.jpsi_info.fPT[i],
-                                                delta_eta, delta_phi});
-                        }
+          .Define(
+              "JpsiInfoUS",
+              [](const EventData &eventData) {
+                ROOT::VecOps::RVec<array<float, 6>> vec2return;
+                for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
+                  if (eventData.jpsi_info.fSign[i] == 0) {
+                    for (size_t j = 0; j < eventData.track_info.fEtaREF.size();
+                         ++j) {
+                      float delta_eta = eventData.jpsi_info.fEta[i] -
+                                        eventData.track_info.fEtaREF[j];
+                      float delta_phi = eventData.jpsi_info.fPhi[i] -
+                                        eventData.track_info.fPhiREF[j];
+                      int n = 0;
+                      while (delta_phi > 1.5 * M_PI && n < 10) {
+                        n++;
+                        delta_phi -= 2 * M_PI;
                       }
+                      while (delta_phi < -0.5 * M_PI && n < 10) {
+                        n++;
+                        delta_phi += 2 * M_PI;
+                      }
+                      if (n >= 10)
+                        delta_phi = -999.;
+                      vec2return.push_back(
+                          {eventData.event_info.fPosZ,
+                           eventData.event_info.fNumContribCalib,
+                           eventData.jpsi_info.fMass[i],
+                           eventData.jpsi_info.fPT[i], delta_eta, delta_phi});
                     }
-                    return vec2return;
+                  }
+                }
+                return vec2return;
+              },
+              {"EventData"})
+          .Define("PosZUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> posZUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      posZUS.push_back(pair[0]);
+                    }
+                    return posZUS;
                   },
-                  {"EventData"})
+                  {"JpsiInfoUS"})
+          .Define("NumContribCalibUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> numContribCalibUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      numContribCalibUS.push_back(pair[1]);
+                    }
+                    return numContribCalibUS;
+                  },
+                  {"JpsiInfoUS"})
           .Define("MassUS",
                   [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> massUS;
                     for (const auto &pair : jpsiInfoUS) {
-                      massUS.push_back(pair[0]);
+                      massUS.push_back(pair[2]);
                     }
                     return massUS;
                   },
@@ -111,7 +131,7 @@ void JpsiAsso(
                   [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> ptUS;
                     for (const auto &pair : jpsiInfoUS) {
-                      ptUS.push_back(pair[1]);
+                      ptUS.push_back(pair[3]);
                     }
                     return ptUS;
                   },
@@ -120,7 +140,7 @@ void JpsiAsso(
                   [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> deltaEtaUS;
                     for (const auto &pair : jpsiInfoUS) {
-                      deltaEtaUS.push_back(pair[2]);
+                      deltaEtaUS.push_back(pair[4]);
                     }
                     return deltaEtaUS;
                   },
@@ -129,7 +149,7 @@ void JpsiAsso(
                   [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> deltaPhiUS;
                     for (const auto &pair : jpsiInfoUS) {
-                      deltaPhiUS.push_back(pair[3]);
+                      deltaPhiUS.push_back(pair[5]);
                     }
                     return deltaPhiUS;
                   },
@@ -137,8 +157,8 @@ void JpsiAsso(
 
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
-  StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 200, {-10, 10});
-  StrVar4Hist var_fNumContrib("fNumContrib", "#it{N}_{vtx contrib} ", "", 300,
+  StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 200, {-10, 10});
+  StrVar4Hist var_fNumContrib("NumContribCalibUS", "#it{N}_{vtx contrib} ", "", 300,
                               {0, 300});
   StrVar4Hist var_NumContribCalib(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
@@ -167,10 +187,10 @@ void JpsiAsso(
   } while (0)
 
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {/* var_fPosZ, var_MassJpsiCandidate,  */var_PtJpsiCandidate,
+                {var_fPosZ, var_MassJpsiCandidate,  var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {/* var_fPosZ, var_MassJpsiCandidate, */ var_PtJpsiCandidate,
+                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned, var_DeltaPhiUS, var_DeltaEtaUS});
 
   RunGraphs(gRResultHandles);
