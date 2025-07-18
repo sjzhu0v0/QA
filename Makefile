@@ -8,10 +8,10 @@ all: \
 	macro/event/MultRaw.exe \
 	macro/event/MultCalib.exe \
 	macro/event/MultPileupCut.exe \
-	macro/event_jpsi/NJpsiCandidatePerEvent.exe \
 	macro/event/MultQA_AllCut.exe \
 	macro/event/MultREFRaw.exe \
 	macro/jpsi/JpsiQA.exe \
+	macro/event_jpsi/NJpsiCandidatePerEvent.exe \
 	macro/event_jpsi/EventMixingJpsiAsso.exe \
 	macro/event_jpsi/MixEventReading.exe \
 	macro/event_jpsi/JpsiAsso.exe
