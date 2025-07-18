@@ -175,15 +175,15 @@ void JpsiAsso(
   } while (0)
   cout << "Start pushing THnD objects..." << endl;
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ, var_fPosZ,
+                {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
                  var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
 
   RunGraphs(gRResultHandles);
-  // Long64_t totalSize = gRResultHandles[0].GetPtr<THnD>()->GetNbins() *
-  //                      sizeof(Double_t); // Approximate size
-  // std::cout << "Approx. memory used: " << totalSize << " bytes ("
-  //           << totalSize / (1024. * 1024.) << " MB)" << std::endl;
+  Long64_t totalSize = gRResultHandles[0].GetPtr<THnD>()->GetNbins() *
+                       sizeof(Double_t); // Approximate size
+  std::cout << "Approx. memory used: " << totalSize << " bytes ("
+            << totalSize / (1024. * 1024.) << " MB)" << std::endl;
   cout << "Start writing THnD objects..." << endl;
 
   MHnTool hnTool(gRResultHandles[0].GetPtr<THnD>());
