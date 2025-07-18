@@ -181,6 +181,7 @@ void JpsiAsso(
 
   RunGraphs(gRResultHandles);
   cout << "Start writing THnD objects..." << endl;
+  fOutput->SetBufferSize(2LL * 1024 * 1024 * 1024);
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();
