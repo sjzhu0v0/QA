@@ -10,30 +10,6 @@
 
 void EventMixingReading(TString path_input_flowVecd = "../input.root",
                         TString path_output = "output.root") {
-  StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
-  StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
-  StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 200, {-10, 10});
-  StrVar4Hist var_fPosZMix("fPosZ", "#it{V}_{Z}", "cm", 10, {-10, 10});
-  StrVar4Hist var_fNumContrib("fNumContrib", "#it{N}_{vtx contrib} ", "", 300,
-                              {0, 300});
-  StrVar4Hist var_NumContribCalib(
-      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
-  StrVar4Hist var_NumContribCalibBinned(
-      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
-      {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
-  StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
-  StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
-  StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
-                            {-1000., 12000.});
-  StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
-                                {0, 150});
-  StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
-                                    {1., 5.});
-  StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 10.});
-
-  const vector<double> bins_mix_numContrib = var_NumContribCalibBinned.fBins;
-  const vector<double> bins_mix_posZ = var_fPosZMix.fBins;
-
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
@@ -42,91 +18,106 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   ROOT::RDataFrame rdf(*tree_input);
 
   auto rdf_AllVar =
-      rdf.Define("fPosZ1",
-                 [](const vector<EventData> &events) {
-                   vector<float> vec2return;
-                   for (const auto &event : events) {
-                     vec2return.push_back(event.event_info.fPosZ);
+      rdf.Define("JpsiInfoUS",
+                 [](const EventData &eventData) {
+                   ROOT::VecOps::RVec<array<float, 6>> vec2return;
+                   for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
+                     if (eventData.jpsi_info.fSign[i] == 0) {
+                       for (size_t j = 0;
+                            j < eventData.track_info.fEtaREF.size(); ++j) {
+                         float delta_eta = eventData.jpsi_info.fEta[i] -
+                                           eventData.track_info.fEtaREF[j];
+                         float delta_phi = eventData.jpsi_info.fPhi[i] -
+                                           eventData.track_info.fPhiREF[j];
+                         int n = 0;
+                         while (delta_phi > 1.5 * M_PI && n < 10) {
+                           n++;
+                           delta_phi -= 2 * M_PI;
+                         }
+                         while (delta_phi < -0.5 * M_PI && n < 10) {
+                           n++;
+                           delta_phi += 2 * M_PI;
+                         }
+                         if (n >= 10)
+                           delta_phi = -999.;
+                         vec2return.push_back(
+                             {eventData.event_info.fPosZ,
+                              eventData.event_info.fNumContribCalib,
+                              eventData.jpsi_info.fMass[i],
+                              eventData.jpsi_info.fPT[i], delta_eta,
+                              delta_phi});
+                       }
+                     }
                    }
-                   return ROOT::VecOps::RVec<float>(vec2return);
+                   return vec2return;
                  },
                  {"MixedEvent"})
-          .Define("fPosZ2",
-                  [](const vector<EventData> &events) {
-                    ROOT::RVec<float> vec2return;
-                    for (const auto &event : events) {
-                      vec2return.push_back(event.event_info2.fPosZ);
+          .Define("PosZUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> posZUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      posZUS.push_back(pair[0]);
                     }
-                    return vec2return;
+                    return posZUS;
                   },
-                  {"MixedEvent"})
-          .Define("NumContribCalib1",
-                  [](const vector<EventData> &events) {
-                    ROOT::RVec<float> vec2return;
-                    for (const auto &event : events) {
-                      vec2return.push_back(event.event_info.fNumContrib);
+                  {"JpsiInfoUS"})
+          .Define("NumContribCalibUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> numContribCalibUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      numContribCalibUS.push_back(pair[1]);
                     }
-                    return vec2return;
+                    return numContribCalibUS;
                   },
-                  {"MixedEvent"})
-          .Define("NumContribCalib2",
-                  [](const vector<EventData> &events) {
-                    ROOT::RVec<float> vec2return;
-                    for (const auto &event : events) {
-                      vec2return.push_back(event.event_info2.fNumContrib);
+                  {"JpsiInfoUS"})
+          .Define("MassUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> massUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      massUS.push_back(pair[2]);
                     }
-                    return vec2return;
+                    return massUS;
                   },
-                  {"MixedEvent"})
-          .Define("vector_Eta_Mass_Pt_Sign_DeltaPhi_DeltaEta",
-                  [](const vector<EventData> &events) {
-                    ROOT::VecOps::RVec<array<float, 6>> vec2return;
-                    for (const auto &event : events) {
-                      for (size_t i = 0; i < event.jpsi_info.fPT.size(); ++i) {
-                        for (size_t j = i + 1; j < event.jpsi_info.fPT.size();
-                             ++j) {
-                          if (event.jpsi_info.fSign[i] == 0 &&
-                              event.jpsi_info.fSign[j] == 0) {
-                            float deltaPhi = event.jpsi_info.fPhi[i] -
-                                             event.jpsi_info.fPhi[j];
-                            if (deltaPhi > M_PI)
-                              deltaPhi -= 2 * M_PI;
-                            else if (deltaPhi < -M_PI)
-                              deltaPhi += 2 * M_PI;
-                            float deltaEta = event.jpsi_info.fEta[i] -
-                                             event.jpsi_info.fEta[j];
-                            vec2return.push_back({event.jpsi_info.fEta[i],
-                                                  event.jpsi_info.fMass[i],
-                                                  event.jpsi_info.fPT[i],
-                                                  event.jpsi_info.fSign[i],
-                                                  deltaPhi, deltaEta});
-                          }
-                        }
-                      }
+                  {"JpsiInfoUS"})
+          .Define("PtUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> ptUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      ptUS.push_back(pair[3]);
                     }
-                    return ROOT::VecOps::RVec<array<float, 6>>(vec2return);
+                    return ptUS;
                   },
-                  {"MixedEvent"})
-          .Alias("fPosZ", "fPosZ1")
-          .Alias("NumContribCalib", "NumContribCalib1")
-          .Define("fMass",
-                  [](const ROOT::VecOps::RVec<array<float, 6>> &vec) {
-                    ROOT::VecOps::RVec<float> mass_vec;
-                    for (const auto &item : vec) {
-                      mass_vec.push_back(item[1]);
+                  {"JpsiInfoUS"})
+          .Define("DeltaEtaUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> deltaEtaUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      deltaEtaUS.push_back(pair[4]);
                     }
-                    return mass_vec;
+                    return deltaEtaUS;
                   },
-                  {"vector_Eta_Mass_Pt_Sign_DeltaPhi_DeltaEta"})
-          .Define("fPT",
-                  [](const ROOT::VecOps::RVec<array<float, 6>> &vec) {
-                    ROOT::VecOps::RVec<float> pt_vec;
-                    for (const auto &item : vec) {
-                      pt_vec.push_back(item[2]);
+                  {"JpsiInfoUS"})
+          .Define("DeltaPhiUS",
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> deltaPhiUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      deltaPhiUS.push_back(pair[5]);
                     }
-                    return pt_vec;
+                    return deltaPhiUS;
                   },
-                  {"vector_Eta_Mass_Pt_Sign_DeltaPhi_DeltaEta"});
+                  {"JpsiInfoUS"});
+
+  StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 8, {-10, 10});
+  StrVar4Hist var_NumContribCalibBinned(
+      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
+      {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
+  StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
+                                    {1., 5.});
+  StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 20,
+                             {-4., 4.});
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 30,
+                             {-M_PI_2, M_PI + M_PI_2});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -135,7 +126,8 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
         rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
   } while (0)
 
-  obj2push_thnd(rdf, {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
+  obj2push_thnd(rdf, {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ, var_fPosZ,
+                      var_MassJpsiCandidate, var_PtJpsiCandidate,
                       var_NumContribCalibBinned});
   fOutput->cd();
   RResultWrite(gRResultHandles);

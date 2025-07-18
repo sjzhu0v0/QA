@@ -155,22 +155,10 @@ void JpsiAsso(
                   },
                   {"JpsiInfoUS"});
 
-  StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
-  StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
-  StrVar4Hist var_fNumContrib("NumContribCalibUS", "#it{N}_{vtx contrib} ", "",
-                              300, {0, 300});
-  StrVar4Hist var_NumContribCalib(
-      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
       {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
-  StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
-  StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
-  StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
-                            {-1000., 12000.});
-  StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
-                                {0, 150});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 100,
                                     {1., 5.});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
@@ -187,11 +175,9 @@ void JpsiAsso(
   } while (0)
   cout << "Start pushing THnD objects..." << endl;
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
+                {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ, var_fPosZ,
+                 var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
-  obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalibBinned, var_DeltaPhiUS, var_DeltaEtaUS});
 
   RunGraphs(gRResultHandles);
 
