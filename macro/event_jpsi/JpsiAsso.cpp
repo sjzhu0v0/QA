@@ -119,7 +119,7 @@ void JpsiAsso(
                   },
                   {"JpsiInfoUS"})
           .Define("MassUS",
-                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> massUS;
                     for (const auto &pair : jpsiInfoUS) {
                       massUS.push_back(pair[2]);
@@ -128,7 +128,7 @@ void JpsiAsso(
                   },
                   {"JpsiInfoUS"})
           .Define("PtUS",
-                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> ptUS;
                     for (const auto &pair : jpsiInfoUS) {
                       ptUS.push_back(pair[3]);
@@ -137,7 +137,7 @@ void JpsiAsso(
                   },
                   {"JpsiInfoUS"})
           .Define("DeltaEtaUS",
-                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> deltaEtaUS;
                     for (const auto &pair : jpsiInfoUS) {
                       deltaEtaUS.push_back(pair[4]);
@@ -146,7 +146,7 @@ void JpsiAsso(
                   },
                   {"JpsiInfoUS"})
           .Define("DeltaPhiUS",
-                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                  [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> deltaPhiUS;
                     for (const auto &pair : jpsiInfoUS) {
                       deltaPhiUS.push_back(pair[5]);
@@ -158,8 +158,8 @@ void JpsiAsso(
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 200, {-10, 10});
-  StrVar4Hist var_fNumContrib("NumContribCalibUS", "#it{N}_{vtx contrib} ", "", 300,
-                              {0, 300});
+  StrVar4Hist var_fNumContrib("NumContribCalibUS", "#it{N}_{vtx contrib} ", "",
+                              300, {0, 300});
   StrVar4Hist var_NumContribCalib(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_NumContribCalibBinned(
@@ -187,7 +187,7 @@ void JpsiAsso(
   } while (0)
 
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
-                {var_fPosZ, var_MassJpsiCandidate,  var_PtJpsiCandidate,
+                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
