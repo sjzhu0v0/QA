@@ -186,7 +186,7 @@ void JpsiAsso(
     gRResultHandles.push_back(                                                 \
         rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
   } while (0)
-
+  cout << "Start pushing THnD objects..." << endl;
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
