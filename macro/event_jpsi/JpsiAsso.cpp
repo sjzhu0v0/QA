@@ -18,6 +18,7 @@ void JpsiAsso(
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *fOutput = new TFile(path_output, "RECREATE");
+  fOutput->SetBufferSize(2147483648);
 
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   Cut_MultTPC_NumContrib::init(path_pileup);
