@@ -163,7 +163,7 @@ void JpsiAsso(
   StrVar4Hist var_NumContribCalib(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_NumContribCalibBinned(
-      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
+      "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
       {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
