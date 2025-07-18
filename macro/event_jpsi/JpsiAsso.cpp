@@ -180,8 +180,11 @@ void JpsiAsso(
                  var_NumContribCalibBinned});
 
   RunGraphs(gRResultHandles);
+  Long64_t totalSize = gRResultHandles[0].GetPtr<THnD>()->GetNbins() *
+                       sizeof(Double_t); // Approximate size
+  std::cout << "Approx. memory used: " << totalSize << " bytes ("
+            << totalSize / (1024. * 1024.) << " MB)" << std::endl;
   cout << "Start writing THnD objects..." << endl;
-  fOutput->SetBufferSize(2LL * 1024 * 1024 * 1024);
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();
