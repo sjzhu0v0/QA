@@ -4,6 +4,7 @@
 #include "MHead.h"
 #include "MHist.h"
 #include "MRootIO.h"
+#include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
 
 void JpsiAsso(
@@ -58,6 +59,82 @@ void JpsiAsso(
           .Filter("isntSameBunchPileup", "no Time Frame border")
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
+  auto rdf_PartTriggerWithJpsiWithEvent =
+      rdf_PartTrigger
+          .Define("EventData", CreateEventData,
+                  {"fMultTPC", "fMultTracklets", "fMultNTracksPV", "fMultFT0C",
+                   "fNumContrib", "NumContribCalib", "fPosX", "fPosY", "fPosZ",
+                   "fSelection", "fHadronicRate", "fPT", "fEta", "fPhi",
+                   "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
+          .Define("JpsiInfoUS",
+                  [](const EventData &eventData) {
+                    ROOT::VecOps::RVec<array<float, 4>> vec2return;
+                    for (size_t i = 0; i < eventData.jpsi_info.fPT.size();
+                         ++i) {
+                      if (eventData.jpsi_info.fSign[i] == 0) {
+                        for (size_t j = 0;
+                             j < eventData.track_info.fEtaREF.size(); ++j) {
+                          float delta_eta = eventData.jpsi_info.fEta[i] -
+                                            eventData.track_info.fEtaREF[j];
+                          float delta_phi = eventData.jpsi_info.fPhi[i] -
+                                            eventData.track_info.fPhiREF[j];
+                          int n = 0;
+                          while (delta_phi > 1.5 * M_PI && n < 10) {
+                            n++;
+                            delta_phi -= 2 * M_PI;
+                          }
+                          while (delta_phi < -0.5 * M_PI && n < 10) {
+                            n++;
+                            delta_phi += 2 * M_PI;
+                          }
+                          if (n >= 10)
+                            delta_phi = -999.;
+                          vec2return.push_back({eventData.jpsi_info.fMass[i],
+                                                eventData.jpsi_info.fPT[i],
+                                                delta_eta, delta_phi});
+                        }
+                      }
+                    }
+                    return vec2return;
+                  },
+                  {"EventData"})
+          .Define("MassUS",
+                  [](const ROOT::VecOps::RVec<array<float, 2>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> massUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      massUS.push_back(pair[0]);
+                    }
+                    return massUS;
+                  },
+                  {"JpsiInfoUS"})
+          .Define("PtUS",
+                  [](const ROOT::VecOps::RVec<array<float, 2>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> ptUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      ptUS.push_back(pair[1]);
+                    }
+                    return ptUS;
+                  },
+                  {"JpsiInfoUS"})
+          .Define("DeltaEtaUS",
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> deltaEtaUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      deltaEtaUS.push_back(pair[2]);
+                    }
+                    return deltaEtaUS;
+                  },
+                  {"JpsiInfoUS"})
+          .Define("DeltaPhiUS",
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> deltaPhiUS;
+                    for (const auto &pair : jpsiInfoUS) {
+                      deltaPhiUS.push_back(pair[3]);
+                    }
+                    return deltaPhiUS;
+                  },
+                  {"JpsiInfoUS"});
+
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 200, {-10, 10});
@@ -74,9 +151,13 @@ void JpsiAsso(
                             {-1000., 12000.});
   StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
                                 {0, 150});
-  StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
+  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 100,
                                     {1., 5.});
-  StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
+                             100, {-5., 5.});
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
+                             100, {-M_PI_2, M_PI + M_PI_2});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -97,7 +178,7 @@ void JpsiAsso(
                 "", "Binned");
   obj2push_thnd(rdf_PartTrigger,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalibBinned, var_DeltaPhi, var_DeltaEta});
+                 var_NumContribCalibBinned, var_DeltaPhiUS, var_DeltaEtaUS});
 
   RunGraphs(gRResultHandles);
 
