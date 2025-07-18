@@ -76,6 +76,7 @@ void JpsiQA(
                                               eventData.jpsi_info.fPT[i]});
                       }
                     }
+                    return vec2return;
                   },
                   {"EventData"})
           .Define("MassUS",
