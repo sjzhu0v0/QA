@@ -127,11 +127,7 @@ void JpsiQA(
 
   obj2push_thnd(rdf_PartTrigger4Jpsi,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalib});
-  obj2push_thnd(rdf_PartTrigger4Jpsi,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalibBinned},
-                "", "Binned");
+                 var_NumContribCalibBinned});
 
   RunGraphs(gRResultHandles);
 
