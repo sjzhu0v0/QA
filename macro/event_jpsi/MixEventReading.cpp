@@ -18,40 +18,41 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   ROOT::RDataFrame rdf(*tree_input);
 
   auto rdf_AllVar =
-      rdf.Define("JpsiInfoUS",
-                 [](const EventData &eventData) {
-                   ROOT::VecOps::RVec<array<float, 6>> vec2return;
-                   for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
-                     if (eventData.jpsi_info.fSign[i] == 0) {
-                       for (size_t j = 0;
-                            j < eventData.track_info.fEtaREF.size(); ++j) {
-                         float delta_eta = eventData.jpsi_info.fEta[i] -
-                                           eventData.track_info.fEtaREF[j];
-                         float delta_phi = eventData.jpsi_info.fPhi[i] -
-                                           eventData.track_info.fPhiREF[j];
-                         int n = 0;
-                         while (delta_phi > 1.5 * M_PI && n < 10) {
-                           n++;
-                           delta_phi -= 2 * M_PI;
-                         }
-                         while (delta_phi < -0.5 * M_PI && n < 10) {
-                           n++;
-                           delta_phi += 2 * M_PI;
-                         }
-                         if (n >= 10)
-                           delta_phi = -999.;
-                         vec2return.push_back(
-                             {eventData.event_info.fPosZ,
-                              eventData.event_info.fNumContribCalib,
-                              eventData.jpsi_info.fMass[i],
-                              eventData.jpsi_info.fPT[i], delta_eta,
-                              delta_phi});
+      rdf.Define(
+             "JpsiInfoUS",
+             [](const vector<EventData> &vec_eventData) {
+               ROOT::VecOps::RVec<array<float, 6>> vec2return;
+               for (auto eventData : vec_eventData)
+                 for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
+                   if (eventData.jpsi_info.fSign[i] == 0) {
+                     for (size_t j = 0; j < eventData.track_info.fEtaREF.size();
+                          ++j) {
+                       float delta_eta = eventData.jpsi_info.fEta[i] -
+                                         eventData.track_info.fEtaREF[j];
+                       float delta_phi = eventData.jpsi_info.fPhi[i] -
+                                         eventData.track_info.fPhiREF[j];
+                       int n = 0;
+                       while (delta_phi > 1.5 * M_PI && n < 10) {
+                         n++;
+                         delta_phi -= 2 * M_PI;
                        }
+                       while (delta_phi < -0.5 * M_PI && n < 10) {
+                         n++;
+                         delta_phi += 2 * M_PI;
+                       }
+                       if (n >= 10)
+                         delta_phi = -999.;
+                       vec2return.push_back(
+                           {eventData.event_info.fPosZ,
+                            eventData.event_info.fNumContribCalib,
+                            eventData.jpsi_info.fMass[i],
+                            eventData.jpsi_info.fPT[i], delta_eta, delta_phi});
                      }
                    }
-                   return vec2return;
-                 },
-                 {"MixedEvent"})
+                 }
+               return vec2return;
+             },
+             {"MixedEvent"})
           .Define("PosZUS",
                   [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> posZUS;
