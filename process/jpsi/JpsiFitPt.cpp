@@ -62,7 +62,7 @@ void JpsiFitPt() {
                   "LHC22pass4_dqfilter");
   gTemplate = &vec_arr_template;
   auto fPosZ_fMass_fPT_NumContribCalib_Binned = MRootIO::GetObjectDiectly<THnD>(
-      file_input2, "fPosZ_fMass_fPT_NumContribCalib_Binned");
+      file_input2, "fPosZ_MassUS_PtUS_NumContribCalib");
 
   MHnTool hn_tool(fPosZ_fMass_fPT_NumContribCalib_Binned);
   hn_tool.Rebin(3, 5);
