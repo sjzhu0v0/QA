@@ -207,10 +207,6 @@ void EventMixingJpsiAsso(
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned},
                 "", "Binned");
-  obj2push_thnd(rdf_PartTrigger,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalibBinned, var_DeltaPhi, var_DeltaEta},
-                "");
 
 #define str_rresult_push(...)                                                  \
   gRResultHandles.push_back(                                                   \

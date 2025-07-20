@@ -10,6 +10,7 @@
 void JpsiAsso(
     TString path_input_flowVecd = "../input.root",
     TString path_output = "output.root", int runNumber = 0,
+    double threshold_bs = 1.,
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
         "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
@@ -153,7 +154,13 @@ void JpsiAsso(
                     }
                     return deltaPhiUS;
                   },
-                  {"JpsiInfoUS"});
+                  {"JpsiInfoUS"})
+          .DefineSlot("Cut_BS",
+                      [threshold_bs](unsigned int) {
+                        thread_local TRandom3 random_gen(0);
+                        return random_gen.Uniform(0, 1) < threshold_bs;
+                      })
+          .Filter("Cut_BS", "Bootstrap cut for Jpsi association");
 
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinned(
@@ -173,7 +180,7 @@ void JpsiAsso(
     gRResultHandles.push_back(                                                 \
         rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
   } while (0)
-  cout << "Start pushing THnD objects..." << endl;
+  // cout << "Start pushing THnD objects..." << endl;
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
                 {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
                  var_MassJpsiCandidate, var_PtJpsiCandidate,
@@ -198,6 +205,7 @@ int main(int argc, char **argv) {
   TString path_input_flowVecd = "../input.root";
   TString path_output = "output.root";
   int runNumber = 0;
+  double threshold_bs = 1.;
   TString path_calib =
       "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
       "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
@@ -215,13 +223,16 @@ int main(int argc, char **argv) {
     runNumber = atoi(argv[3]);
   }
   if (argc > 4) {
-    path_calib = argv[4];
+    threshold_bs = atof(argv[4]);
   }
   if (argc > 5) {
+    path_calib = argv[4];
+  }
+  if (argc > 6) {
     path_pileup = argv[5];
   }
-  JpsiAsso(path_input_flowVecd, path_output, runNumber, path_calib,
-           path_pileup);
+  JpsiAsso(path_input_flowVecd, path_output, runNumber, threshold_bs,
+           path_calib, path_pileup);
 
   return 0;
 }
