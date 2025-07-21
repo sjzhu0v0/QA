@@ -198,59 +198,8 @@ void EventMixingJpsiAsso(
   ROOT::RDF::Experimental::AddProgressBar(
       rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 
-#define obj2push_thnd(rdf2push, ...)                                           \
-  do {                                                                         \
-    TupleTHnDModel tuple_thnd = GetTHnDModelWithTitle(__VA_ARGS__);            \
-    gRResultHandles.push_back(                                                 \
-        rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
-  } while (0)
-
-  obj2push_thnd(rdf_PartTrigger, {var_fPosZ, var_MassJpsiCandidate,
-                                  var_PtJpsiCandidate, var_NumContribCalib});
-  obj2push_thnd(rdf_PartTrigger,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalibBinned},
-                "", "Binned");
-
-#define str_rresult_push(...)                                                  \
-  gRResultHandles.push_back(                                                   \
-      rdf_PartTriggerWithJpsiWithEventWithEventMixing.__VA_ARGS__)
-
-  str_rresult_push(
-      Histo1D({"IndexMixing", ";IndexMixing", 100, -0.5, 99.5}, "IndexMixing"));
-  str_rresult_push(Histo2D({"IndexMixing_NumContribCalib_IndexMixing_PosZ",
-                            ";IndexMixing_NumContribCalib;IndexMixing_PosZ", 10,
-                            -0.5, 9.5, 10, -0.5, 9.5},
-                           "IndexMixing_NumContribCalib", "IndexMixing_PosZ"));
-  str_rresult_push(Histo2D({"MixedEvent_NumContribCalib1_MixedEvent_fPosZ1",
-                            ";MixedEvent_NumContribCalib1;MixedEvent_fPosZ1",
-                            var_NumContribCalibBinned.fNbins,
-                            var_NumContribCalibBinned.fBins.data(),
-                            var_fPosZMix.fNbins, var_fPosZMix.fBins.data()},
-                           "MixedEvent_NumContribCalib1", "MixedEvent_fPosZ1"));
-  str_rresult_push(Histo2D(
-      {"MixedEvent_NumContribCalib1_MixedEvent_NumContribCalib2",
-       ";MixedEvent_NumContribCalib1;MixedEvent_NumContribCalib2",
-       var_NumContribCalibBinned.fNbins, var_NumContribCalibBinned.fBins.data(),
-       var_NumContribCalibBinned.fNbins,
-       var_NumContribCalibBinned.fBins.data()},
-      "MixedEvent_NumContribCalib1", "MixedEvent_NumContribCalib2"));
-  str_rresult_push(Histo2D({"MixedEvent_fPosZ1_MixedEvent_fPosZ2",
-                            ";MixedEvent_fPosZ1;MixedEvent_fPosZ2",
-                            var_fPosZMix.fNbins, var_fPosZMix.fBins.data(),
-                            var_fPosZMix.fNbins, var_fPosZMix.fBins.data()},
-                           "MixedEvent_fPosZ1", "MixedEvent_fPosZ2"));
-  str_rresult_push(Histo2D({"MixedEvent_fPosZ1_MixedEvent_fPosZ2_fineBin",
-                            ";MixedEvent_fPosZ1;MixedEvent_fPosZ2",
-                            var_fPosZ.fNbins, var_fPosZ.fBins.data(),
-                            var_fPosZ.fNbins, var_fPosZ.fBins.data()},
-                           "MixedEvent_fPosZ1", "MixedEvent_fPosZ2"));
-
-#undef str_rresult_push
-
   fOutput->cd();
   RResultWrite(gRResultHandles);
-  cout << "EventMixingJpsiAsso: " << path_output << endl;
   fOutput->Close();
 }
 
