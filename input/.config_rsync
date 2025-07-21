@@ -4,3 +4,6 @@ virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultPileup
 virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultQA_AllCut/MultQA_AllCut.root ./event/MultQA_AllCut_LHC22pass4_dqfilter.root
 virgo /lustre/alice/users/szhu/job/QA/event/LHC22_pass4_thin_dqfilter/MultREFRaw/merge.root ./event/MultREFRaw_LHC22pass4_dqfilter.root
 virgo /lustre/alice/users/szhu/job/QA/jpsi/LHC22_pass4_thin_dqfilter/JpsiQA/merge.root ./jpsi/JpsiQA_LHC22pass4_dqfilter.root
+virgo /lustre/alice/users/szhu/job/QA/jpsi/LHC22_pass4_thin_dqfilter/JpsiQA/merge.root ./jpsi/JpsiQA_LHC22pass4_dqfilter.root
+virgo /lustre/alice/users/szhu/job/QA/event_jpsi/LHC22_pass4_thin_dqfilter/MixEventReading/merge.root ./event_jpsi/MixEventReading_LHC22pass4_dqfilter.root
+virgo /lustre/alice/users/szhu/job/QA/event_jpsi/LHC22_pass4_thin_dqfilter/JpsiAsso/merge.root ./event_jpsi/JpsiAsso_LHC22pass4_dqfilter.root
