@@ -44,7 +44,7 @@ macro/jpsi/JpsiQA.exe: macro/jpsi/JpsiQA.cpp opt/libMRootDict.so opt/libMRootDic
 macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/libMRootDict.so
 	g++ -o $@ macro/event_jpsi/EventMixingJpsiAsso.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
-macro/event_jpsi/EventMixingJpsiAsso_v2.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/libMRootDict.so
+macro/event_jpsi/EventMixingJpsiAsso_v2.exe: macro/event_jpsi/EventMixingJpsiAsso_v2.cpp opt/libMRootDict.so
 	g++ -o $@ macro/event_jpsi/EventMixingJpsiAsso_v2.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 macro/event_jpsi/MixEventReading.exe: macro/event_jpsi/MixEventReading.cpp opt/libMRootDict.so
