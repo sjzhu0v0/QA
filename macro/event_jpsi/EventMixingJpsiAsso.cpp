@@ -196,7 +196,7 @@ void EventMixingJpsiAsso(
 
   ROOT::RDF::Experimental::AddProgressBar(
       rdf_PartTriggerWithJpsiWithEventWithEventMixing);
-      
+
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
     TupleTHnDModel tuple_thnd = GetTHnDModelWithTitle(__VA_ARGS__);            \
@@ -249,6 +249,7 @@ void EventMixingJpsiAsso(
 
   fOutput->cd();
   RResultWrite(gRResultHandles);
+  cout << "EventMixingJpsiAsso: " << path_output << endl;
   fOutput->Close();
 }
 
