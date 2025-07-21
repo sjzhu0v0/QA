@@ -110,6 +110,7 @@ void JpsiFitPtMult() {
 
   signal_fit_total.InputData(hist);
   chi2Fit(signal_fit_total);
+  // fit(signal_fit_total);
   signal_fit_total >> (gPublisherCanvas->NewPad());
 
   for (int i_pt = 1; i_pt <= hn_tool.GetNbins(2); i_pt++) {
@@ -119,6 +120,7 @@ void JpsiFitPtMult() {
     auto hist_pt = hn_tool.Project(1, {0, i_pt, 1});
     signal_fit_pt.InputData(hist_pt);
     chi2Fit(signal_fit_pt);
+    // fit(signal_fit_pt);
     signal_fit_pt >> (gPublisherCanvas->NewPad());
     gPublisherCanvas->AddText(Form("pT: %d, Mult: 1", i_pt), 0.55,
                               0.86 - 0.045 * 6, kBlack, 0.04);

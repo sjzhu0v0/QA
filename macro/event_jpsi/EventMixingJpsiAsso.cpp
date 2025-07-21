@@ -194,6 +194,9 @@ void EventMixingJpsiAsso(
   rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
       "EventMixing", path_output_tree, {"MixedEvent"});
 
+  ROOT::RDF::Experimental::AddProgressBar(
+      rdf_PartTriggerWithJpsiWithEventWithEventMixing);
+      
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
     TupleTHnDModel tuple_thnd = GetTHnDModelWithTitle(__VA_ARGS__);            \
