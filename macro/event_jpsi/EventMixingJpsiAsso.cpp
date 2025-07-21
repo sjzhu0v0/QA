@@ -163,8 +163,6 @@ void EventMixingJpsiAsso(
                     for (const auto &event : events) {
                       mixedPosZ.push_back(event.event_info.fPosZ);
                     }
-                    cout << "MixedEvent_fPosZ1 size: " << mixedPosZ.size()
-                         << endl;
                     return mixedPosZ;
                   },
                   {"MixedEvent"})
