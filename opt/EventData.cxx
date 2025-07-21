@@ -6,12 +6,36 @@ void EventInfo::Copy(EventInfo other) {
   fMultNTracksPV = other.fMultNTracksPV;
   fMultFT0C = other.fMultFT0C;
   fNumContrib = other.fNumContrib;
-  fNumContribCalib = other.fNumContribCalib; // Calibrated number of contributors
+  fNumContribCalib =
+      other.fNumContribCalib; // Calibrated number of contributors
   fPosX = other.fPosX;
   fPosY = other.fPosY;
   fPosZ = other.fPosZ;
   fSelection = other.fSelection;
   fHadronicRate = other.fHadronicRate;
+}
+
+bool EventInfo::isGood() const {
+  return fMultTPC >= 0 && fMultTracklets >= 0 && fMultNTracksPV >= 0 &&
+         fMultFT0C >= 0 && fNumContrib >= 0 && fNumContribCalib >= 0 &&
+         fPosX != 0 && fPosY != 0 && fPosZ != 0;
+}
+
+bool JpsiInfo::isGood() const {
+  return fPT_size >= 0 && fEta_size >= 0 && fPhi_size >= 0 && fMass_size >= 0 &&
+         fSign_size >= 0 && fPT.size() == fPT_size &&
+         fEta.size() == fEta_size && fPhi.size() == fPhi_size &&
+         fMass.size() == fMass_size && fSign.size() == fSign_size;
+}
+
+bool TrackInfo::isGood() const {
+  return fPTREF_size >= 0 && fEtaREF_size >= 0 && fPhiREF_size >= 0 &&
+         fPTREF.size() == fPTREF_size && fEtaREF.size() == fEtaREF_size &&
+         fPhiREF.size() == fPhiREF_size;
+}
+
+bool EventData::isGood() const {
+  return event_info.isGood() && jpsi_info.isGood() && track_info.isGood();
 }
 
 EventData CreateEventData(Int_t fMultTPC, Int_t fMultTracklets,

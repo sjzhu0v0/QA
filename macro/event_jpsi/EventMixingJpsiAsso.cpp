@@ -101,12 +101,17 @@ void EventMixingJpsiAsso(
   auto rdf_PartTriggerWithJpsi =
       rdf_witTrigger.Filter("fEta_size>=1", "has Jpsi");
 
-  auto rdf_PartTriggerWithJpsiWithEvent = rdf_PartTriggerWithJpsi.Define(
-      "EventData", CreateEventData,
-      {"fMultTPC", "fMultTracklets", "fMultNTracksPV", "fMultFT0C",
-       "fNumContrib", "NumContribCalib", "fPosX", "fPosY", "fPosZ",
-       "fSelection", "fHadronicRate", "fPT", "fEta", "fPhi", "fMass", "fSign",
-       "fPTREF", "fEtaREF", "fPhiREF"});
+  auto rdf_PartTriggerWithJpsiWithEvent =
+      rdf_PartTriggerWithJpsi
+          .Define("EventData", CreateEventData,
+                  {"fMultTPC", "fMultTracklets", "fMultNTracksPV", "fMultFT0C",
+                   "fNumContrib", "NumContribCalib", "fPosX", "fPosY", "fPosZ",
+                   "fSelection", "fHadronicRate", "fPT", "fEta", "fPhi",
+                   "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
+          .Define("isEventGood",
+                  [](const EventData &event) { return event.isGood(); },
+                  {"EventData"})
+          .Filter("isEventGood", "Event is good");
 
   auto rdf_PartTriggerWithJpsiWithEventWithEventMixing =
       rdf_PartTriggerWithJpsiWithEvent
@@ -196,20 +201,6 @@ void EventMixingJpsiAsso(
 
   ROOT::RDF::Experimental::AddProgressBar(
       rdf_PartTriggerWithJpsiWithEventWithEventMixing);
-
-#define obj2push_thnd(rdf2push, ...)                                           \
-  do {                                                                         \
-    TupleTHnDModel tuple_thnd = GetTHnDModelWithTitle(__VA_ARGS__);            \
-    gRResultHandles.push_back(                                                 \
-        rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
-  } while (0)
-
-  obj2push_thnd(rdf_PartTrigger, {var_fPosZ, var_MassJpsiCandidate,
-                                  var_PtJpsiCandidate, var_NumContribCalib});
-  obj2push_thnd(rdf_PartTrigger,
-                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
-                 var_NumContribCalibBinned},
-                "", "Binned");
 
 #define str_rresult_push(...)                                                  \
   gRResultHandles.push_back(                                                   \

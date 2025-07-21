@@ -22,6 +22,7 @@ struct EventInfo {
   Float_t fHadronicRate = 0;
 
   void Copy(EventInfo other);
+  bool isGood() const;
   ClassDefNV(EventInfo, 1); // 添加这一行
 };
 
@@ -53,6 +54,8 @@ struct JpsiInfo {
     fSign_size = other.fSign_size;
     fSign.assign(other.fSign.begin(), other.fSign.end());
   }
+
+  bool isGood() const;
   ClassDefNV(JpsiInfo, 1); // 添加这一行
 };
 
@@ -74,6 +77,8 @@ struct TrackInfo {
     fPhiREF_size = other.fPhiREF_size;
     fPhiREF.assign(other.fPhiREF.begin(), other.fPhiREF.end());
   }
+
+  bool isGood() const;
   ClassDefNV(TrackInfo, 1); // 添加这一行
 };
 
@@ -82,6 +87,8 @@ struct EventData {
   EventInfo event_info2;
   JpsiInfo jpsi_info;
   TrackInfo track_info;
+
+  bool isGood() const;
 
   ClassDefNV(EventData, 1); // 添加这一行
 };
