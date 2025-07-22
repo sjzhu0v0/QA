@@ -42,5 +42,5 @@ void AssoYeild(
   // Axis 4: axis4, title: p_{T} (GeV/c)  nbins:10
   // Axis 5: axis5, title: N_{vtx contrib} Calibrated  nbins:10
 
-  
+  AssocYeildHelper_v2 assoYeild(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
 }
