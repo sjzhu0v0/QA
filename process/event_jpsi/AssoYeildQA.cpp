@@ -4,17 +4,19 @@
 #include "TApplication.h"
 
 void AssoYeildQA(
-    TString input_se_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                          "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_"
-                          "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString input_se_raw =
-        "/home/szhu/work/alice/analysis/QA/input/jpsi/"
-        "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_MassUS_PtUS_NumContribCalib",
-    TString input_me_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                          "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_"
-                          "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString path_output =
-        "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYeildQA") {
+    TString input_se_pr =
+        "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+        "JpsiAsso_cluster1_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+    TString input_se_raw = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
+                           "JpsiQA_cluster1_LHC22pass4_dqfilter.root:fPosZ_"
+                           "MassUS_PtUS_NumContribCalib",
+    TString input_me_pr =
+        "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+        "MixEventReading_cluster1_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                          "AssoYeildQA_cluster1") {
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
   auto hist_me_pr = MRootIO::GetObjectDiectly<THnD>(input_me_pr);
@@ -29,7 +31,8 @@ void AssoYeildQA(
 
   AssocYeildHelper_v2 assoYeild(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
   assoYeild.Rebin(gtype_vars::kNumContrib, 5);
-  assoYeild.Rebin(gtype_vars::kDeltaEta, 4);
+  assoYeild.Rebin(gtype_vars::kDeltaEta, 2);
+  assoYeild.Rebin(gtype_vars::kMass, 2);
 
   hnTool_se_pr.PrintAllAxis();
   // Axis 0: axis0, title: #Delta#eta_{J/#psi, track}  nbins:80
