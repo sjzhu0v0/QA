@@ -6,17 +6,17 @@
 void AssoYeildQA(
     TString input_se_pr =
         "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-        "JpsiAsso_cluster1_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+        "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_"
         "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
     TString input_se_raw = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
-                           "JpsiQA_cluster1_LHC22pass4_dqfilter.root:fPosZ_"
+                           "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_"
                            "MassUS_PtUS_NumContribCalib",
     TString input_me_pr =
         "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-        "MixEventReading_cluster1_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+        "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_"
         "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildQA_cluster1") {
+                          "AssoYeildQA") {
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
   auto hist_me_pr = MRootIO::GetObjectDiectly<THnD>(input_me_pr);
@@ -57,7 +57,7 @@ void AssoYeildQA(
   // Axis 5: axis5, title: N_{vtx contrib} Calibrated  nbins:10
 
   gPublisherCanvas = new MPublisherCanvas(
-      "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/AssoYeildQA.pdf", 2, 1,
+      "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/AssoYeildQA.pdf", 3, 1,
       600, 600);
   MRootGraphic::StyleCommon();
   gStyle->SetPalette(kRainBow);
@@ -70,6 +70,9 @@ void AssoYeildQA(
   assoYeild.SetMixMultInt(false);
 
   auto h2_total = assoYeild.AssociatedYeild(0, 0, 0);
+
+  StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_total);
+
   auto h2_lowMult = assoYeild.AssociatedYeild(0, 0, 1);
   auto h2_highMult = assoYeild.AssociatedYeild(0, 0, 2);
   auto h2_highSubLow = (TH2D *)h2_highMult->Clone("h2_highSubLow");

@@ -6,9 +6,9 @@
 
 void AssoYeildGroupQAEtaGap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "AssoYeildQA_cluster1_LHC22pass4.root",
+                         "AssoYeildQA_LHC22pass4.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQAEtaGap_cluster1.root") {
+                          "AssoYeildGroupQAEtaGap.root") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -36,7 +36,7 @@ void AssoYeildGroupQAEtaGap(
 
   gPublisherCanvas =
       new MPublisherCanvas("/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                           "AssoYeildGroupQA_cluster1.pdf",
+                           "AssoYeildGroupQAEtaGap.pdf",
                            3, 3, 600, 600);
   MRootGraphic::StyleCommon();
 
@@ -79,7 +79,7 @@ void AssoYeildGroupQAEtaGap(
       h2_highSubLow_mass->GetXaxis()->SetRangeUser(-1.8, 1.8);
 
       gPublisherCanvas->NewPad()->cd();
-      TF1 f1_modu("f1_modu", "[0]+[1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x)",
+      TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                   -M_PI_2, M_PI + M_PI_2);
       h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
       double results_modu[4];
@@ -95,9 +95,9 @@ void AssoYeildGroupQAEtaGap(
                                         indexHistEtaGap.GetBinUpperEdge()));
       h1_highSubLow_mass->Draw();
       TF1 f1_modu_0("f1_modu_0", "[0]", -M_PI_2, M_PI + M_PI_2);
-      TF1 f1_modu_1("f1_modu_1", "[0]+[1]*cos(x)", -M_PI_2, M_PI + M_PI_2);
-      TF1 f1_modu_2("f1_modu_2", "[0]+[1]*cos(2*x)", -M_PI_2, M_PI + M_PI_2);
-      TF1 f1_modu_3("f1_modu_3", "[0]+[1]*cos(3*x)", -M_PI_2, M_PI + M_PI_2);
+      TF1 f1_modu_1("f1_modu_1", "[0]+2*[1]*cos(x)", -M_PI_2, M_PI + M_PI_2);
+      TF1 f1_modu_2("f1_modu_2", "[0]+2*[1]*cos(2*x)", -M_PI_2, M_PI + M_PI_2);
+      TF1 f1_modu_3("f1_modu_3", "[0]+2*[1]*cos(3*x)", -M_PI_2, M_PI + M_PI_2);
       f1_modu_0.SetParameter(0, results_modu[0]);
       f1_modu_1.SetParameter(0, results_modu[0]);
       f1_modu_1.SetParameter(1, results_modu[1]);
@@ -139,13 +139,15 @@ void AssoYeildGroupQAEtaGap(
       ->Draw(h_v22part)
       ->Draw(h_v22) */
       ;
+
+  gPublisherCanvas->SetCanvasNwNh(3, 2);
   for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
     auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", i_etaGap),
                                             i_etaGap, i_etaGap);
     h1_v22->GetYaxis()->SetTitle("V_{2}");
     h1_v22->SetTitle(Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f",
                           h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap)));
-
+    MRootGraphic::StyleHistCommonHist(h1_v22);
     gPublisherCanvas->Draw(h1_v22);
   }
 

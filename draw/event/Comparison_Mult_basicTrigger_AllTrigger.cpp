@@ -42,6 +42,7 @@ void Comparison_Mult_basicTrigger_AllTrigger(
   TCanvas *c_levelTrigger_0_5 =
       new TCanvas("c_levelTrigger_0_5", "c_levelTrigger", 800, 600);
   gPad->SetRightMargin(0.15);
+  gPad->SetGridy();
   LevelTrigger->GetXaxis()->SetRangeUser(-0.5, 4.5);
   LevelTrigger->Draw("hist text");
   c_levelTrigger_0_5->SaveAs(
