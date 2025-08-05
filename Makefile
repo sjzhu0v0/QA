@@ -17,6 +17,9 @@ all: \
 	macro/event_jpsi/MixEventReading.exe \
 	macro/event_jpsi/JpsiAsso.exe
 
+macro/track/TrackQA.exe: macro/track/TrackQA.cpp
+	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+
 macro/event/MultRaw.exe: macro/event/MultRaw.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
