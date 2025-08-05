@@ -9,5 +9,6 @@ virgo /lustre/alice/users/szhu/job/QA/event_jpsi/LHC22_pass4_thin_dqfilter/MixEv
 virgo /lustre/alice/users/szhu/job/QA/event_jpsi/LHC22_pass4_thin_dqfilter/MixEventReading/cluster1.root ./event_jpsi/MixEventReading_cluster1_LHC22pass4_dqfilter.root
 virgo /lustre/alice/users/szhu/job/QA/event_jpsi/LHC22_pass4_thin_dqfilter/JpsiAsso/merge.root ./event_jpsi/JpsiAsso_LHC22pass4_dqfilter.root
 virgo /lustre/alice/users/szhu/job/QA/event_jpsi/LHC22_pass4_thin_dqfilter/JpsiAsso/cluster1.root ./event_jpsi/JpsiAsso_cluster1_LHC22pass4_dqfilter.root
-virgo /lustre/alice/users/szhu/work/TinyTasks/TrackInfoMC/24fd4b/task/output/merged.root ./track/trackInfoMC_24fd4b_550367.root 
+virgo /lustre/alice/users/szhu/work/TinyTasks/TrackInfoMC/24fd4b/task/output/aa/AO2D.root ./track/trackInfoMC_24fd4b_550367.root 
+virgo /lustre/alice/users/szhu/work/TinyTasks/TrackInfoMC/24fd4b/task/output/hist_merge.root ./track/trackInfoMC_24fd4b_550367_hist.root 
 
