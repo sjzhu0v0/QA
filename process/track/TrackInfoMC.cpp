@@ -84,3 +84,21 @@ void TrackInfoMC(
   RResultWrite(gRResultHandles);
   file_output->Close();
 }
+
+
+int main(int argc, char **argv) {
+  TString path_input = "/home/szhu/work/alice/analysis/QA/input/track/"
+                       "trackInfoMC_24fd4b_550367.root";
+  TString path_output = "/home/szhu/work/alice/analysis/QA/output/track/"
+                        "TrackInfoMC_24fd4b_550367.root";
+
+  if (argc > 1) {
+    path_input = argv[1];
+  }
+  if (argc > 2) {
+    path_output = argv[2];
+  }
+
+  TrackInfoMC(path_input, path_output);
+  return 0;
+}
