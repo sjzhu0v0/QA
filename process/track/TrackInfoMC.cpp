@@ -23,7 +23,7 @@ void TrackInfoMC(
   StrVar4Hist var_Pt("fPt", "p_{T}", "GeV/c", 100, {0.1, 6});
   StrVar4Hist var_DeltaPtOverPt("DeltaPtOverPt",
                                 "(p^{rec}_{T}-p^{MC}_{T})/p^{rec}_{T}", "", 100,
-                                {-0.5, 0.5});
+                                {-0.3, 0.3});
 
   ROOT::RDataFrame rdf(*tree_info);
 
