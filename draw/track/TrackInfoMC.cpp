@@ -101,7 +101,8 @@ void TrackInfoMC(TString path_input =
     h1->Fit("gaus", "Q", "", -2 * sigma, 2 * sigma);
     h1->Draw();
     MDouble sigmaDCAxy(h1->GetFunction("gaus")->GetParameter(2),
-                       h1->GetFunction("gaus")->GetParError(2));
+                       //    h1->GetFunction("gaus")->GetParError(2));
+                       0.000002 / h1->GetFunction("gaus")->GetParameter(2));
     h_InversePt_fDcaXY.SetBinInfo(sigmaDCAxy);
   }
 
@@ -113,10 +114,11 @@ void TrackInfoMC(TString path_input =
         Form("h1_%d", GenerateUID()), indexHistInversePt, indexHistInversePt);
     h1->Fit("gaus", "Q0", "", -0.04, 0.04);
     double sigma = h1->GetFunction("gaus")->GetParameter(2);
-    h1->Fit("gaus", "Q", "", -2 * sigma, 2 * sigma);
+    h1->Fit("gaus", "Q", "", -sigma, sigma);
     h1->Draw();
     MDouble sigmaDCAz(h1->GetFunction("gaus")->GetParameter(2),
-                      h1->GetFunction("gaus")->GetParError(2));
+                      //   h1->GetFunction("gaus")->GetParError(2));
+                      0.000002 / h1->GetFunction("gaus")->GetParameter(2));
     h_InversePt_fDcaZ.SetBinInfo(sigmaDCAz);
   }
   gPublisherCanvas->finalize();
@@ -130,24 +132,37 @@ void TrackInfoMC(TString path_input =
   h_InversePt_fDcaXY.fHisto->SetLineColor(kRed);
   h_InversePt_fDcaZ.fHisto->SetLineColor(kBlue);
   TF1 *f_SigmaDCAxy =
-      new TF1("f_SigmaDCAxy", "[0]+[1]*pow(x,[2])", var_InversePt.GetMin(), 5.);
-  // TF1 *f_SigmaDCAxy = new TF1("f_SigmaDCAxy",
-  // "sqrt([0]*[0]+pow([1]*x,[2]*2))",
-  //                             var_InversePt.GetMin(), 5.);
+      new TF1("f_SigmaDCAxy", "[0]+[1]*pow(x,[2])", var_InversePt.GetMin(), 6.);
+  f_SigmaDCAxy->SetLineColor(kGreen + 2);
   f_SigmaDCAxy->SetParameter(2, 1);
   f_SigmaDCAxy->SetParameter(1, 0.0025);
-  h_InversePt_fDcaXY.fHisto->Fit(f_SigmaDCAxy, "", "", 0.3, 5);
+  h_InversePt_fDcaXY.fHisto->Fit(f_SigmaDCAxy, "", "", 0.3, 6);
 
-  TF1 *f_SigmaDCAz =
-      new TF1("f_SigmaDCAz", "[0]+[1]*pow(x,[2])", var_InversePt.GetMin(), 5.);
-  f_SigmaDCAz->SetParameter(2, 1);
-  f_SigmaDCAz->SetParameter(1, 0.0025);
-  h_InversePt_fDcaZ.fHisto->Fit(f_SigmaDCAz, "", "", 0.3, 5);
+  //  0.000924651 + 0.000924651 * pow(x, 1.4062)
+
+  //   TF1 *f_SigmaDCAz =
+  //       new TF1("f_SigmaDCAz", "[0]+[1]*pow(x,[2])",
+  //       var_InversePt.GetMin(), 5.);
+  //   f_SigmaDCAz->SetParameter(2, 1);
+  //   f_SigmaDCAz->SetParameter(1, 0.0025);
+  //   h_InversePt_fDcaZ.fHisto->Fit(f_SigmaDCAz, "", "", 0.3, 5);
+  h_InversePt_fDcaXY.fHisto->GetYaxis()->SetTitle(
+      "#sigma of DCA distributions (cm)");
+  h_InversePt_fDcaXY.fHisto->GetYaxis()->SetMaxDigits(2);
 
   h_InversePt_fDcaXY.fHisto->Draw("PMC");
   f_SigmaDCAxy->Draw("same");
   h_InversePt_fDcaZ.fHisto->Draw("PMC SAME");
-  f_SigmaDCAz->Draw("same");
+
+  TLegend *legend = new TLegend(0.16, 0.69, 0.46, 0.89);
+  legend->SetFillColor(0);
+  legend->SetBorderSize(0);
+  legend->SetTextSize(0.04);
+  legend->AddEntry(h_InversePt_fDcaXY.fHisto.get(), "DCA_{XY}", "L");
+  legend->AddEntry(h_InversePt_fDcaZ.fHisto.get(), "DCA_{Z}", "L");
+  legend->AddEntry(f_SigmaDCAxy, "DCA fit", "L");
+  legend->Draw();
+
   c_sigmaDCA_InversePt->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/track/TrackInfoMC_"
       "SigmaDCAxy_DCAz_InversePt.pdf");
@@ -167,15 +182,45 @@ void TrackInfoMC(TString path_input =
       new MPublisherCanvas("/home/szhu/work/alice/analysis/QA/plot/track/"
                            "TrackInfoMC_fPt_DeltaPtOverPt_diff.pdf",
                            3, 3);
-  for (int i = 1; i <= fPt_DeltaPtOverPt->GetXaxis()->GetNbins(); i++) {
+  MHist1D h_Pt_DeltaPtOverPt(indexHistPt, "SigmaDeltaPtOverPt_fPt");
+
+  // for (int i = 1; i <= fPt_DeltaPtOverPt->GetXaxis()->GetNbins(); i++) {
+  //   gPublisherCanvas->NewPad()->cd();
+  //   auto h1 = (TH1D *)fPt_DeltaPtOverPt->ProjectionY(
+  //       Form("h1_fPt_DeltaPtOverPt_%d", i), i, i);
+  //   h1->SetTitle(Form("fPt_DeltaPtOverPt: p_{T}:[%.2f,%.2f];",
+  //                     fPt_DeltaPtOverPt->GetXaxis()->GetBinLowEdge(i),
+  //                     fPt_DeltaPtOverPt->GetXaxis()->GetBinUpEdge(i)));
+  //   h1->Fit("gaus", "Q0", "", -0.5, 0.5);
+  //   double sigma = h1->GetFunction("gaus")->GetParameter(2);
+  //   h1->Fit("gaus", "Q", "", -2 * sigma, 2 * sigma);
+  //   gPad->SetLogy();
+  //   h1->Draw();
+  // }
+  for (auto indexHistPt : indexHistPt) {
     gPublisherCanvas->NewPad()->cd();
     auto h1 = (TH1D *)fPt_DeltaPtOverPt->ProjectionY(
-        Form("h1_fPt_DeltaPtOverPt_%d", i), i, i);
+        Form("h1_%d", GenerateUID()), indexHistPt, indexHistPt);
     h1->Fit("gaus", "Q0", "", -0.5, 0.5);
     double sigma = h1->GetFunction("gaus")->GetParameter(2);
     h1->Fit("gaus", "Q", "", -2 * sigma, 2 * sigma);
     gPad->SetLogy();
     h1->Draw();
+    // MDouble sigmaDeltaPtOverPt(h1->GetFunction("gaus")->GetParameter(2),
+    //                            h1->GetFunction("gaus")->GetParError(2));
+    MDouble sigmaDeltaPtOverPt(h1->GetRMS(), h1->GetRMSError());
+    h_Pt_DeltaPtOverPt.SetBinInfo(sigmaDeltaPtOverPt);
   }
+
   gPublisherCanvas->finalize();
+
+  TCanvas *c_sigmaDeltaPtOverPt_fPt = new TCanvas(
+      "c_sigmaDeltaPtOverPt_fPt", "c_sigmaDeltaPtOverPt_fPt", 400, 400);
+  // MRootGraphic::StyleHistCommonHist(h_Pt_DeltaPtOverPt.fHisto.get());
+  c_sigmaDeltaPtOverPt_fPt->cd();
+  h_Pt_DeltaPtOverPt.fHisto->GetXaxis()->SetRangeUser(0, 6);
+  h_Pt_DeltaPtOverPt.fHisto->Draw("C");
+  c_sigmaDeltaPtOverPt_fPt->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/plot/track/TrackInfoMC_"
+      "SigmaDeltaPtOverPt_fPt.pdf");
 }
