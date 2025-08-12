@@ -10,9 +10,10 @@ void MultRaw(TString path_input = "../input.root",
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
-  TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
-  TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
-
+  //   TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
+  //   TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
+  TChain *tree_event = MRootIO::OpenChain(file_event, "O2reducedevent");
+  TChain *tree_event_ext = MRootIO::OpenChain(file_event, "O2reextended");
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
   ROOT::RDataFrame rdf(*tree_event);
