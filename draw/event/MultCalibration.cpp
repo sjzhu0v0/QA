@@ -11,10 +11,13 @@ void MultCalibration(
   // fNumContribfPosZ
   gROOT->SetBatch(true);
   MRootGraphic::StyleCommon();
-  TProfile *fNumContribfPosZ = MRootIO::GetTProfile(path + ":fNumContribfPosZ");
-  TProfile *fNumContribRun = MRootIO::GetTProfile(path + ":fNumContribRun");
+  TFile *file_input = TFile::Open(path);
+  TProfile *fNumContribfPosZ = (TProfile *)file_input->Get("fNumContribfPosZ");
+  //   MRootIO::GetTProfile(file_input, "fNumContribfPosZ");
+  TProfile *fNumContribRun = (TProfile *)file_input->Get("fNumContribRun");
   auto fNumContribfPosZRun =
-      MRootIO::GetObjectDiectly<TProfile2D>(path + ":fNumContribfPosZRun");
+      (TProfile2D *)file_input->Get("fNumContribfPosZRun");
+
   TFile *file_output = new TFile(path_output, "RECREATE");
 
   MRootGraphic::StyleHistCommonHist(fNumContribfPosZ);
@@ -57,9 +60,10 @@ void MultCalibration(
   c_fNumContribfPosZRun->cd();
   gPad->SetRightMargin(0.15);
   c_fNumContribfPosZRun->SetGrid();
+  //   cout << fNumContribfPosZRun << endl;
   fNumContribfPosZRun->SetTitle(
       "fNumContribfPosZRun;fPosZ [cm];Run;<fNumContrib>");
-  fNumContribfPosZRun->GetXaxis()->SetTitle("fPosZ [cm]");
+  fNumContribfPosZRun->GetXaxis()->SetTitle("V_{z} [cm]");
   fNumContribfPosZRun->GetYaxis()->SetTitle("Run");
   fNumContribfPosZRun->Draw("colz");
   c_fNumContribfPosZRun->Modified();
@@ -88,7 +92,7 @@ void MultCalibration(
     }
     TF1 *fit_func = new TF1(Form("pol6_%s", label.Data()), "pol6", -10, 10);
     h_NumContribPosZ_calibration->Fit(fit_func, "Q", "", -10, 10);
-    // fNumContribfPosZRun->GetListOfFunctions()->Add((TF1 *)fit_func->Clone());
+    fNumContribfPosZRun->GetListOfFunctions()->Add((TF1 *)fit_func->Clone());
     file_output->WriteObject<TF1>(
         fit_func, Form("fNumContribfPosZRun_calib_%s", label.Data()));
     MRootGraphic::StyleHistCommonHist(h_NumContribPosZ_calibration);
