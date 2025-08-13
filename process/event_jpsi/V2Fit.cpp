@@ -70,7 +70,7 @@ void V2Fit() {
 
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
-                                    {1.4, 5.});
+                                    {1.8, 5.4});
   MIndexHist indexHistEtaGap(var_EtaGap, 1, 1);
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, 2);
   MVec<MHist1D> vec_v22(indexHistEtaGap);
