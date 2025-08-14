@@ -63,10 +63,6 @@ void JpsiAsso(
   auto CutTrackInfo = [](const TrackInfo &track_info, const int &index) {
     bool ptCut =
         track_info.fPTREF[index] > 0.4 && track_info.fPTREF[index] < 4.0;
-    cout << track_info.fPTREF[index] << endl;
-    if (!ptCut) {
-      cout << "Track info pt cut failed: " << track_info.fPTREF[index] << endl;
-    }
     return ptCut;
   };
 
@@ -79,9 +75,8 @@ void JpsiAsso(
                    "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
           .Define(
               "JpsiInfoUS",
-              [&CutTrackInfo](const EventData &eventData) {
+              [CutTrackInfo](const EventData &eventData) {
                 ROOT::VecOps::RVec<array<float, 6>> vec2return;
-                cout << "EventData: " << eventData.event_info.fPosZ << endl;
                 for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
                   if (eventData.jpsi_info.fSign[i] == 0) {
                     for (size_t j = 0; j < eventData.track_info.fEtaREF.size();
