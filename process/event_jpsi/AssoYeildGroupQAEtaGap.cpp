@@ -156,6 +156,7 @@ void AssoYeildGroupQAEtaGap(
 }
 
 int main(int argc, char **argv) {
+  gROOT->SetBatch(kTRUE);
   TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                        "AssoYeildQA_LHC22pass4.root";
   TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
@@ -173,5 +174,5 @@ int main(int argc, char **argv) {
     path_pdf = argv[3];
   }
   AssoYeildGroupQAEtaGap(path_input, path_output, path_pdf);
-    return 0;
+  return 0;
 }

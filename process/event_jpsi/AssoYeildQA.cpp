@@ -147,6 +147,7 @@ void AssoYeildQA(
 }
 
 int main(int argc, char **argv) {
+  gROOT->SetBatch(kTRUE);
   TString path_input_se_pr =
       "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
       "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_MassUS_"
