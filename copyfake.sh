@@ -23,7 +23,6 @@ echo
 ln -s "$SCRIPT_DIR/draw"
 ln -s "$SCRIPT_DIR/include"
 ln -s "$SCRIPT_DIR/macro"
-ln -s "$SCRIPT_DIR/opt"
 ln -s "$SCRIPT_DIR/plot"
 ln -s "$SCRIPT_DIR/process"
 ln -s "$SCRIPT_DIR/task"
