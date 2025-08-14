@@ -20,7 +20,7 @@ void AssoYeildQA(
   auto hist_me_pr = MRootIO::GetObjectDiectly<THnD>(input_me_pr);
 
   TFile *file_output =
-      new TFile(Form("%s_LHC22pass4.root", path_output.Data()), "RECREATE");
+      new TFile(Form("%s.root", path_output.Data()), "RECREATE");
 
   MHnTool hnTool_se_pr(hist_se_pr);
   MHnTool hnTool_se_raw(hist_se_raw);
