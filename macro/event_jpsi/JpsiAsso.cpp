@@ -203,7 +203,7 @@ void JpsiAsso(
 
   // MHnTool hnTool(gRResultHandles[0].GetPtr<THnD>());
   // hnTool.PrintAllAxis();
-
+cout << "Start writing THnD objects..." << endl;
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();
