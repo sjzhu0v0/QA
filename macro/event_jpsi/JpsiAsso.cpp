@@ -60,6 +60,12 @@ void JpsiAsso(
           .Filter("isntSameBunchPileup", "no Time Frame border")
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
+  auto CutTrackInfo = [](const TrackInfo & track_info, const int &index) {
+    bool ptCut =
+        track_info.fPTREF[index] > 0.4 && track_info.fPTREF[index] < 4.0;
+    return ptCut;
+  };
+
   auto rdf_PartTriggerWithJpsiWithEvent =
       rdf_PartTrigger
           .Define("EventData", CreateEventData,
@@ -69,12 +75,14 @@ void JpsiAsso(
                    "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
           .Define(
               "JpsiInfoUS",
-              [](const EventData &eventData) {
+              [&CutTrackInfo](const EventData &eventData) {
                 ROOT::VecOps::RVec<array<float, 6>> vec2return;
                 for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
                   if (eventData.jpsi_info.fSign[i] == 0) {
                     for (size_t j = 0; j < eventData.track_info.fEtaREF.size();
                          ++j) {
+                      if (!CutTrackInfo(eventData.track_info, j))
+                        continue;
                       float delta_eta = eventData.jpsi_info.fEta[i] -
                                         eventData.track_info.fEtaREF[j];
                       float delta_phi = eventData.jpsi_info.fPhi[i] -
