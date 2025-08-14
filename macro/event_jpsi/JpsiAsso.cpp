@@ -60,9 +60,13 @@ void JpsiAsso(
           .Filter("isntSameBunchPileup", "no Time Frame border")
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
-  auto CutTrackInfo = [](const TrackInfo & track_info, const int &index) {
+  auto CutTrackInfo = [](const TrackInfo &track_info, const int &index) {
     bool ptCut =
         track_info.fPTREF[index] > 0.4 && track_info.fPTREF[index] < 4.0;
+    cout << track_info.fPTREF[index] << endl;
+    if (!ptCut) {
+      cout << "Track info pt cut failed: " << track_info.fPTREF[index] << endl;
+    }
     return ptCut;
   };
 
