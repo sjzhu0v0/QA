@@ -81,12 +81,11 @@ void JpsiAsso(
               "JpsiInfoUS",
               [&CutTrackInfo](const EventData &eventData) {
                 ROOT::VecOps::RVec<array<float, 6>> vec2return;
+                cout << "EventData: " << eventData.event_info.fPosZ << endl;
                 for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
                   if (eventData.jpsi_info.fSign[i] == 0) {
                     for (size_t j = 0; j < eventData.track_info.fEtaREF.size();
                          ++j) {
-                      cout << "Track info pt: "
-                           << eventData.track_info.fPTREF[j] << endl;
                       if (!CutTrackInfo(eventData.track_info, j))
                         continue;
                       float delta_eta = eventData.jpsi_info.fEta[i] -
