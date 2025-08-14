@@ -4,17 +4,15 @@
 #include "TApplication.h"
 
 void AssoYeildQA(
-    TString input_se_pr =
-        "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-        "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_"
-        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+    TString input_se_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                          "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+                          "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
     TString input_se_raw = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
                            "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_"
                            "MassUS_PtUS_NumContribCalib",
-    TString input_me_pr =
-        "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-        "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_"
-        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+    TString input_me_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                          "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+                          "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                           "AssoYeildQA") {
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
@@ -56,9 +54,7 @@ void AssoYeildQA(
   // Axis 4: axis4, title: p_{T} (GeV/c)  nbins:10
   // Axis 5: axis5, title: N_{vtx contrib} Calibrated  nbins:10
 
-  gPublisherCanvas = new MPublisherCanvas(
-      "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/AssoYeildQA.pdf", 3, 1,
-      600, 600);
+  gPublisherCanvas = new MPublisherCanvas(path_output + ".pdf", 3, 1, 600, 600);
   MRootGraphic::StyleCommon();
   gStyle->SetPalette(kRainBow);
 
@@ -148,4 +144,37 @@ void AssoYeildQA(
 
   gPublisherCanvas->finalize();
   file_output->Close();
+}
+
+int main(int argc, char **argv) {
+  TString path_input_se_pr =
+      "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+      "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_MassUS_"
+      "PtUS_NumContribCalibUS";
+  TString path_input_se_raw =
+      "/home/szhu/work/alice/analysis/QA/input/jpsi/"
+      "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_MassUS_PtUS_NumContribCalib";
+  TString path_input_me_pr =
+      "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+      "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_"
+      "MassUS_PtUS_NumContribCalibUS";
+  TString path_output =
+      "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYeildQA";
+
+  if (argc > 1) {
+    path_input_se_pr = argv[1];
+  }
+  if (argc > 2) {
+    path_input_se_raw = argv[2];
+  }
+  if (argc > 3) {
+    path_input_me_pr = argv[3];
+  }
+  if (argc > 4) {
+    path_output = argv[4];
+  }
+  AssoYeildQA(path_input_se_pr, path_input_se_raw, path_input_me_pr,
+              path_output);
+
+  return 0;
 }

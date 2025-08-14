@@ -8,7 +8,9 @@ void AssoYeildGroupQAEtaGap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                          "AssoYeildQA_LHC22pass4.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQAEtaGap.root") {
+                          "AssoYeildGroupQAEtaGap.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                       "AssoYeildGroupQAEtaGap.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -34,10 +36,7 @@ void AssoYeildGroupQAEtaGap(
   MHGroupTool2D *hgroupTool2d_highSubLow_mass = new MHGroupTool2D(
       file_input, "h2_highSubLow_mass_%d", {var_MassJpsiCandidate}, {2});
 
-  gPublisherCanvas =
-      new MPublisherCanvas("/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                           "AssoYeildGroupQAEtaGap.pdf",
-                           3, 3, 600, 600);
+  gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 3, 600, 600);
   MRootGraphic::StyleCommon();
 
 #define LGetBinContent(hist, vec_index, ...)                                   \
@@ -154,4 +153,25 @@ void AssoYeildGroupQAEtaGap(
 
   file_output->Write();
   file_output->Close();
+}
+
+int main(int argc, char **argv) {
+  TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                       "AssoYeildQA_LHC22pass4.root";
+  TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                        "AssoYeildGroupQAEtaGap.root";
+  TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                     "AssoYeildGroupQAEtaGap.pdf";
+
+  if (argc > 1) {
+    path_input = argv[1];
+  }
+  if (argc > 2) {
+    path_output = argv[2];
+  }
+  if (argc > 3) {
+    path_pdf = argv[3];
+  }
+  AssoYeildGroupQAEtaGap(path_input, path_output, path_pdf);
+    return 0;
 }

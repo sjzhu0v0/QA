@@ -8,7 +8,9 @@ void AssoYeildGroupQA(
     TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                          "AssoYeildQA_cluster1_LHC22pass4.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQA_cluster1.root") {
+                          "AssoYeildGroupQA_cluster1.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                       "AssoYeildGroupQA_cluster1.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -34,10 +36,7 @@ void AssoYeildGroupQA(
   MHGroupTool2D *hgroupTool2d_highSubLow_mass = new MHGroupTool2D(
       file_input, "h2_highSubLow_mass_%d", {var_MassJpsiCandidate}, {2});
 
-  gPublisherCanvas =
-      new MPublisherCanvas("/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                           "AssoYeildGroupQA_cluster1.pdf",
-                           2, 3, 600, 600);
+  gPublisherCanvas = new MPublisherCanvas(path_pdf, 2, 3, 600, 600);
   MRootGraphic::StyleCommon();
 
 #define LGetBinContent(hist, vec_index, ...)                                   \
