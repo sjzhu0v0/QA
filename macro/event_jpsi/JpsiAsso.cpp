@@ -85,6 +85,8 @@ void JpsiAsso(
                   if (eventData.jpsi_info.fSign[i] == 0) {
                     for (size_t j = 0; j < eventData.track_info.fEtaREF.size();
                          ++j) {
+                      cout << "Track info pt: "
+                           << eventData.track_info.fPTREF[j] << endl;
                       if (!CutTrackInfo(eventData.track_info, j))
                         continue;
                       float delta_eta = eventData.jpsi_info.fEta[i] -
