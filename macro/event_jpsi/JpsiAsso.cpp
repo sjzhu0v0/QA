@@ -236,10 +236,10 @@ int main(int argc, char **argv) {
     threshold_bs = atof(argv[4]);
   }
   if (argc > 5) {
-    path_calib = argv[4];
+    path_calib = argv[5];
   }
   if (argc > 6) {
-    path_pileup = argv[5];
+    path_pileup = argv[6];
   }
 
   cout << "Input path: " << path_input_flowVecd << endl;
