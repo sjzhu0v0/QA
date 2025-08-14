@@ -241,6 +241,13 @@ int main(int argc, char **argv) {
   if (argc > 6) {
     path_pileup = argv[5];
   }
+
+  cout << "Input path: " << path_input_flowVecd << endl;
+  cout << "Output path: " << path_output << endl;
+  cout << "Run number: " << runNumber << endl;
+  cout << "Bootstrap threshold: " << threshold_bs << endl;
+  cout << "Calibration path: " << path_calib << endl;
+  cout << "Pileup path: " << path_pileup << endl;
   JpsiAsso(path_input_flowVecd, path_output, runNumber, threshold_bs,
            path_calib, path_pileup);
 
