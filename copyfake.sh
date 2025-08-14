@@ -12,12 +12,21 @@ done
 echo
 
 # create soft link to the directories
-for dir in "$SCRIPT_DIR"/*/; do
-    if [ -d "$dir" ]; then
-        dir_name=$(basename "$dir")
-        echo "Creating symlink for $dir_name"
-        ln -s "$SCRIPT_DIR/$dir_name"
-    fi
-done
+# for dir in "$SCRIPT_DIR"/*/; do
+#     if [ -d "$dir" ]; then
+#         dir_name=$(basename "$dir")
+#         echo "Creating symlink for $dir_name"
+#         ln -s "$SCRIPT_DIR/$dir_name"
+#     fi
+# done
+
+ln -s "$SCRIPT_DIR/draw"
+ln -s "$SCRIPT_DIR/include"
+ln -s "$SCRIPT_DIR/macro"
+ln -s "$SCRIPT_DIR/opt"
+ln -s "$SCRIPT_DIR/plot"
+ln -s "$SCRIPT_DIR/process"
+ln -s "$SCRIPT_DIR/task"
+mkdir plot output
 
 cp $SCRIPT_DIR/TemplateMakefile ./Makefile
