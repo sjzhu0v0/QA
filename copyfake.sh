@@ -20,4 +20,4 @@ for dir in "$SCRIPT_DIR"/*/; do
     fi
 done
 
-cp $SCRIPT_DIR/MakefileTemplate ./Makefile
+cp $SCRIPT_DIR/TemplateMakefile ./Makefile
