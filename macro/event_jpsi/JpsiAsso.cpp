@@ -60,11 +60,11 @@ void JpsiAsso(
           .Filter("isntSameBunchPileup", "no Time Frame border")
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
-  // auto CutTrackInfo = [](const TrackInfo &track_info, const int &index) {
-  //   bool ptCut =
-  //       track_info.fPTREF[index] > 0.4 && track_info.fPTREF[index] < 4.0;
-  //   return ptCut;
-  // };
+  auto CutTrackInfo = [](const TrackInfo &track_info, const int &index) {
+    bool ptCut =
+        track_info.fPTREF[index] > 0.4 && track_info.fPTREF[index] < 4.0;
+    return ptCut;
+  };
 
   auto rdf_PartTriggerWithJpsiWithEvent =
       rdf_PartTrigger
@@ -75,7 +75,7 @@ void JpsiAsso(
                    "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
           .Define(
               "JpsiInfoUS",
-              [](const EventData &eventData) {
+              [&CutTrackInfo](const EventData &eventData) {
                 ROOT::VecOps::RVec<array<float, 6>> vec2return;
                 for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
                   if (eventData.jpsi_info.fSign[i] == 0) {
@@ -83,8 +83,8 @@ void JpsiAsso(
                          ++j) {
                       cout << "TrackInfo size: "
                            << eventData.track_info.fEtaREF.size() << endl;
-                      // if (!CutTrackInfo(eventData.track_info, j))
-                      //   continue;
+                      if (!CutTrackInfo(eventData.track_info, j))
+                        continue;
                       float delta_eta = eventData.jpsi_info.fEta[i] -
                                         eventData.track_info.fEtaREF[j];
                       float delta_phi = eventData.jpsi_info.fPhi[i] -
@@ -242,12 +242,6 @@ int main(int argc, char **argv) {
     path_pileup = argv[6];
   }
 
-  cout << "Input path: " << path_input_flowVecd << endl;
-  cout << "Output path: " << path_output << endl;
-  cout << "Run number: " << runNumber << endl;
-  cout << "Bootstrap threshold: " << threshold_bs << endl;
-  cout << "Calibration path: " << path_calib << endl;
-  cout << "Pileup path: " << path_pileup << endl;
   JpsiAsso(path_input_flowVecd, path_output, runNumber, threshold_bs,
            path_calib, path_pileup);
 
