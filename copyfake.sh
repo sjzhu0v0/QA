@@ -19,3 +19,5 @@ for dir in "$SCRIPT_DIR"/*/; do
         ln -s "$SCRIPT_DIR/$dir_name"
     fi
 done
+
+cp $SCRIPT_DIR/MakefileTemplate ./Makefile

@@ -1,0 +1,20 @@
+DIR_BASE=/lustre/alice/users/szhu/work/Analysis/PairFlow
+PATH_INCLUDE=$(DIR_BASE)/include
+FLAGS_INCLUDE=-I$(DIR_BASE)/include -I$(DIR_BASE)/macro
+FLAGS_ROOT=$(shell root-config --cflags --libs)
+FLAGS_MINUIT=-lMinuit
+
+# macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
+# 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+
+# macro/event_jpsi/JpsiAsso.exe: macro/event_jpsi/JpsiAsso.cpp
+# 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+
+# macro/event_jpsi/MixEventReading.exe: macro/event_jpsi/MixEventReading.cpp opt/libMRootDict.so
+# 	g++ -o $@ macro/event_jpsi/MixEventReading.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+
+# opt/MRootDict.cxx: opt/EventData.h opt/LinkDef.h
+# 	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
+
+# opt/libMRootDict.so: opt/MRootDict.cxx opt/EventData.cxx
+# 	g++ -o $@ $^ -I./ `root-config --cflags --libs` -shared -fPIC
