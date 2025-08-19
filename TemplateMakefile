@@ -4,6 +4,28 @@ FLAGS_INCLUDE=-I$(DIR_BASE)/include -I$(DIR_BASE)/macro
 FLAGS_ROOT=$(shell root-config --cflags --libs)
 FLAGS_MINUIT=-lMinuit
 
+SRC_DIR := /home/szhu/work/alice/analysis/QA/process/jpsi
+SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
+TARGETS := $(notdir $(SOURCES:.cpp=.exe))
+
+# 调试输出
+$(info === Debug info ===)
+$(info SOURCES = $(SOURCES))
+$(info TARGETS = $(TARGETS))
+$(info ================)
+
+.PHONY: all clean print
+
+all: $(TARGETS)
+	@echo "Target built: $(TARGETS)"
+
+%.exe: $(SRC_DIR)/%.cpp
+	g++ $< -o $@ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@echo "Compiled: $< -> $@"
+
+clean:
+	rm -f *.exe
+
 # macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
 # 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
