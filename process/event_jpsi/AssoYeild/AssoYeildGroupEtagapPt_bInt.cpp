@@ -4,24 +4,22 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupEtaGap_bInt(
-    TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "AssoYeildQA_LHC22pass4.root",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQAEtaGap.root",
-    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "AssoYeildGroupQAEtaGap.pdf") {
+void AssoYeildGroupEtagapPt_bInt(
+    TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
+                         "AssoYeildPt.root",
+    TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
+                          "AssoYeildGroupEtagapPt_bLow.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
+                       "AssoYeildGroupEtagapPt_bInt.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
   struct StrAny_ptV2 {
-    // const int fNbins = 3;
-    // const vector<int> bins = {1, 3, 5, 10};
-    const int fNbins = 1;
-    const vector<int> bins = {0, 10};
+    const vector<vector<int>> bins = {{2, 3}, {4, 5}, {6, 7, 8, 9, 10}};
+    const int fNbins = bins.size();
     const TString fName = "ptV2";
 
-    int operator[](int index) { return bins[index]; }
+    vector<int> operator[](int index) { return bins[index]; }
   } strAny_ptV2;
 
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
@@ -36,9 +34,10 @@ void AssoYeildGroupEtaGap_bInt(
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
-  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 1, {0., 10.});
+  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3, {1., 3., 5., 10.});
   // StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3,
   // {1., 3., 5., 10.});
+
   MHGroupTool2D *hgroupTool2d_total_mass =
       new MHGroupTool2D(file_input, "h2_total_mass_pt_%d_%d",
                         {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
@@ -126,7 +125,7 @@ void AssoYeildGroupEtaGap_bInt(
 
         auto h1_highSubLow_mass = ApplyEtaGap(h2_highSubLow_mass, deltaEta);
         auto h1_lowMult_mass = ApplyEtaGap(h2_lowMult_mass, deltaEta);
-        ///////////////////////////////////////////////////////
+        /////////////////////////////////////////////////
         gPublisherCanvas->NewPad()->cd();
         TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                     -M_PI_2, M_PI + M_PI_2);
@@ -164,8 +163,13 @@ void AssoYeildGroupEtaGap_bInt(
   MDouble name##Value __VA_ARGS__;                                             \
   hVec_##name.current().SetBinInfo(name##Value);
 
-        FillHist(b, (h1_highSubLow_mass->GetBinContent(1),
-                     h1_highSubLow_mass->GetBinError(1)));
+        double b_value, b_error;
+        b_value = h1_highSubLow_mass->IntegralAndError(
+            1, h1_highSubLow_mass->GetNbinsX(), b_error);
+        b_value /= (double)h1_highSubLow_mass->GetNbinsX();
+        b_error /= (double)h1_highSubLow_mass->GetNbinsX();
+
+        FillHist(b, (b_value, b_error));
         FillHist(a0, (results_modu[0], f1_modu.GetParError(0)));
         FillHist(a1, (results_modu[1], f1_modu.GetParError(1)));
         FillHist(a2, (results_modu[2], f1_modu.GetParError(2)));
@@ -194,26 +198,6 @@ void AssoYeildGroupEtaGap_bInt(
     }
   }
 
-  // // gPublisherCanvas->Draw(h_v22, "surf2")
-  // /* ->Draw(h_a2)
-  // ->Draw(h_b)
-  // ->Draw(h_a0)
-  // ->Draw(h_a0PlusB)
-  // ->Draw(h_v22part)
-  // ->Draw(h_v22) */
-  // ;
-
-  // gPublisherCanvas->SetCanvasNwNh(3, 2);
-  // for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
-  //   auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", i_etaGap),
-  //                                           i_etaGap, i_etaGap);
-  //   h1_v22->GetYaxis()->SetTitle("V_{2}");
-  //   h1_v22->SetTitle(Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f",
-  //                         h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap)));
-  //   MRootGraphic::StyleHistCommonHist(h1_v22);
-  //   gPublisherCanvas->Draw(h1_v22);
-  // }
-
   gPublisherCanvas->finalize();
 
   file_output->Write();
@@ -238,6 +222,6 @@ int main(int argc, char **argv) {
   if (argc > 3) {
     path_pdf = argv[3];
   }
-  AssoYeildGroupEtaGap_bInt(path_input, path_output, path_pdf);
+  AssoYeildGroupEtagapPt_bInt(path_input, path_output, path_pdf);
   return 0;
 }

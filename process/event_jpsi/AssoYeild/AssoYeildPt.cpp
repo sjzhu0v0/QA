@@ -4,17 +4,17 @@
 #include "TApplication.h"
 
 void AssoYeildPt(
-    TString input_se_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                          "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+    TString input_se_pr =
+        "/home/szhu/work/alice/analysis/QA/test/JpsiAsso.root:DeltaEtaUS_"
+        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+    TString input_se_raw =
+        "/home/szhu/work/alice/analysis/QA/test/JpsiQA.root:fPosZ_"
+        "MassUS_PtUS_NumContribCalib",
+    TString input_me_pr = "/home/szhu/work/alice/analysis/QA/test/"
+                          "MixEventReading.root:DeltaEtaUS_"
                           "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString input_se_raw = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
-                           "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_"
-                           "MassUS_PtUS_NumContribCalib",
-    TString input_me_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                          "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_"
-                          "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildQA") {
+    TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
+                          "AssoYeildPt") {
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
   auto hist_me_pr = MRootIO::GetObjectDiectly<THnD>(input_me_pr);
@@ -91,46 +91,54 @@ void AssoYeildPt(
   // // gPublisherCanvas->SetCanvasNwNh(2, 2);
 
   struct StrAny_ptV2 {
-    // const int fNbins = 3;
-    // const vector<int> bins = {1, 3, 5, 10};
-    const int fNbins = 1;
-    const vector<int> bins = {0, 10};
+    const vector<vector<int>> bins = {{2, 3}, {4, 5}, {6, 7, 8, 9, 10}};
+    const int fNbins = bins.size();
     const TString fName = "ptV2";
 
-    int operator[](int index) { return bins[index]; }
+    vector<int> operator[](int index) { return bins[index]; }
   } strAny_ptV2;
 
   file_output->cd();
-  int i_pt = 1;
-  double pt_min = 0.;
-  double pt_max = 10.;
-  assoYeild.SetRangeUser(gtype_vars::kPt, pt_min, pt_max);
-  for (int i_mass = 1; i_mass <= hnTool_se_pr.GetNbins(3); i_mass++) {
-    auto h2_total_mass_pt = assoYeild.AssociatedYeild(i_mass, 0, 0);
-    auto h2_lowMult_mass_pt = assoYeild.AssociatedYeild(i_mass, 0, 1);
-    auto h2_highMult_mass_pt = assoYeild.AssociatedYeild(i_mass, 0, 2);
-    auto h2_highSubLow_mass_pt = (TH2D *)h2_highMult_mass_pt->Clone(
-        Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
-    HistSubstraction2D(h2_highSubLow_mass_pt, h2_highMult_mass_pt,
-                       h2_lowMult_mass_pt);
-    StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_total_mass_pt);
-    StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                 h2_lowMult_mass_pt);
-    StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                 h2_highMult_mass_pt);
-    StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                 h2_highSubLow_mass_pt);
-    h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass, i_pt));
-    h2_lowMult_mass_pt->SetName(Form("h2_lowMult_mass_pt_%d_%d", i_mass, i_pt));
-    h2_highMult_mass_pt->SetName(
-        Form("h2_highMult_mass_pt_%d_%d", i_mass, i_pt));
-    h2_highSubLow_mass_pt->SetName(
-        Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
-    h2_total_mass_pt->Write();
-    h2_lowMult_mass_pt->Write();
-    h2_highMult_mass_pt->Write();
-    h2_highSubLow_mass_pt->Write();
-  }
+  // int i_pt = 1;
+  // double pt_min = 0.;
+  // double pt_max = 10.;
+  // assoYeild.SetRangeUser(gtype_vars::kPt, pt_min, pt_max);
+  // for (int ipt = 1; ipt <= strAny_ptV2.fNbins; ipt++)
+
+  vector<int> pt_bins = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  for (int i_pt = 1; i_pt <= strAny_ptV2.fNbins; i_pt++)
+    for (int i_mass = 1; i_mass <= hnTool_se_pr.GetNbins(3); i_mass++) {
+      auto h2_total_mass_pt =
+          assoYeild.AssociatedYeildPtSum(i_mass, strAny_ptV2[i_pt - 1], 0);
+      auto h2_lowMult_mass_pt =
+          assoYeild.AssociatedYeildPtSum(i_mass, strAny_ptV2[i_pt - 1], 1);
+      auto h2_highMult_mass_pt =
+          assoYeild.AssociatedYeildPtSum(i_mass, strAny_ptV2[i_pt - 1], 2);
+      auto h2_highSubLow_mass_pt = (TH2D *)h2_highMult_mass_pt->Clone(
+          Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
+      HistSubstraction2D(h2_highSubLow_mass_pt, h2_highMult_mass_pt,
+                         h2_lowMult_mass_pt);
+      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+                                   h2_total_mass_pt);
+      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+                                   h2_lowMult_mass_pt);
+      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+                                   h2_highMult_mass_pt);
+      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+                                   h2_highSubLow_mass_pt);
+      h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass, i_pt));
+      h2_lowMult_mass_pt->SetName(
+          Form("h2_lowMult_mass_pt_%d_%d", i_mass, i_pt));
+      h2_highMult_mass_pt->SetName(
+          Form("h2_highMult_mass_pt_%d_%d", i_mass, i_pt));
+      h2_highSubLow_mass_pt->SetName(
+          Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
+      h2_total_mass_pt->Write();
+      h2_lowMult_mass_pt->Write();
+      h2_highMult_mass_pt->Write();
+      h2_highSubLow_mass_pt->Write();
+    }
 
   gPublisherCanvas->finalize();
   file_output->Close();

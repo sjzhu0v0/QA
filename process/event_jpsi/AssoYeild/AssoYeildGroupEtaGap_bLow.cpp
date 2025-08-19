@@ -5,12 +5,12 @@
 #include "TApplication.h"
 
 void AssoYeildGroupEtaGap_bLow(
-    TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "AssoYeildQA_LHC22pass4.root",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQAEtaGap.root",
-    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "AssoYeildGroupQAEtaGap.pdf") {
+    TString path_input =
+        "/home/szhu/work/alice/analysis/QA/test/AssoYeildQA.root",
+    TString path_output =
+        "/home/szhu/work/alice/analysis/QA/test/AssoYeildGroupEtaGap_bLow.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
+                       "AssoYeildGroupEtaGap_bLow.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -126,7 +126,7 @@ void AssoYeildGroupEtaGap_bLow(
       FillHist(v22part, = a2Value / a0Value);
       FillHist(a0PlusB, = a0Value + bValue);
 
-        gPublisherCanvas->Draw(h1_highSubLow_mass)->Draw(h1_lowMult_mass);
+      gPublisherCanvas->Draw(h1_highSubLow_mass)->Draw(h1_lowMult_mass);
     }
   }
 

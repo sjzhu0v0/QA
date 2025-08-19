@@ -4,16 +4,16 @@
 #include "TApplication.h"
 
 void AssoYeildQA(
-    TString input_se_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                          "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_"
+    TString input_se_pr =
+        "/home/szhu/work/alice/analysis/QA/test/JpsiAsso.root:DeltaEtaUS_"
+        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+    TString input_se_raw =
+        "/home/szhu/work/alice/analysis/QA/test/JpsiQA.root:fPosZ_"
+        "MassUS_PtUS_NumContribCalib",
+    TString input_me_pr = "/home/szhu/work/alice/analysis/QA/test/"
+                          "MixEventReading.root:DeltaEtaUS_"
                           "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString input_se_raw = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
-                           "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_"
-                           "MassUS_PtUS_NumContribCalib",
-    TString input_me_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                          "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_"
-                          "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+    TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
                           "AssoYeildQA") {
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
@@ -101,13 +101,12 @@ void AssoYeildQA(
     h2_lowMult_mass->SetName(Form("h2_lowMult_mass_%d", i_mass));
     h2_highMult_mass->SetName(Form("h2_highMult_mass_%d", i_mass));
     h2_highSubLow_mass->SetName(Form("h2_highSubLow_mass_%d", i_mass));
+    HistSubstraction2D(h2_highSubLow_mass, h2_highMult_mass, h2_lowMult_mass);
     h2_total_mass->Write();
     h2_lowMult_mass->Write();
     h2_highMult_mass->Write();
     h2_highSubLow_mass->Write();
 
-    HistSubstraction2D(h2_highSubLow_mass, h2_highMult_mass, h2_lowMult_mass);
-    
     cout << "Mass: " << i_mass << " integral " << h2_total_mass->Integral()
          << " lowMult: " << h2_lowMult_mass->Integral()
          << " highMult: " << h2_highMult_mass->Integral()
@@ -134,8 +133,8 @@ void AssoYeildQA(
     //                                h2_highMult_mass_pt);
     //   StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
     //                                h2_highSubLow_mass_pt);
-    //   h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass, i_pt));
-    //   h2_lowMult_mass_pt->SetName(
+    //   h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass,
+    //   i_pt)); h2_lowMult_mass_pt->SetName(
     //       Form("h2_lowMult_mass_pt_%d_%d", i_mass, i_pt));
     //   h2_highMult_mass_pt->SetName(
     //       Form("h2_highMult_mass_pt_%d_%d", i_mass, i_pt));

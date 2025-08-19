@@ -5,12 +5,12 @@
 #include "TApplication.h"
 
 void AssoYeildGroupEtaGap_bInt(
-    TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "AssoYeildQA_LHC22pass4.root",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQAEtaGap.root",
-    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "AssoYeildGroupQAEtaGap.pdf") {
+    TString path_input =
+        "/home/szhu/work/alice/analysis/QA/test/AssoYeildQA.root",
+    TString path_output =
+        "/home/szhu/work/alice/analysis/QA/test/AssoYeildGroupEtaGap_bInt.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
+                       "AssoYeildGroupEtaGap_bInt.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
