@@ -187,7 +187,7 @@ void AssoYeildGroupEtaGap_bInt(
           Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f, p_{T} bin: %d",
                h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap), i_ptv2));
       MRootGraphic::StyleHistCommonHist(h1_v22);
-      gPublisherCanvas->Draw(h1_v22);
+      gPublisherCanvas->DrawClone(h1_v22);
     }
   }
 
