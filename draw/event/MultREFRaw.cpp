@@ -40,7 +40,7 @@ void MultREFRaw(
   StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
                                 {0, 150});
   StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
-                                    {1., 5.});
+                                    {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("fPT", "M_{ee}", "GeV/c", 10, {0., 10.});
 
   vector<array<string, 2>> conditions_samePileup = {
