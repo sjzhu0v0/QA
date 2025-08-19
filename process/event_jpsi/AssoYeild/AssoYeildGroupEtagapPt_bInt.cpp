@@ -118,11 +118,11 @@ void AssoYeildGroupEtaGap_bInt(
       for (auto i_etaGap : indexHistEtaGap) {
         double deltaEta = indexHistEtaGap.GetBinUpperEdge();
         auto h2_highSubLow_mass = hgroupTool2d_highSubLow_mass->GetHist(
-            vector<int>{i_mass, strAny_ptV2[i_ptV2]});
+            vector<int>{i_mass, indexAnyPtV2Jpsi[i_ptV2 - 1]});
         auto h2_lowMult_mass = hgroupTool2d_lowMult_mass->GetHist(
-            vector<int>{i_mass, strAny_ptV2[i_ptV2]});
-        for (int i_pTJpsi = strAny_ptV2[i_ptV2] + 1;
-             i_pTJpsi <= strAny_ptV2[i_ptV2 + 1] - 1; i_pTJpsi++) {
+            vector<int>{i_mass, indexAnyPtV2Jpsi[i_ptV2 - 1]});
+        for (int i_pTJpsi = indexAnyPtV2Jpsi[i_ptV2 - 1] + 1;
+             i_pTJpsi <= indexAnyPtV2Jpsi[i_ptV2] - 1; i_pTJpsi++) {
           auto h2_highSubLow_mass_temp = hgroupTool2d_highSubLow_mass->GetHist(
               vector<int>{i_mass, i_pTJpsi});
           h2_highSubLow_mass->Add(h2_highSubLow_mass_temp);
