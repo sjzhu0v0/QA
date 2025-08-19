@@ -33,7 +33,7 @@ void EventMixingJpsiAsso(
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
   // close multi-thread
   ROOT::EnableImplicitMT(1);
-  
+
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 200, {-10, 10});
@@ -52,7 +52,7 @@ void EventMixingJpsiAsso(
   StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
                                 {0, 150});
   StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
-                                    {1., 5.});
+                                    {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 10.});
 
   const vector<double> bins_mix_numContrib = var_NumContribCalibBinned.fBins;
