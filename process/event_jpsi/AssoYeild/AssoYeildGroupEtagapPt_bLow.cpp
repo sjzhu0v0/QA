@@ -184,6 +184,7 @@ void AssoYeildGroupEtagapPt_bLow(
   gPublisherCanvas->SetCanvasNwNh(3, 2);
   for (auto i_ptv2 : indexAnyPtV2Jpsi) {
     auto h2_v22 = (TH2D *)hVec_b.current();
+    cout << "i_ptv2: " << i_ptv2 << "integral: " << h2_v22->Integral() << endl;
     for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
       auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", GenerateUID()),
                                               i_etaGap, i_etaGap);
