@@ -32,7 +32,9 @@ void AssoYeildGroupEtagapPt_bLow(TString path_input = "./AssoYeildPt.root",
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
-  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3, {1., 3., 5., 10.});
+  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 1, {0., 10.});
+  // StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3,
+  // {1., 3., 5., 10.});
 
   MHGroupTool2D *hgroupTool2d_total_mass =
       new MHGroupTool2D(file_input, "h2_total_mass_pt_%d_%d",
@@ -184,7 +186,7 @@ void AssoYeildGroupEtagapPt_bLow(TString path_input = "./AssoYeildPt.root",
     auto h2_v22 = (TH2D *)hVec_b.current();
     for (int i_etaGap = 1; i_etaGap <= h2_v22->GetNbinsY(); i_etaGap++) {
       auto h1_v22 = h2_v22->ProjectionX(Form("h1_v22_%d", GenerateUID()),
-                                              i_etaGap, i_etaGap);
+                                        i_etaGap, i_etaGap);
       h1_v22->GetYaxis()->SetTitle("V_{2}");
       h1_v22->SetTitle(
           Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f, p_{T} bin: %d",

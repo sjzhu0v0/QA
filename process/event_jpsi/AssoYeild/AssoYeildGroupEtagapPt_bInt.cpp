@@ -36,8 +36,9 @@ void AssoYeildGroupEtaGap_bInt(
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
-  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3, {1., 3., 5., 10.});
-
+  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 1, {0., 10.});
+  // StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3,
+  // {1., 3., 5., 10.});
   MHGroupTool2D *hgroupTool2d_total_mass =
       new MHGroupTool2D(file_input, "h2_total_mass_pt_%d_%d",
                         {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
