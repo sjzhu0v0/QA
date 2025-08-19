@@ -180,6 +180,8 @@ void AssoYeildGroupEtaGap_bInt(
         FillHist(v22, = a2Value / (a0Value + bValue));
         FillHist(v22part, = a2Value / a0Value);
         FillHist(a0PlusB, = a0Value + bValue);
+
+        gPublisherCanvas->Draw(h1_highSubLow_mass)->Draw(h1_lowMult_mass);
       }
     }
   }
