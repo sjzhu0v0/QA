@@ -118,34 +118,34 @@ void AssoYeildQA(
     StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_highMult_mass);
     StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
                                  h2_highSubLow_mass);
-    for (int i_pt = 1; i_pt <= hnTool_se_pr.GetNbins(4); i_pt++) {
-      auto h2_total_mass_pt = assoYeild.AssociatedYeild(i_mass, i_pt, 0);
-      auto h2_lowMult_mass_pt = assoYeild.AssociatedYeild(i_mass, i_pt, 1);
-      auto h2_highMult_mass_pt = assoYeild.AssociatedYeild(i_mass, i_pt, 2);
-      auto h2_highSubLow_mass_pt = (TH2D *)h2_highMult_mass_pt->Clone(
-          Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
-      HistSubstraction2D(h2_highSubLow_mass_pt, h2_highMult_mass_pt,
-                         h2_lowMult_mass_pt);
-      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                   h2_total_mass_pt);
-      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                   h2_lowMult_mass_pt);
-      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                   h2_highMult_mass_pt);
-      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                   h2_highSubLow_mass_pt);
-      h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass, i_pt));
-      h2_lowMult_mass_pt->SetName(
-          Form("h2_lowMult_mass_pt_%d_%d", i_mass, i_pt));
-      h2_highMult_mass_pt->SetName(
-          Form("h2_highMult_mass_pt_%d_%d", i_mass, i_pt));
-      h2_highSubLow_mass_pt->SetName(
-          Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
-      h2_total_mass_pt->Write();
-      h2_lowMult_mass_pt->Write();
-      h2_highMult_mass_pt->Write();
-      h2_highSubLow_mass_pt->Write();
-    }
+    // for (int i_pt = 1; i_pt <= hnTool_se_pr.GetNbins(4); i_pt++) {
+    //   auto h2_total_mass_pt = assoYeild.AssociatedYeild(i_mass, i_pt, 0);
+    //   auto h2_lowMult_mass_pt = assoYeild.AssociatedYeild(i_mass, i_pt, 1);
+    //   auto h2_highMult_mass_pt = assoYeild.AssociatedYeild(i_mass, i_pt, 2);
+    //   auto h2_highSubLow_mass_pt = (TH2D *)h2_highMult_mass_pt->Clone(
+    //       Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
+    //   HistSubstraction2D(h2_highSubLow_mass_pt, h2_highMult_mass_pt,
+    //                      h2_lowMult_mass_pt);
+    //   StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+    //                                h2_total_mass_pt);
+    //   StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+    //                                h2_lowMult_mass_pt);
+    //   StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+    //                                h2_highMult_mass_pt);
+    //   StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+    //                                h2_highSubLow_mass_pt);
+    //   h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass, i_pt));
+    //   h2_lowMult_mass_pt->SetName(
+    //       Form("h2_lowMult_mass_pt_%d_%d", i_mass, i_pt));
+    //   h2_highMult_mass_pt->SetName(
+    //       Form("h2_highMult_mass_pt_%d_%d", i_mass, i_pt));
+    //   h2_highSubLow_mass_pt->SetName(
+    //       Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
+    //   h2_total_mass_pt->Write();
+    //   h2_lowMult_mass_pt->Write();
+    //   h2_highMult_mass_pt->Write();
+    //   h2_highSubLow_mass_pt->Write();
+    // }
   }
 
   gPublisherCanvas->finalize();
