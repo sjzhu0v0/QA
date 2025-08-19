@@ -65,8 +65,7 @@ void AssoYeildGroupEtaGap_bInt(
   // MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
   // using MIndexAny1 = MIndexAny<StrAny_ptV2>;
-
-  file_output->cd();
+  gDirectory = nullptr;
   MHist2D h_b(indexHistMass, indexHistEtaGap, "b");
   MHist2D h_a0(indexHistMass, indexHistEtaGap, "a0");
   MHist2D h_a1(indexHistMass, indexHistEtaGap, "a1");
@@ -87,6 +86,7 @@ void AssoYeildGroupEtaGap_bInt(
   // MHist3D h_a0PlusB(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap,
   //                   "a0PlusB");
 
+  file_output->cd();
   using MVec1 = MVec<MHist2D, MIndexAny<StrAny_ptV2>>;
   MVec1 hVec_b(indexAnyPtV2Jpsi, h_b);
   MVec1 hVec_a0(indexAnyPtV2Jpsi, h_a0);
