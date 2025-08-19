@@ -91,8 +91,10 @@ void AssoYeildPt(
   // // gPublisherCanvas->SetCanvasNwNh(2, 2);
 
   struct StrAny_ptV2 {
-    const int fNbins = 3;
-    const vector<int> bins = {1, 3, 5, 11};
+    // const int fNbins = 3;
+    // const vector<int> bins = {1, 3, 5, 10};
+    const int fNbins = 1;
+    const vector<int> bins = {0, 10};
     const TString fName = "ptV2";
 
     int operator[](int index) { return bins[index]; }
