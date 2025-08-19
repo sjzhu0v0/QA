@@ -107,6 +107,12 @@ void AssoYeildQA(
     h2_highSubLow_mass->Write();
 
     HistSubstraction2D(h2_highSubLow_mass, h2_highMult_mass, h2_lowMult_mass);
+    
+    cout << "Mass: " << i_mass << " integral " << h2_total_mass->Integral()
+         << " lowMult: " << h2_lowMult_mass->Integral()
+         << " highMult: " << h2_highMult_mass->Integral()
+         << " highSubLow: " << h2_highSubLow_mass->Integral() << endl;
+
     StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_total_mass);
     StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_lowMult_mass);
     StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_highMult_mass);
