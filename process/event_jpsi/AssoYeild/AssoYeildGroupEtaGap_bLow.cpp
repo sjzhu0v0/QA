@@ -4,7 +4,7 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupQAEtaGap(
+void AssoYeildGroupEtaGap_bLow(
     TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                          "AssoYeildQA_LHC22pass4.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
@@ -60,23 +60,27 @@ void AssoYeildGroupQAEtaGap(
   //   MVec<MHist1D> hVec_b(indexHistEtaGap, h1d_b);
   // quit file_output directory
   gDirectory = nullptr;
+  auto ApplyEtaGap = [](TH2D *h2, double gap_eta) {
+    h2->GetXaxis()->SetRangeUser(-1.8, -gap_eta / 2.);
+    auto h1_highSubLow_mass1 =
+        (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass1_%d", GenerateUID()));
+    h2->GetXaxis()->SetRangeUser(gap_eta / 2., 1.8);
+    auto h1_highSubLow_mass =
+        (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass_%d", GenerateUID()));
+    h1_highSubLow_mass->Add(h1_highSubLow_mass1);
+    return h1_highSubLow_mass;
+  };
 
   for (auto i_mass : indexHistMass) {
     for (auto i_etaGap : indexHistEtaGap) {
       double deltaEta = indexHistEtaGap.GetBinUpperEdge();
       auto h2_highSubLow_mass =
           hgroupTool2d_highSubLow_mass->GetHist(vector<int>{i_mass});
-
-      h2_highSubLow_mass->GetXaxis()->SetRangeUser(-1.8, -deltaEta / 2.);
-      auto h1_highSubLow_mass1 = (TH1D *)h2_highSubLow_mass->ProjectionY(
-          Form("h1_highSubLow_mass1_%d", GenerateUID()));
-      h2_highSubLow_mass->GetXaxis()->SetRangeUser(deltaEta / 2., 1.8);
-      auto h1_highSubLow_mass = (TH1D *)h2_highSubLow_mass->ProjectionY(
-          Form("h1_highSubLow_mass_%d", GenerateUID()));
-      h1_highSubLow_mass->Add(h1_highSubLow_mass1);
-
-      h2_highSubLow_mass->GetXaxis()->SetRangeUser(-1.8, 1.8);
-
+      auto h2_lowMult_mass =
+          hgroupTool2d_lowMult_mass->GetHist(vector<int>{i_mass});
+      auto h1_highSubLow_mass = ApplyEtaGap(h2_highSubLow_mass, deltaEta);
+      auto h1_lowMult_mass = ApplyEtaGap(h2_lowMult_mass, deltaEta);
+      /////////////////////////////////////////////////
       gPublisherCanvas->NewPad()->cd();
       TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                   -M_PI_2, M_PI + M_PI_2);
@@ -84,10 +88,6 @@ void AssoYeildGroupQAEtaGap(
       double results_modu[4];
       f1_modu.GetParameters(results_modu);
 
-      auto h2_lowMult_mass =
-          hgroupTool2d_lowMult_mass->GetHist(vector<int>{i_mass});
-      auto h1_lowMult_mass = (TH1D *)h2_lowMult_mass->ProjectionY(
-          Form("h1_lowMult_mass_%d", i_mass));
       double b_lowMult_mass = h1_lowMult_mass->GetBinContent(1);
       h1_highSubLow_mass->SetTitle(Form("i_mass = %d, #Delta#eta_{gap} = %.2f",
                                         i_mass,
@@ -116,8 +116,8 @@ void AssoYeildGroupQAEtaGap(
   MDouble name##Value __VA_ARGS__;                                             \
   h_##name.SetBinInfo(name##Value);
 
-      FillHist(b, (h1_lowMult_mass->GetBinContent(1),
-                   h1_lowMult_mass->GetBinError(1)));
+      FillHist(b, (h1_highSubLow_mass->GetBinContent(1),
+                   h1_highSubLow_mass->GetBinError(1)));
       FillHist(a0, (results_modu[0], f1_modu.GetParError(0)));
       FillHist(a1, (results_modu[1], f1_modu.GetParError(1)));
       FillHist(a2, (results_modu[2], f1_modu.GetParError(2)));
@@ -173,6 +173,6 @@ int main(int argc, char **argv) {
   if (argc > 3) {
     path_pdf = argv[3];
   }
-  AssoYeildGroupQAEtaGap(path_input, path_output, path_pdf);
+  AssoYeildGroupEtaGap_bLow(path_input, path_output, path_pdf);
   return 0;
 }

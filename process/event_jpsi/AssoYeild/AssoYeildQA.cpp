@@ -150,14 +150,16 @@ int main(int argc, char **argv) {
   gROOT->SetBatch(kTRUE);
   TString path_input_se_pr =
       "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-      "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_MassUS_"
+      "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_"
+      "MassUS_"
       "PtUS_NumContribCalibUS";
   TString path_input_se_raw =
       "/home/szhu/work/alice/analysis/QA/input/jpsi/"
       "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_MassUS_PtUS_NumContribCalib";
   TString path_input_me_pr =
       "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-      "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_"
+      "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_"
+      "PosZUS_"
       "MassUS_PtUS_NumContribCalibUS";
   TString path_output =
       "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYeildQA";
