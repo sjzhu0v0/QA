@@ -4,13 +4,9 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupEtagapPt_bLow(
-    TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "AssoYeildQA_LHC22pass4.root",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQAEtaGap.root",
-    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "AssoYeildGroupQAEtaGap.pdf") {
+void AssoYeildGroupEtagapPt_bLow(TString path_input = "./AssoYeildPt.root",
+                                 TString path_output = "./output.root",
+                                 TString path_pdf = "./output.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -184,9 +180,8 @@ void AssoYeildGroupEtagapPt_bLow(
   gPublisherCanvas->SetCanvasNwNh(3, 2);
   for (auto i_ptv2 : indexAnyPtV2Jpsi) {
     auto h2_v22 = (TH2D *)hVec_b.current();
-    cout << "i_ptv2: " << i_ptv2 << "integral: " << h2_v22->Integral() << endl;
-    for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
-      auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", GenerateUID()),
+    for (int i_etaGap = 1; i_etaGap <= h2_v22->GetNbinsY(); i_etaGap++) {
+      auto h1_v22 = h2_v22->ProjectionX(Form("h1_v22_%d", GenerateUID()),
                                               i_etaGap, i_etaGap);
       h1_v22->GetYaxis()->SetTitle("V_{2}");
       h1_v22->SetTitle(
