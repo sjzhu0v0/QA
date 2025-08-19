@@ -99,7 +99,6 @@ void AssoYeildGroupEtagapPt_bLow(
   gDirectory = nullptr;
   //   MHist1D h1d_b(indexHistEtaGap, "b");
   //   MVec<MHist1D> hVec_b(indexHistEtaGap, h1d_b);
-  // quit file_output directory
 
   auto ApplyEtaGap = [](TH2D *h2, double gap_eta) {
     h2->GetXaxis()->SetRangeUser(-1.8, -gap_eta / 2.);
@@ -200,14 +199,18 @@ void AssoYeildGroupEtagapPt_bLow(
   // ->Draw(h_v22) */
   // ;
   gPublisherCanvas->SetCanvasNwNh(3, 2);
-  for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
-    auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", i_etaGap),
-                                            i_etaGap, i_etaGap);
-    h1_v22->GetYaxis()->SetTitle("V_{2}");
-    h1_v22->SetTitle(Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f",
-                          h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap)));
-    MRootGraphic::StyleHistCommonHist(h1_v22);
-    gPublisherCanvas->Draw(h1_v22);
+  for (auto i_ptv2 : indexAnyPtV2Jpsi) {
+    auto h2_v22 = (TH2D *)hVec_b.current();
+    for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
+      auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", i_etaGap),
+                                              i_etaGap, i_etaGap);
+      h1_v22->GetYaxis()->SetTitle("V_{2}");
+      h1_v22->SetTitle(
+          Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f, p_{T} bin: %d",
+               h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap), i_ptv2));
+      MRootGraphic::StyleHistCommonHist(h1_v22);
+      gPublisherCanvas->Draw(h1_v22);
+    }
   }
 
   gPublisherCanvas->finalize();

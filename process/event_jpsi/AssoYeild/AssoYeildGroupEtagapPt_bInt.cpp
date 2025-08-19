@@ -184,7 +184,21 @@ void AssoYeildGroupEtaGap_bInt(
     }
   }
 
-  // gPublisherCanvas->SetCanvasNwNh(1, 1);
+  gPublisherCanvas->SetCanvasNwNh(3, 2);
+  for (auto i_ptv2 : indexAnyPtV2Jpsi) {
+    auto h2_v22 = (TH2D *)hVec_b.current();
+    for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
+      auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", i_etaGap),
+                                              i_etaGap, i_etaGap);
+      h1_v22->GetYaxis()->SetTitle("V_{2}");
+      h1_v22->SetTitle(
+          Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f, p_{T} bin: %d",
+               h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap), i_ptv2));
+      MRootGraphic::StyleHistCommonHist(h1_v22);
+      gPublisherCanvas->Draw(h1_v22);
+    }
+  }
+
   // // gPublisherCanvas->Draw(h_v22, "surf2")
   // /* ->Draw(h_a2)
   // ->Draw(h_b)
