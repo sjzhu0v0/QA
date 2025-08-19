@@ -34,21 +34,20 @@ void AssoYeildGroupEtaGap_bInt(
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
-  // StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3,
-  // {1., 3., 5., 10.});
+  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3, {1., 3., 5., 10.});
 
   MHGroupTool2D *hgroupTool2d_total_mass =
       new MHGroupTool2D(file_input, "h2_total_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtJpsiCandidate}, {2, 1});
+                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
   MHGroupTool2D *hgroupTool2d_lowMult_mass =
       new MHGroupTool2D(file_input, "h2_lowMult_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtJpsiCandidate}, {2, 1});
+                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
   MHGroupTool2D *hgroupTool2d_highMult_mass =
       new MHGroupTool2D(file_input, "h2_highMult_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtJpsiCandidate}, {2, 1});
+                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
   MHGroupTool2D *hgroupTool2d_highSubLow_mass =
       new MHGroupTool2D(file_input, "h2_highSubLow_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtJpsiCandidate}, {2, 1});
+                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
 
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 3, 600, 600);
   MRootGraphic::StyleCommon();
@@ -117,19 +116,10 @@ void AssoYeildGroupEtaGap_bInt(
     for (auto i_ptV2 : indexAnyPtV2Jpsi) {
       for (auto i_etaGap : indexHistEtaGap) {
         double deltaEta = indexHistEtaGap.GetBinUpperEdge();
-        auto h2_highSubLow_mass = hgroupTool2d_highSubLow_mass->GetHist(
-            vector<int>{i_mass, indexAnyPtV2Jpsi[i_ptV2 - 1]});
-        auto h2_lowMult_mass = hgroupTool2d_lowMult_mass->GetHist(
-            vector<int>{i_mass, indexAnyPtV2Jpsi[i_ptV2 - 1]});
-        for (int i_pTJpsi = indexAnyPtV2Jpsi[i_ptV2 - 1] + 1;
-             i_pTJpsi <= indexAnyPtV2Jpsi[i_ptV2] - 1; i_pTJpsi++) {
-          auto h2_highSubLow_mass_temp = hgroupTool2d_highSubLow_mass->GetHist(
-              vector<int>{i_mass, i_pTJpsi});
-          h2_highSubLow_mass->Add(h2_highSubLow_mass_temp);
-          auto h2_lowMult_mass_temp =
-              hgroupTool2d_lowMult_mass->GetHist(vector<int>{i_mass, i_pTJpsi});
-          h2_lowMult_mass->Add(h2_lowMult_mass_temp);
-        }
+        auto h2_highSubLow_mass =
+            hgroupTool2d_highSubLow_mass->GetHist(vector<int>{i_mass, i_ptV2});
+        auto h2_lowMult_mass =
+            hgroupTool2d_lowMult_mass->GetHist(vector<int>{i_mass, i_ptV2});
 
         auto h1_highSubLow_mass = ApplyEtaGap(h2_highSubLow_mass, deltaEta);
         auto h1_lowMult_mass = ApplyEtaGap(h2_lowMult_mass, deltaEta);
