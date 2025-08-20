@@ -17,6 +17,7 @@ void JpsiQA(
     TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
+  ROOT::EnableImplicitMT(1);
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
