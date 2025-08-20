@@ -9,7 +9,8 @@
 
 void JpsiQA(
     TString path_input_flowVecd = "../input.root",
-    TString path_output = "output.root", int runNumber = 0,
+    TString path_output = "output.root",
+    TString path_output_tree = "output_tree.root", int runNumber = 0,
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
         "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
@@ -46,6 +47,7 @@ void JpsiQA(
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
       ;
+  rdf_witTrigger.Snapshot("MultCalib", path_output_tree, {"NumContribCalib"});
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
@@ -139,6 +141,7 @@ void JpsiQA(
 int main(int argc, char **argv) {
   TString path_input_flowVecd = "../input.root";
   TString path_output = "output.root";
+  TString path_output_tree = "output_tree.root";
   int runNumber = 0;
   TString path_calib =
       "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
@@ -154,15 +157,20 @@ int main(int argc, char **argv) {
     path_output = argv[2];
   }
   if (argc > 3) {
-    runNumber = atoi(argv[3]);
+    path_output_tree = argv[3];
   }
   if (argc > 4) {
-    path_calib = argv[4];
+    runNumber = atoi(argv[4]);
   }
   if (argc > 5) {
-    path_pileup = argv[5];
+    path_calib = argv[5];
   }
-  JpsiQA(path_input_flowVecd, path_output, runNumber, path_calib, path_pileup);
+  if (argc > 6) {
+    path_pileup = argv[6];
+  }
+  gROOT->SetBatch(kTRUE); // Disable interactive graphics
+  JpsiQA(path_input_flowVecd, path_output, path_output_tree, runNumber,
+         path_calib, path_pileup);
 
   return 0;
 }
