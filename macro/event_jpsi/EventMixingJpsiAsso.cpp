@@ -69,7 +69,7 @@ void EventMixingJpsiAsso(
   // Cut_MultTPC_NumContrib::init(path_pileup);
 
   TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
-  TChain *tree_mult = MRootIO::OpenChain(file_flowVecd, "MultCalib");
+  TChain *tree_mult = MRootIO::OpenChain(file_mult, "MultCalib");
 
   tree_flowVecd->AddFriend(tree_mult);
 
