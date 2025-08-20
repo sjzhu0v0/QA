@@ -11,14 +11,16 @@
 vector<EventData> MixEvent(unsigned int, const int id,
                            const EventData &event_info) {
   return MixVec<EventData, EventData>(
-      id, event_info, [](const EventData &a, const EventData &b) {
+      id, event_info,
+      [](const EventData &a, const EventData &b) {
         EventData event;
         event.event_info.Copy(a.event_info);
         event.event_info2.Copy(b.event_info);
         event.jpsi_info.Copy(a.jpsi_info);
         event.track_info.Copy(b.track_info);
         return event;
-      });
+      },
+      100);
 }
 
 void EventMixingJpsiAsso(
