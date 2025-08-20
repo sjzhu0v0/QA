@@ -25,6 +25,7 @@ vector<EventData> MixEvent(unsigned int, const int id,
 
 void EventMixingJpsiAsso(
     TString path_input_flowVecd = "../input.root",
+    TString path_input_mult = "../input2.root",
     TString path_output = "output.root",
     TString path_output_tree = "output_tree.root", int runNumber = 0,
     TString path_calib =
@@ -61,12 +62,14 @@ void EventMixingJpsiAsso(
   const vector<double> bins_mix_posZ = var_fPosZMix.fBins;
 
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
+  TFile *file_mult = TFile::Open(path_input_mult);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   Cut_MultTPC_NumContrib::init(path_pileup);
 
   TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
+  TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "MultCalib");
 
   ROOT::RDataFrame rdf(*tree_flowVecd);
 
@@ -83,9 +86,6 @@ void EventMixingJpsiAsso(
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
           .Alias("fMultREF", "fPTREF_size")
           .Define("RunNumber", [] { return float(0.5); })
-          .DefineSlot("NumContribCalib",
-                      Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
-                      {"fNumContrib", "fPosZ"})
       /*   .DefineSlot("isntSelfDefinedPileup",
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
@@ -251,6 +251,7 @@ void EventMixingJpsiAsso(
 
 int main(int argc, char **argv) {
   TString path_input_flowVecd = "../input.root";
+  TString path_input_mult = "../input2.root";
   TString path_output = "output.root";
   TString path_output_tree = "output_tree.root";
   int runNumber = 0;
@@ -265,22 +266,26 @@ int main(int argc, char **argv) {
     path_input_flowVecd = argv[1];
   }
   if (argc > 2) {
-    path_output = argv[2];
+    path_input_mult = argv[2];
   }
   if (argc > 3) {
-    path_output_tree = argv[3];
+    path_output = argv[3];
   }
   if (argc > 4) {
-    runNumber = atoi(argv[4]);
+    path_output_tree = argv[4];
   }
   if (argc > 5) {
-    path_calib = argv[5];
+    runNumber = atoi(argv[5]);
   }
   if (argc > 6) {
-    path_pileup = argv[6];
+    path_calib = argv[6];
   }
-  EventMixingJpsiAsso(path_input_flowVecd, path_output, path_output_tree,
-                      runNumber, path_calib, path_pileup);
+  if (argc > 7) {
+    path_pileup = argv[7];
+  }
+  gROOT->SetBatch(kTRUE); // Disable interactive graphics
+  EventMixingJpsiAsso(path_input_flowVecd, path_input_mult, path_output,
+                      path_output_tree, runNumber, path_calib, path_pileup);
 
   return 0;
 }
