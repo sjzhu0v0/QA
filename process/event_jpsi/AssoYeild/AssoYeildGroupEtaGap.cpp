@@ -4,13 +4,14 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupEtaGap_bInt(
+void AssoYeildGroupEtaGap(
     TString path_input =
         "/home/szhu/work/alice/analysis/QA/test/AssoYeildQA.root",
     TString path_output =
         "/home/szhu/work/alice/analysis/QA/test/AssoYeildGroupEtaGap_bInt.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
-                       "AssoYeildGroupEtaGap_bInt.pdf") {
+                       "AssoYeildGroupEtaGap_bInt.pdf",
+    bool is_bInt = true) {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -119,12 +120,17 @@ void AssoYeildGroupEtaGap_bInt(
   h_##name.SetBinInfo(name##Value);
 
       double b_value, b_error;
-      b_value = h1_highSubLow_mass->IntegralAndError(
-          1, h1_highSubLow_mass->GetNbinsX(), b_error);
-      b_value /= (double)h1_highSubLow_mass->GetNbinsX();
-      b_error /= (double)h1_highSubLow_mass->GetNbinsX();
-
+      if (is_bInt) {
+        b_value = h1_highSubLow_mass->IntegralAndError(
+            1, h1_highSubLow_mass->GetNbinsX(), b_error);
+        b_value /= (double)h1_highSubLow_mass->GetNbinsX();
+        b_error /= (double)h1_highSubLow_mass->GetNbinsX();
+      } else {
+        b_value = h1_highSubLow_mass->GetBinContent(1);
+        b_error = h1_highSubLow_mass->GetBinError(1);
+      }
       FillHist(b, (b_value, b_error));
+
       FillHist(a0, (results_modu[0], f1_modu.GetParError(0)));
       FillHist(a1, (results_modu[1], f1_modu.GetParError(1)));
       FillHist(a2, (results_modu[2], f1_modu.GetParError(2)));
@@ -172,6 +178,7 @@ int main(int argc, char **argv) {
                         "AssoYeildGroupQAEtaGap.root";
   TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
                      "AssoYeildGroupQAEtaGap.pdf";
+  bool is_bInt = false;
 
   if (argc > 1) {
     path_input = argv[1];
@@ -182,6 +189,10 @@ int main(int argc, char **argv) {
   if (argc > 3) {
     path_pdf = argv[3];
   }
-  AssoYeildGroupEtaGap_bInt(path_input, path_output, path_pdf);
+  if (argc > 3) {
+    is_bInt = atoi(argv[4]);
+  }
+
+  AssoYeildGroupEtaGap(path_input, path_output, path_pdf, is_bInt);
   return 0;
 }
