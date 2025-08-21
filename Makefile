@@ -15,7 +15,9 @@ all: \
 	macro/event_jpsi/NJpsiCandidatePerEvent.exe \
 	macro/event_jpsi/EventMixingJpsiAsso.exe \
 	macro/event_jpsi/MixEventReading.exe \
-	macro/event_jpsi/JpsiAsso.exe
+	macro/event_jpsi/JpsiAsso.exe \
+	macro/event_jpsi/JpsiAsso_BS.exe
+
 
 process/track/TrackInfoMC.exe: process/track/TrackInfoMC.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
@@ -40,6 +42,9 @@ macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
 
 macro/event_jpsi/JpsiAsso.exe: macro/event_jpsi/JpsiAsso.cpp
 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+
+macro/event_jpsi/JpsiAsso_BS.exe: macro/event_jpsi/JpsiAsso_BS.cpp opt/libMRootDict.so
+	g++ -o $@ macro/event_jpsi/JpsiAsso_BS.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 macro/jpsi/JpsiQA.exe: macro/jpsi/JpsiQA.cpp opt/libMRootDict.so opt/libMRootDict.so
 	g++ -o $@ macro/jpsi/JpsiQA.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
