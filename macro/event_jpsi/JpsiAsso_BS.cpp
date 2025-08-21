@@ -8,22 +8,25 @@
 #include <ROOT/RDataFrame.hxx>
 
 void JpsiAsso(
-    TString path_input_flowVecd = "../input.root",
-    TString path_output = "output.root", int runNumber = 0,
-    double threshold_bs = 1.,
-    TString path_calib =
+    TString path_input_flowVecd = "../input.root", TString path_input_mult = "../input2.root",
+    TString path_output = "output.root", /* int runNumber = 0, */
+    double threshold_bs = 1.
+  /*   ,TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
         "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
     TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
-        "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
+        "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
-  Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
-  Cut_MultTPC_NumContrib::init(path_pileup);
+  // Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
+  // Cut_MultTPC_NumContrib::init(path_pileup);
 
   TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
+  TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
+
+  tree_flowVecd->AddFriend(tree_mult);
 
   ROOT::RDataFrame rdf(*tree_flowVecd);
 
@@ -40,9 +43,9 @@ void JpsiAsso(
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
           .Alias("fMultREF", "fPTREF_size")
           .Define("RunNumber", [] { return float(0.5); })
-          .DefineSlot("NumContribCalib",
-                      Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
-                      {"fNumContrib", "fPosZ"})
+      /*  .DefineSlot("NumContribCalib",
+                   Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
+                   {"fNumContrib", "fPosZ"}) */
       /*   .DefineSlot("isntSelfDefinedPileup",
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
@@ -211,37 +214,24 @@ void JpsiAsso(
 
 int main(int argc, char **argv) {
   TString path_input_flowVecd = "../input.root";
+  TString path_input_mult = "../input2.root";
   TString path_output = "output.root";
-  int runNumber = 0;
   double threshold_bs = 1.;
-  TString path_calib =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
-  TString path_pileup =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultPileup_LHC22pass4_dqfilter.root:fit_func_upedge";
 
   if (argc > 1) {
     path_input_flowVecd = argv[1];
   }
   if (argc > 2) {
-    path_output = argv[2];
+    path_input_mult = argv[2];
   }
   if (argc > 3) {
-    runNumber = atoi(argv[3]);
+    path_output = argv[3];
   }
   if (argc > 4) {
     threshold_bs = atof(argv[4]);
   }
-  if (argc > 5) {
-    path_calib = argv[5];
-  }
-  if (argc > 6) {
-    path_pileup = argv[6];
-  }
 
-  JpsiAsso(path_input_flowVecd, path_output, runNumber, threshold_bs,
-           path_calib, path_pileup);
+  JpsiAsso(path_input_flowVecd, path_output, threshold_bs);
 
   return 0;
 }
