@@ -156,7 +156,7 @@ void AssoYeildGroupEtaGap(
       ->Draw(h_v22) */
       ;
 
-  gPublisherCanvas->SetCanvasNwNh(3, 2);
+  gPublisherCanvas->SetCanvasNwNh(4, 6);
   for (int i_etaGap = 1; i_etaGap <= h_v22.fHisto->GetNbinsY(); i_etaGap++) {
     auto h1_v22 = h_v22.fHisto->ProjectionX(Form("h1_v22_%d", i_etaGap),
                                             i_etaGap, i_etaGap);
@@ -164,7 +164,28 @@ void AssoYeildGroupEtaGap(
     h1_v22->SetTitle(Form("V_{2} vs M_{ee} for #Delta#eta_{gap} = %.2f",
                           h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap)));
     MRootGraphic::StyleHistCommonHist(h1_v22);
-    gPublisherCanvas->Draw(h1_v22);
+    gPublisherCanvas->DrawClone(h1_v22);
+    auto h1_b =
+        h_b.fHisto->ProjectionX(Form("h1_b_%d", i_etaGap), i_etaGap, i_etaGap);
+    h1_b->GetYaxis()->SetTitle("b");
+    h1_b->SetTitle(Form("b vs M_{ee} for #Delta#eta_{gap} = %.2f",
+                        h_b.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap)));
+    MRootGraphic::StyleHistCommonHist(h1_b);
+    gPublisherCanvas->DrawClone(h1_b);
+    auto h1_a0 = h_a0.fHisto->ProjectionX(Form("h1_a0_%d", i_etaGap), i_etaGap,
+                                          i_etaGap);
+    h1_a0->GetYaxis()->SetTitle("a0");
+    h1_a0->SetTitle(Form("a0 vs M_{ee} for #Delta#eta_{gap} = %.2f",
+                         h_a0.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap)));
+    MRootGraphic::StyleHistCommonHist(h1_a0);
+    gPublisherCanvas->DrawClone(h1_a0);
+    auto h1_a2 = h_a2.fHisto->ProjectionX(Form("h1_a2_%d", i_etaGap), i_etaGap,
+                                          i_etaGap);
+    h1_a2->GetYaxis()->SetTitle("a2");
+    h1_a2->SetTitle(Form("a2 vs M_{ee} for #Delta#eta_{gap} = %.2f",
+                         h_a2.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap)));
+    MRootGraphic::StyleHistCommonHist(h1_a2);
+    gPublisherCanvas->DrawClone(h1_a2);
   }
 
   gPublisherCanvas->finalize();

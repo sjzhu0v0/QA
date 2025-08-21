@@ -191,11 +191,12 @@ void AssoYeildGroupEtagapPt(
     }
   }
 
-  gPublisherCanvas->SetCanvasNwNh(3, 6);
+  gPublisherCanvas->SetCanvasNwNh(4, 6);
   for (auto i_ptv2 : indexAnyPtV2Jpsi) {
     auto h2_v22 = (TH2D *)hVec_b.current();
     auto h2_b = (TH2D *)hVec_b.current();
     auto h2_a0 = (TH2D *)hVec_a0.current();
+    auto h2_a2 = (TH2D *)hVec_a2.current();
     for (int i_etaGap = 1; i_etaGap <= h2_v22->GetNbinsY(); i_etaGap++) {
       auto h1_v22 = h2_v22->ProjectionX(Form("h1_v22_%d", GenerateUID()),
                                         i_etaGap, i_etaGap);
@@ -220,6 +221,15 @@ void AssoYeildGroupEtagapPt(
           Form("a0 vs M_{ee} for #Delta#eta_{gap} = %.2f, p_{T} bin: %d",
                h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap), i_ptv2));
       MRootGraphic::StyleHistCommonHist(h1_a0);
+      gPublisherCanvas->DrawClone(h1_a0);
+      auto h1_a2 = h2_a2->ProjectionX(Form("h1_a2_%d", GenerateUID()), i_etaGap,
+                                      i_etaGap);
+      h1_a2->GetYaxis()->SetTitle("a2");
+      h1_a2->SetTitle(
+          Form("a2 vs M_{ee} for #Delta#eta_{gap} = %.2f, p_{T} bin: %d",
+               h_v22.fHisto->GetYaxis()->GetBinUpEdge(i_etaGap), i_ptv2));
+      MRootGraphic::StyleHistCommonHist(h1_a2);
+      gPublisherCanvas->DrawClone(h1_a2);
     }
   }
 
