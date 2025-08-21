@@ -175,8 +175,6 @@ void AssoYeildGroupEtagapPt(
           b_error = h1_highSubLow_mass->GetBinError(1);
         }
         FillHist(b, (b_value, b_error));
-
-        FillHist(b, (b_value, b_error));
         FillHist(a0, (results_modu[0], f1_modu.GetParError(0)));
         FillHist(a1, (results_modu[1], f1_modu.GetParError(1)));
         FillHist(a2, (results_modu[2], f1_modu.GetParError(2)));
