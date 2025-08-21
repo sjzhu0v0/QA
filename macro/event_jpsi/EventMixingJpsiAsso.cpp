@@ -23,17 +23,10 @@ vector<EventData> MixEvent(unsigned int, const int id,
       100);
 }
 
-void EventMixingJpsiAsso(
-    TString path_input_flowVecd = "../input.root",
-    TString path_input_mult = "../input2.root",
-    TString path_output = "output.root",
-    TString path_output_tree = "output_tree.root", int runNumber = 0,
-    TString path_calib =
-        "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
-    TString path_pileup =
-        " /home/szhu/work/alice/analysis/QA/output/event/"
-        "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
+void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
+                         TString path_input_mult = "../input2.root",
+                         TString path_output = "output.root",
+                         TString path_output_tree = "output_tree.root") {
   // close multi-thread
   ROOT::EnableImplicitMT(1);
 
@@ -256,13 +249,6 @@ int main(int argc, char **argv) {
   TString path_input_mult = "../input2.root";
   TString path_output = "output.root";
   TString path_output_tree = "output_tree.root";
-  int runNumber = 0;
-  TString path_calib =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
-  TString path_pileup =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultPileup_LHC22pass4_dqfilter.root:fit_func_upedge";
 
   if (argc > 1) {
     path_input_flowVecd = argv[1];
@@ -276,18 +262,10 @@ int main(int argc, char **argv) {
   if (argc > 4) {
     path_output_tree = argv[4];
   }
-  if (argc > 5) {
-    runNumber = atoi(argv[5]);
-  }
-  if (argc > 6) {
-    path_calib = argv[6];
-  }
-  if (argc > 7) {
-    path_pileup = argv[7];
-  }
+
   gROOT->SetBatch(kTRUE); // Disable interactive graphics
   EventMixingJpsiAsso(path_input_flowVecd, path_input_mult, path_output,
-                      path_output_tree, runNumber, path_calib, path_pileup);
+                      path_output_tree);
 
   return 0;
 }
