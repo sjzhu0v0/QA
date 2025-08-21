@@ -10,8 +10,8 @@
 void JpsiAsso(
     TString path_input_flowVecd = "../input.root", TString path_input_mult = "../input2.root",
     TString path_output = "output.root", /* int runNumber = 0, */
-    double threshold_bs = 1.,
-  /*   TString path_calib =
+    double threshold_bs = 1.
+  /*   ,TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
         "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
     TString path_pileup =
