@@ -28,4 +28,3 @@ ln -s "$SCRIPT_DIR/task"
 mkdir plot output
 
 cp $SCRIPT_DIR/TemplateMakefile ./Makefile
-cp $SCRIPT_DIR/compile.sh ./compile.sh
