@@ -66,6 +66,11 @@ void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
 
   tree_flowVecd->AddFriend(tree_mult);
 
+  cout << "Input file: " << path_input_flowVecd << endl;
+  cout << "Input file: " << path_input_mult << endl;
+  cout << "Output file: " << path_output << endl;
+  cout << "Output tree file: " << path_output_tree << endl;
+
   ROOT::RDataFrame rdf(*tree_flowVecd);
 
   auto rdf_witTrigger =
