@@ -191,7 +191,7 @@ void AssoYeildGroupEtagapPt(
     }
   }
 
-  gPublisherCanvas->SetCanvasNwNh(4, 6);
+  gPublisherCanvas->SetCanvasNwNh(4, 3);
   for (auto i_ptv2 : indexAnyPtV2Jpsi) {
     auto h2_v22 = (TH2D *)hVec_b.current();
     auto h2_b = (TH2D *)hVec_b.current();
