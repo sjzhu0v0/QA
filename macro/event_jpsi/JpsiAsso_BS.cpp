@@ -299,7 +299,7 @@ int main(int argc, char **argv) {
     threshold_bs = atof(argv[4]);
   }
 
-  JpsiAsso(path_input_flowVecd, path_output, threshold_bs);
+  JpsiAsso(path_input_flowVecd, path_input_mult, path_output, threshold_bs);
 
   return 0;
 }
