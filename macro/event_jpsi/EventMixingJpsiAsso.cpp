@@ -104,7 +104,7 @@ void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
   auto rdf_PartTriggerWithJpsi =
-      rdf_witTrigger.Filter("fEta_size>=1", "has Jpsi");
+      rdf_PartTrigger.Filter("fEta_size>=1", "has Jpsi");
 
   auto rdf_PartTriggerWithJpsiWithEvent =
       rdf_PartTriggerWithJpsi
