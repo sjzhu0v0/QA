@@ -112,6 +112,21 @@ void JpsiAsso(
                 return vec2return;
               },
               {"EventData"})
+          .Define(
+              "JpsiInfoUSSingle",
+              [](const EventData &eventData) {
+                ROOT::VecOps::RVec<array<float, 4>> vec2return;
+                for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
+                  if (eventData.jpsi_info.fSign[i] == 0) {
+                    vec2return.push_back({eventData.event_info.fPosZ,
+                                          eventData.event_info.fNumContribCalib,
+                                          eventData.jpsi_info.fMass[i],
+                                          eventData.jpsi_info.fPT[i]});
+                  }
+                }
+                return vec2return;
+              },
+              {"EventData"})
           .Define("PosZUS",
                   [](const ROOT::VecOps::RVec<array<float, 6>> &jpsiInfoUS) {
                     ROOT::VecOps::RVec<float> posZUS;
@@ -166,6 +181,42 @@ void JpsiAsso(
                     return deltaPhiUS;
                   },
                   {"JpsiInfoUS"})
+          .Define("PosZUSSingle",
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> posZUSSingle;
+                    for (const auto &pair : jpsiInfoUS) {
+                      posZUSSingle.push_back(pair[0]);
+                    }
+                    return posZUSSingle;
+                  },
+                  {"JpsiInfoUSSingle"})
+          .Define("NumContribCalibUSSingle",
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> numContribCalibUSSingle;
+                    for (const auto &pair : jpsiInfoUS) {
+                      numContribCalibUSSingle.push_back(pair[1]);
+                    }
+                    return numContribCalibUSSingle;
+                  },
+                  {"JpsiInfoUSSingle"})
+          .Define("MassUSSingle",
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> massUSSingle;
+                    for (const auto &pair : jpsiInfoUS) {
+                      massUSSingle.push_back(pair[2]);
+                    }
+                    return massUSSingle;
+                  },
+                  {"JpsiInfoUSSingle"})
+          .Define("PtUSSingle",
+                  [](const ROOT::VecOps::RVec<array<float, 4>> &jpsiInfoUS) {
+                    ROOT::VecOps::RVec<float> ptUSSingle;
+                    for (const auto &pair : jpsiInfoUS) {
+                      ptUSSingle.push_back(pair[3]);
+                    }
+                    return ptUSSingle;
+                  },
+                  {"JpsiInfoUSSingle"})
           .DefineSlot("Cut_BS",
                       [threshold_bs](unsigned int) {
                         thread_local TRandom3 random_gen(0);
@@ -184,6 +235,14 @@ void JpsiAsso(
                              {-4., 4.});
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
+  StrVar4Hist var_fPosZSingle("PosZUSSingle", "#it{V}_{Z}", "cm", 8, {-10, 10});
+  StrVar4Hist var_NumContribCalibBinnedSingle(
+      "NumContribCalibUSSingle", "N_{vtx contrib} Calibrated", "", 10,
+      {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
+  StrVar4Hist var_MassJpsiCandidateSingle("MassUSSingle", "M_{ee}",
+                                          "GeV^{2}/c^{4}", 90, {1.8, 5.4});
+  StrVar4Hist var_PtJpsiCandidateSingle("PtUSSingle", "p_{T}", "GeV/c", 10,
+                                        {0., 10.});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -196,6 +255,9 @@ void JpsiAsso(
                 {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
                  var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
+  obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
+                {var_fPosZSingle, var_MassJpsiCandidateSingle,
+                 var_PtJpsiCandidateSingle, var_NumContribCalibBinnedSingle});
 
   RunGraphs(gRResultHandles);
   // Long64_t totalSize = gRResultHandles[0].GetPtr<THnD>()->GetNbins() *
