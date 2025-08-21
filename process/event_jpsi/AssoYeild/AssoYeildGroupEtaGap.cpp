@@ -37,7 +37,7 @@ void AssoYeildGroupEtaGap(
   MHGroupTool2D *hgroupTool2d_highSubLow_mass = new MHGroupTool2D(
       file_input, "h2_highSubLow_mass_%d", {var_MassJpsiCandidate}, {2});
 
-  gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 3, 600, 600);
+  gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 6, 600, 600);
   MRootGraphic::StyleCommon();
 
 #define LGetBinContent(hist, vec_index, ...)                                   \
@@ -80,9 +80,12 @@ void AssoYeildGroupEtaGap(
           hgroupTool2d_highSubLow_mass->GetHist(vector<int>{i_mass});
       auto h2_lowMult_mass =
           hgroupTool2d_lowMult_mass->GetHist(vector<int>{i_mass});
+      auto h2_highMult_mass =
+          hgroupTool2d_highMult_mass->GetHist(vector<int>{i_mass});
 
       auto h1_highSubLow_mass = ApplyEtaGap(h2_highSubLow_mass, deltaEta);
       auto h1_lowMult_mass = ApplyEtaGap(h2_lowMult_mass, deltaEta);
+      auto h1_highMult_mass = ApplyEtaGap(h2_highMult_mass, deltaEta);
       /////////////////////////////////////////////////
       gPublisherCanvas->NewPad()->cd();
       TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
@@ -139,7 +142,7 @@ void AssoYeildGroupEtaGap(
       FillHist(v22part, = a2Value / a0Value);
       FillHist(a0PlusB, = a0Value + bValue);
 
-      gPublisherCanvas->Draw(h1_highSubLow_mass)->Draw(h1_lowMult_mass);
+      gPublisherCanvas->Draw(h1_highMult_mass)->Draw(h1_lowMult_mass);
     }
   }
 
