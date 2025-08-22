@@ -164,14 +164,14 @@ void AssoYeildGroupEtagapPt(
         FillHist(v22part);
         MDouble a0PlusBValue = a0Value + bValue;
         FillHist(a0PlusB);
-        cout << "i_mass: " << i_mass << ", i_etaGap: " << i_etaGap
-             << ", bValue: " << bValue.fValue << ", a0Value: " << a0Value.fValue
-             << ", a1Value: " << a1Value.fValue
-             << ", a2Value: " << a2Value.fValue
-             << ", a3Value: " << a3Value.fValue
-             << ", v22Value: " << v22Value.fValue
-             << ", v22partValue: " << v22partValue.fValue
-             << ", a0PlusBValue: " << a0PlusBValue.fValue << endl;
+        // cout << "i_mass: " << i_mass << ", i_etaGap: " << i_etaGap
+        //      << ", bValue: " << bValue.fValue << ", a0Value: " << a0Value.fValue
+        //      << ", a1Value: " << a1Value.fValue
+        //      << ", a2Value: " << a2Value.fValue
+        //      << ", a3Value: " << a3Value.fValue
+        //      << ", v22Value: " << v22Value.fValue
+        //      << ", v22partValue: " << v22partValue.fValue
+        //      << ", a0PlusBValue: " << a0PlusBValue.fValue << endl;
         TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                     -M_PI_2, M_PI + M_PI_2);
         f1_modu.SetParameter(0, a0Value.fValue);
