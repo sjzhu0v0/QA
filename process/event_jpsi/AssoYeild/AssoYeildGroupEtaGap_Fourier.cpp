@@ -118,9 +118,9 @@ void AssoYeildGroupEtaGap(
       vector<double> params_modu = {a0Value.fValue, a1Value.fValue,
                                     a2Value.fValue, a3Value.fValue};
       f1_modu.FixParameter(0, a0Value.fValue);
-      f1_modu.SetParameter(1, a1Value.fValue);
-      f1_modu.SetParameter(2, a2Value.fValue);
-      f1_modu.SetParameter(3, a3Value.fValue);
+      f1_modu.FixParameter(1, a1Value.fValue);
+      f1_modu.FixParameter(2, a2Value.fValue);
+      f1_modu.FixParameter(3, a3Value.fValue);
 
       gPublisherCanvas->NewPad()->cd();
       h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
@@ -152,14 +152,14 @@ void AssoYeildGroupEtaGap(
 
 #define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
 
-      FillHist(b, (b_value, b_error));
-      FillHist(a0, (results_modu[0], f1_modu.GetParError(0)));
-      FillHist(a1, (results_modu[1], f1_modu.GetParError(1)));
-      FillHist(a2, (results_modu[2], f1_modu.GetParError(2)));
-      FillHist(a3, (results_modu[3], f1_modu.GetParError(3)));
-      FillHist(v22, = a2Value / (a0Value + bValue));
-      FillHist(v22part, = a2Value / a0Value);
-      FillHist(a0PlusB, = a0Value + bValue);
+      FillHist(b);
+      FillHist(a0);
+      FillHist(a1);
+      FillHist(a2);
+      FillHist(a3);
+      FillHist(v22);
+      FillHist(v22part);
+      FillHist(a0PlusB);
 
       gPublisherCanvas->Draw(h1_highMult_mass)->Draw(h1_lowMult_mass);
     }
