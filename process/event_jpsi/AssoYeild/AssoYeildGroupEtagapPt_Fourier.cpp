@@ -157,8 +157,6 @@ void AssoYeildGroupEtagapPt(
 
         TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                     -M_PI_2, M_PI + M_PI_2);
-        vector<double> params_modu = {a0Value.fValue, a1Value.fValue,
-                                      a2Value.fValue, a3Value.fValue};
         f1_modu.FixParameter(0, a0Value.fValue);
         f1_modu.FixParameter(1, a1Value.fValue);
         f1_modu.FixParameter(2, a2Value.fValue);
