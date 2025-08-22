@@ -99,19 +99,29 @@ void AssoYeildGroupEtaGap(
         b_value = h1_highSubLow_mass->GetBinContent(1);
         b_error = h1_highSubLow_mass->GetBinError(1);
       }
+#define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
+
       MDouble bValue(b_value, b_error);
+      FillHist(b);
       MDouble a0Value(h1_highSubLow_mass->Integral(),
                       h1_highSubLow_mass->GetMeanError());
       a0Value /= (double)h1_highSubLow_mass->GetNbinsX();
+      FillHist(a0);
       MDouble a1Value = GetSumWithError1D(h1_highSubLow_mass,
                                           [](double x) { return cos(x); });
+      FillHist(a1);
       MDouble a2Value = GetSumWithError1D(h1_highSubLow_mass,
                                           [](double x) { return cos(2 * x); });
+      FillHist(a2);
       MDouble a3Value = GetSumWithError1D(h1_highSubLow_mass,
                                           [](double x) { return cos(3 * x); });
+      FillHist(a3);
       MDouble v22Value = a2Value / (a0Value + bValue);
+      FillHist(v22);
       MDouble v22partValue = a2Value / a0Value;
+      FillHist(v22part);
       MDouble a0PlusBValue = a0Value + bValue;
+      FillHist(a0PlusB);
       cout << "i_mass: " << i_mass << ", i_etaGap: " << i_etaGap
            << ", bValue: " << bValue.fValue << ", a0Value: " << a0Value.fValue
            << ", a1Value: " << a1Value.fValue << ", a2Value: " << a2Value.fValue
@@ -119,16 +129,7 @@ void AssoYeildGroupEtaGap(
            << ", v22Value: " << v22Value.fValue
            << ", v22partValue: " << v22partValue.fValue
            << ", a0PlusBValue: " << a0PlusBValue.fValue << endl;
-#define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
 
-      FillHist(b);
-      FillHist(a0);
-      FillHist(a1);
-      FillHist(a2);
-      FillHist(a3);
-      FillHist(v22);
-      FillHist(v22part);
-      FillHist(a0PlusB);
       TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                   -M_PI_2, M_PI + M_PI_2);
       f1_modu.SetParameter(0, a0Value.fValue);
