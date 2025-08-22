@@ -163,7 +163,7 @@ void AssoYeildGroupEtagapPt(
         f1_modu.FixParameter(3, a3Value.fValue);
 
         gPublisherCanvas->NewPad()->cd();
-        h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
+        // h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
 
         h1_highSubLow_mass->SetTitle(
             Form("i_mass = %d, #Delta#eta_{gap} = % .2f ", i_mass,
