@@ -145,12 +145,12 @@ void AssoYeildGroupEtagapPt(
         MDouble a0Value(h1_highSubLow_mass->Integral(),
                         h1_highSubLow_mass->GetMeanError());
         a0Value /= (double)h1_highSubLow_mass->GetNbinsX();
-        MDouble a1Value =
-            GetMean1D(h1_highSubLow_mass, [](double x) { return cos(x); });
-        MDouble a2Value =
-            GetMean1D(h1_highSubLow_mass, [](double x) { return cos(2 * x); });
-        MDouble a3Value =
-            GetMean1D(h1_highSubLow_mass, [](double x) { return cos(3 * x); });
+        MDouble a1Value = GetSumWithError1D(h1_highSubLow_mass,
+                                            [](double x) { return cos(x); });
+        MDouble a2Value = GetSumWithError1D(
+            h1_highSubLow_mass, [](double x) { return cos(2 * x); });
+        MDouble a3Value = GetSumWithError1D(
+            h1_highSubLow_mass, [](double x) { return cos(3 * x); });
         MDouble v22Value = a2Value / (a0Value + bValue);
         MDouble v22partValue = a2Value / a0Value;
         MDouble a0PlusBValue = a0Value + bValue;
