@@ -169,6 +169,7 @@ void AssoYeildGroupEtagapPt(
             Form("i_mass = %d, #Delta#eta_{gap} = % .2f ", i_mass,
                  indexHistEtaGap.GetBinUpperEdge()));
         h1_highSubLow_mass->Draw();
+        f1_modu.DrawClone("same");
         TF1 f1_modu_0("f1_modu_0", "[0]", -M_PI_2, M_PI + M_PI_2);
         TF1 f1_modu_1("f1_modu_1", "[0]+2*[1]*cos(x)", -M_PI_2, M_PI + M_PI_2);
         TF1 f1_modu_2("f1_modu_2", "[0]+2*[1]*cos(2*x)", -M_PI_2,
