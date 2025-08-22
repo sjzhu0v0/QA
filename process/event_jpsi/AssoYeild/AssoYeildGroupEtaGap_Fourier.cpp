@@ -112,7 +112,16 @@ void AssoYeildGroupEtaGap(
       MDouble v22Value = a2Value / (a0Value + bValue);
       MDouble v22partValue = a2Value / a0Value;
       MDouble a0PlusBValue = a0Value + bValue;
+#define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
 
+      FillHist(b);
+      FillHist(a0);
+      FillHist(a1);
+      FillHist(a2);
+      FillHist(a3);
+      FillHist(v22);
+      FillHist(v22part);
+      FillHist(a0PlusB);
       TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                   -M_PI_2, M_PI + M_PI_2);
       f1_modu.SetParameter(0, a0Value.fValue);
@@ -148,17 +157,6 @@ void AssoYeildGroupEtaGap(
       f1_modu_0.DrawClone("same");
       f1_modu_1.DrawClone("same");
       f1_modu_2.DrawClone("same");
-
-#define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
-
-      FillHist(b);
-      FillHist(a0);
-      FillHist(a1);
-      FillHist(a2);
-      FillHist(a3);
-      FillHist(v22);
-      FillHist(v22part);
-      FillHist(a0PlusB);
 
       gPublisherCanvas->Draw(h1_highMult_mass)->Draw(h1_lowMult_mass);
     }
