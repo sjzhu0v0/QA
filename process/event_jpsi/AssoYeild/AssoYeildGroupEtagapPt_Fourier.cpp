@@ -165,7 +165,8 @@ void AssoYeildGroupEtagapPt(
         MDouble a0PlusBValue = a0Value + bValue;
         FillHist(a0PlusB);
         // cout << "i_mass: " << i_mass << ", i_etaGap: " << i_etaGap
-        //      << ", bValue: " << bValue.fValue << ", a0Value: " << a0Value.fValue
+        //      << ", bValue: " << bValue.fValue << ", a0Value: " <<
+        //      a0Value.fValue
         //      << ", a1Value: " << a1Value.fValue
         //      << ", a2Value: " << a2Value.fValue
         //      << ", a3Value: " << a3Value.fValue
@@ -178,6 +179,8 @@ void AssoYeildGroupEtagapPt(
         f1_modu.SetParameter(1, a1Value.fValue);
         f1_modu.SetParameter(2, a2Value.fValue);
         f1_modu.SetParameter(3, a3Value.fValue);
+
+        cout << f1_modu.GetParameter(2) << endl;
 
         gPublisherCanvas->NewPad()->cd();
         // h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
@@ -201,6 +204,7 @@ void AssoYeildGroupEtagapPt(
         f1_modu_2.SetParameter(1, a2Value.fValue);
         f1_modu_3.SetParameter(0, a0Value.fValue);
         f1_modu_3.SetParameter(1, a3Value.fValue);
+        cout << "debug:" << f1_modu_2.GetParameter(1) << endl;
 
         f1_modu_0.SetLineColor(kBlue);
         f1_modu_1.SetLineColor(kGreen + 2);
