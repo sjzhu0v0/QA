@@ -112,6 +112,13 @@ void AssoYeildGroupEtaGap(
       MDouble v22Value = a2Value / (a0Value + bValue);
       MDouble v22partValue = a2Value / a0Value;
       MDouble a0PlusBValue = a0Value + bValue;
+      cout << "i_mass: " << i_mass << ", i_etaGap: " << i_etaGap
+           << ", bValue: " << bValue.fValue << ", a0Value: " << a0Value.fValue
+           << ", a1Value: " << a1Value.fValue << ", a2Value: " << a2Value.fValue
+           << ", a3Value: " << a3Value.fValue
+           << ", v22Value: " << v22Value.fValue
+           << ", v22partValue: " << v22partValue.fValue
+           << ", a0PlusBValue: " << a0PlusBValue.fValue << endl;
 #define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
 
       FillHist(b);
