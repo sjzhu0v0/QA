@@ -115,10 +115,10 @@ void AssoYeildGroupEtaGap(
 
       TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                   -M_PI_2, M_PI + M_PI_2);
-      f1_modu.FixParameter(0, a0Value.fValue);
-      f1_modu.FixParameter(1, a1Value.fValue);
-      f1_modu.FixParameter(2, a2Value.fValue);
-      f1_modu.FixParameter(3, a3Value.fValue);
+      f1_modu.SetParameter(0, a0Value.fValue);
+      f1_modu.SetParameter(1, a1Value.fValue);
+      f1_modu.SetParameter(2, a2Value.fValue);
+      f1_modu.SetParameter(3, a3Value.fValue);
 
       gPublisherCanvas->NewPad()->cd();
       // h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
