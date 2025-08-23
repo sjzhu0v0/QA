@@ -141,46 +141,29 @@ void AssoYeildGroupEtagapPt(
           b_value = h1_highSubLow_mass->GetBinContent(1);
           b_error = h1_highSubLow_mass->GetBinError(1);
         }
-#define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
+#define FillHist(name, ...)                                                    \
+  MDouble name##Value __VA_ARGS__;                                             \
+  hVec_##name.current().SetBinInfo(name##Value);
 
-        MDouble bValue(b_value, b_error);
-        FillHist(b);
-        MDouble a0Value(h1_highSubLow_mass->Integral(),
-                        h1_highSubLow_mass->GetMeanError());
-        a0Value /= (double)h1_highSubLow_mass->GetNbinsX();
-        FillHist(a0);
-        MDouble a1Value = GetSumWithError1D(h1_highSubLow_mass,
-                                            [](double x) { return cos(x); });
-        FillHist(a1);
-        MDouble a2Value = GetSumWithError1D(
-            h1_highSubLow_mass, [](double x) { return cos(2 * x); });
-        FillHist(a2);
-        MDouble a3Value = GetSumWithError1D(
-            h1_highSubLow_mass, [](double x) { return cos(3 * x); });
-        FillHist(a3);
-        MDouble v22Value = a2Value / (a0Value + bValue);
-        FillHist(v22);
-        MDouble v22partValue = a2Value / a0Value;
-        FillHist(v22part);
-        MDouble a0PlusBValue = a0Value + bValue;
-        FillHist(a0PlusB);
-        // cout << "i_mass: " << i_mass << ", i_etaGap: " << i_etaGap
-        //      << ", bValue: " << bValue.fValue << ", a0Value: " <<
-        //      a0Value.fValue
-        //      << ", a1Value: " << a1Value.fValue
-        //      << ", a2Value: " << a2Value.fValue
-        //      << ", a3Value: " << a3Value.fValue
-        //      << ", v22Value: " << v22Value.fValue
-        //      << ", v22partValue: " << v22partValue.fValue
-        //      << ", a0PlusBValue: " << a0PlusBValue.fValue << endl;
+        FillHist(b, (b_value, b_error));
+        FillHist(a0, (h1_highSubLow_mass->GetMean(),
+                      h1_highSubLow_mass->GetMeanError()));
+        FillHist(a1, = GetSumWithError1D(h1_highSubLow_mass,
+                                         [](double x) { return cos(x); }));
+        FillHist(a2, = GetSumWithError1D(h1_highSubLow_mass,
+                                         [](double x) { return cos(2 * x); }));
+        FillHist(a3, = GetSumWithError1D(h1_highSubLow_mass,
+                                         [](double x) { return cos(3 * x); }));
+        FillHist(v22, = a2Value / (a0Value + bValue));
+        FillHist(v22part, = a2Value / a0Value);
+        FillHist(a0PlusB, = a0Value + bValue);
+     
         TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                     -M_PI_2, M_PI + M_PI_2);
         f1_modu.SetParameter(0, a0Value.fValue);
         f1_modu.SetParameter(1, a1Value.fValue);
         f1_modu.SetParameter(2, a2Value.fValue);
         f1_modu.SetParameter(3, a3Value.fValue);
-
-        cout << f1_modu.GetParameter(2) << endl;
 
         gPublisherCanvas->NewPad()->cd();
         // h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
@@ -204,7 +187,6 @@ void AssoYeildGroupEtagapPt(
         f1_modu_2.SetParameter(1, a2Value.fValue);
         f1_modu_3.SetParameter(0, a0Value.fValue);
         f1_modu_3.SetParameter(1, a3Value.fValue);
-        cout << "debug:" << f1_modu_2.GetParameter(1) << endl;
 
         f1_modu_0.SetLineColor(kBlue);
         f1_modu_1.SetLineColor(kGreen + 2);

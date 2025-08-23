@@ -58,6 +58,7 @@ void AssoYeildGroupEtaGap(
   MHist2D h_v22(indexHistMass, indexHistEtaGap, "v22");
   MHist2D h_v22part(indexHistMass, indexHistEtaGap, "v22part");
   MHist2D h_a0PlusB(indexHistMass, indexHistEtaGap, "a0PlusB");
+
   //   MHist1D h1d_b(indexHistEtaGap, "b");
   //   MVec<MHist1D> hVec_b(indexHistEtaGap, h1d_b);
   // quit file_output directory
@@ -99,32 +100,27 @@ void AssoYeildGroupEtaGap(
         b_value = h1_highSubLow_mass->GetBinContent(1);
         b_error = h1_highSubLow_mass->GetBinError(1);
       }
-#define FillHist(name, ...) h_##name.SetBinInfo(name##Value);
+#define FillHist(name, ...)                                                    \
+  MDouble name##Value __VA_ARGS__;                                             \
+  h_##name.SetBinInfo(name##Value);
 
-      MDouble bValue(b_value, b_error);
-      FillHist(b);
-      MDouble a0Value(h1_highSubLow_mass->Integral(),
-                      h1_highSubLow_mass->GetMeanError());
-      a0Value /= (double)h1_highSubLow_mass->GetNbinsX();
-      FillHist(a0);
-      MDouble a1Value = GetSumWithError1D(h1_highSubLow_mass,
-                                          [](double x) { return cos(x); });
-      FillHist(a1);
-      MDouble a2Value = GetSumWithError1D(h1_highSubLow_mass,
-                                          [](double x) { return cos(2 * x); });
-      FillHist(a2);
-      MDouble a3Value = GetSumWithError1D(h1_highSubLow_mass,
-                                          [](double x) { return cos(3 * x); });
-      FillHist(a3);
-      MDouble v22Value = a2Value / (a0Value + bValue);
-      FillHist(v22);
-      MDouble v22partValue = a2Value / a0Value;
-      FillHist(v22part);
-      MDouble a0PlusBValue = a0Value + bValue;
-      FillHist(a0PlusB);
+      FillHist(b, (b_value, b_error));
+      FillHist(a0, (h1_highSubLow_mass->GetMean(),
+                    h1_highSubLow_mass->GetMeanError()));
+      FillHist(a1, = GetSumWithError1D(h1_highSubLow_mass,
+                                       [](double x) { return cos(x); }));
+      FillHist(a2, = GetSumWithError1D(h1_highSubLow_mass,
+                                       [](double x) { return cos(2 * x); }));
+      FillHist(a3, = GetSumWithError1D(h1_highSubLow_mass,
+                                       [](double x) { return cos(3 * x); }));
+      FillHist(v22, = a2Value / (a0Value + bValue));
+      FillHist(v22part, = a2Value / a0Value);
+      FillHist(a0PlusB, = a0Value + bValue);
       // cout << "i_mass: " << i_mass << ", i_etaGap: " << i_etaGap
-      //      << ", bValue: " << bValue.fValue << ", a0Value: " << a0Value.fValue
-      //      << ", a1Value: " << a1Value.fValue << ", a2Value: " << a2Value.fValue
+      //      << ", bValue: " << bValue.fValue << ", a0Value: " <<
+      //      a0Value.fValue
+      //      << ", a1Value: " << a1Value.fValue << ", a2Value: " <<
+      //      a2Value.fValue
       //      << ", a3Value: " << a3Value.fValue
       //      << ", v22Value: " << v22Value.fValue
       //      << ", v22partValue: " << v22partValue.fValue
@@ -132,6 +128,7 @@ void AssoYeildGroupEtaGap(
 
       TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                   -M_PI_2, M_PI + M_PI_2);
+      f1_modu.SetName(Form("f1_modu_%d_%d", i_mass, i_etaGap));
       f1_modu.SetParameter(0, a0Value.fValue);
       f1_modu.SetParameter(1, a1Value.fValue);
       f1_modu.SetParameter(2, a2Value.fValue);
