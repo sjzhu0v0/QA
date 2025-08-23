@@ -105,8 +105,10 @@ void AssoYeildGroupEtaGap(
   h_##name.SetBinInfo(name##Value);
 
       FillHist(b, (b_value, b_error));
-      FillHist(a0, (h1_highSubLow_mass->GetMean(),
-                    h1_highSubLow_mass->GetMeanError()));
+      double a0_value = 0;
+      double a0_error = 0;
+      a0_value = h1_highSubLow_mass->IntegralAndError(-1, -1, a0_error);
+      FillHist(a0, (a0_value, a0_error));
       FillHist(a1, = GetSumWithError1D(h1_highSubLow_mass,
                                        [](double x) { return cos(x); }));
       FillHist(a2, = GetSumWithError1D(h1_highSubLow_mass,

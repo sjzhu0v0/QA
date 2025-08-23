@@ -146,8 +146,10 @@ void AssoYeildGroupEtagapPt(
   hVec_##name.current().SetBinInfo(name##Value);
 
         FillHist(b, (b_value, b_error));
-        FillHist(a0, (h1_highSubLow_mass->GetMean(),
-                      h1_highSubLow_mass->GetMeanError()));
+        double a0_value = 0;
+        double a0_error = 0;
+        a0_value = h1_highSubLow_mass->IntegralAndError(-1, -1, a0_error);
+        FillHist(a0, (a0_value, a0_error));
         FillHist(a1, = GetSumWithError1D(h1_highSubLow_mass,
                                          [](double x) { return cos(x); }));
         FillHist(a2, = GetSumWithError1D(h1_highSubLow_mass,
@@ -157,7 +159,7 @@ void AssoYeildGroupEtagapPt(
         FillHist(v22, = a2Value / (a0Value + bValue));
         FillHist(v22part, = a2Value / a0Value);
         FillHist(a0PlusB, = a0Value + bValue);
-     
+
         TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
                     -M_PI_2, M_PI + M_PI_2);
         f1_modu.SetParameter(0, a0Value.fValue);
