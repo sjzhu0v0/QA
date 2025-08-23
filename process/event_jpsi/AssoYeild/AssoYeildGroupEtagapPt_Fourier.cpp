@@ -17,7 +17,17 @@ void AssoYeildGroupEtagapPt(
   TFile *file_output = new TFile(path_output, "RECREATE");
 
   struct StrAny_ptV2 {
-    const vector<vector<int>> bins = {{2, 3}, {4, 5}, {6, 7, 8, 9, 10}};
+    const vector<vector<int>> bins = {{1},
+                                      {2},
+                                      {3},
+                                      {4},
+                                      {5},
+                                      {2, 3},
+                                      {4, 5},
+                                      {1, 2, 3},
+                                      {1, 2, 3, 4, 5},
+                                      {6, 7, 8, 9, 10},
+                                      {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
     const int fNbins = bins.size();
     const TString fName = "ptV2";
 
@@ -36,7 +46,8 @@ void AssoYeildGroupEtagapPt(
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
-  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3, {1., 3., 5., 10.});
+  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
+                           {0., 1.});
   // StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3,
   // {1., 3., 5., 10.});
 

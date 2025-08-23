@@ -100,7 +100,17 @@ void AssoYeildPt(
   // // gPublisherCanvas->SetCanvasNwNh(2, 2);
 
   struct StrAny_ptV2 {
-    const vector<vector<int>> bins = {{2, 3}, {4, 5}, {6, 7, 8, 9, 10}};
+    const vector<vector<int>> bins = {{1},
+                                      {2},
+                                      {3},
+                                      {4},
+                                      {5},
+                                      {2, 3},
+                                      {4, 5},
+                                      {1, 2, 3},
+                                      {1, 2, 3, 4, 5},
+                                      {6, 7, 8, 9, 10},
+                                      {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
     const int fNbins = bins.size();
     const TString fName = "ptV2";
 
