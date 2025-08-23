@@ -19,7 +19,7 @@ all: $(TARGETS)
 	@echo "Target built: $(TARGETS)"
 
 %.exe: $(SRC_DIR)/%.cpp
-	g++ $< -o $@ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ $< -o $@ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 	@echo "Compiled: $< -> $@"
 
 clean:
