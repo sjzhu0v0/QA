@@ -89,17 +89,6 @@ void AssoYeildGroupEtagapPt(
   MHist2D h_v22part(indexHistMass, indexHistEtaGap, "v22part");
   MHist2D h_a0PlusB(indexHistMass, indexHistEtaGap, "a0PlusB");
 
-  // MHist3D h_b(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "b");
-  // MHist3D h_a0(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a0");
-  // MHist3D h_a1(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a1");
-  // MHist3D h_a2(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a2");
-  // MHist3D h_a3(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a3");
-  // MHist3D h_v22(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "v22");
-  // MHist3D h_v22part(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap,
-  //                   "v22part");
-  // MHist3D h_a0PlusB(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap,
-  //                   "a0PlusB");
-
   file_output->cd();
   using MVec1 = MVec<MHist2D, MIndexAny<StrAny_ptV2>>;
   MVec1 hVec_b(indexAnyPtV2Jpsi, h_b);
