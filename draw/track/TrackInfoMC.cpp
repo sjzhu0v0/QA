@@ -218,6 +218,10 @@ void TrackInfoMC(TString path_input =
       "c_sigmaDeltaPtOverPt_fPt", "c_sigmaDeltaPtOverPt_fPt", 400, 400);
   // MRootGraphic::StyleHistCommonHist(h_Pt_DeltaPtOverPt.fHisto.get());
   c_sigmaDeltaPtOverPt_fPt->cd();
+  MRootGraphic::StyleHistCommonHist(h_Pt_DeltaPtOverPt.fHisto.get());
+  h_Pt_DeltaPtOverPt.fHisto->GetYaxis()->SetTitle("RMS(#Deltap_{T}/p_{T})");
+  h_Pt_DeltaPtOverPt.fHisto->GetYaxis()->SetMaxDigits(2);
+  h_Pt_DeltaPtOverPt.fHisto->SetLineColor(kRed);
   h_Pt_DeltaPtOverPt.fHisto->GetXaxis()->SetRangeUser(0, 6);
   h_Pt_DeltaPtOverPt.fHisto->Draw("C");
   c_sigmaDeltaPtOverPt_fPt->SaveAs(
