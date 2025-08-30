@@ -5,7 +5,7 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupEtagapPt(
+funcWithJson(void, AssoYeildGroupEtagapPt)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
                          "AssoYeildPt.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
@@ -13,6 +13,7 @@ void AssoYeildGroupEtagapPt(
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYeildGroupEtagapPt_bInt.pdf",
     bool is_bInt = false) {
+  SetUpJson();
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -22,18 +23,9 @@ void AssoYeildGroupEtagapPt(
                                       {3},
                                       {4},
                                       {5},
-                                      {1, 2},
                                       {2, 3},
-                                      {3, 4},
                                       {4, 5},
-                                      {5, 6},
                                       {1, 2, 3},
-                                      {2, 3, 4},
-                                      {3, 4, 5},
-                                      {4, 5, 6},
-                                      {1, 2, 3, 4},
-                                      {2, 3, 4, 5},
-                                      {3, 4, 5, 6},
                                       {1, 2, 3, 4, 5},
                                       {6, 7, 8, 9, 10},
                                       {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};

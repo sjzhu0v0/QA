@@ -1,11 +1,10 @@
-#include "MFit.h"
 #include "MHelper.h"
 #include "MMath.h"
 #include "MRootGraphic.h"
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupEtagapPt(
+funcWithJson(void, AssoYeildGroupEtagapPt)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
                          "AssoYeildPt.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
@@ -98,6 +97,17 @@ void AssoYeildGroupEtagapPt(
   MHist2D h_v22part(indexHistMass, indexHistEtaGap, "v22part");
   MHist2D h_a0PlusB(indexHistMass, indexHistEtaGap, "a0PlusB");
 
+  // MHist3D h_b(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "b");
+  // MHist3D h_a0(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a0");
+  // MHist3D h_a1(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a1");
+  // MHist3D h_a2(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a2");
+  // MHist3D h_a3(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "a3");
+  // MHist3D h_v22(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap, "v22");
+  // MHist3D h_v22part(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap,
+  //                   "v22part");
+  // MHist3D h_a0PlusB(indexHistPtV2Jpsi, indexHistMass, indexHistEtaGap,
+  //                   "a0PlusB");
+
   file_output->cd();
   using MVec1 = MVec<MHist2D, MIndexAny<StrAny_ptV2>>;
   MVec1 hVec_b(indexAnyPtV2Jpsi, h_b);
@@ -140,6 +150,43 @@ void AssoYeildGroupEtagapPt(
         auto h1_lowMult_mass = ApplyEtaGap(h2_lowMult_mass, deltaEta);
         auto h1_highMult_mass = ApplyEtaGap(h2_highMult_mass, deltaEta);
         /////////////////////////////////////////////////
+        gPublisherCanvas->NewPad()->cd();
+        TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
+                    -M_PI_2, M_PI + M_PI_2);
+        h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
+        double results_modu[4];
+        f1_modu.GetParameters(results_modu);
+
+        double b_lowMult_mass = h1_lowMult_mass->GetBinContent(1);
+        h1_highSubLow_mass->SetTitle(
+            Form("i_mass = %d, #Delta#eta_{gap} = %.2f", i_mass,
+                 indexHistEtaGap.GetBinUpperEdge()));
+        h1_highSubLow_mass->Draw();
+        TF1 f1_modu_0("f1_modu_0", "[0]", -M_PI_2, M_PI + M_PI_2);
+        TF1 f1_modu_1("f1_modu_1", "[0]+2*[1]*cos(x)", -M_PI_2, M_PI + M_PI_2);
+        TF1 f1_modu_2("f1_modu_2", "[0]+2*[1]*cos(2*x)", -M_PI_2,
+                      M_PI + M_PI_2);
+        TF1 f1_modu_3("f1_modu_3", "[0]+2*[1]*cos(3*x)", -M_PI_2,
+                      M_PI + M_PI_2);
+        f1_modu_0.SetParameter(0, results_modu[0]);
+        f1_modu_1.SetParameter(0, results_modu[0]);
+        f1_modu_1.SetParameter(1, results_modu[1]);
+        f1_modu_2.SetParameter(0, results_modu[0]);
+        f1_modu_2.SetParameter(1, results_modu[2]);
+        f1_modu_3.SetParameter(0, results_modu[0]);
+        f1_modu_3.SetParameter(1, results_modu[3]);
+        f1_modu_0.SetLineColor(kBlue);
+        f1_modu_1.SetLineColor(kGreen + 2);
+        f1_modu_2.SetLineColor(kYellow + 2);
+        f1_modu_3.SetLineColor(kOrange + 2);
+        f1_modu_0.DrawClone("same");
+        f1_modu_1.DrawClone("same");
+        f1_modu_2.DrawClone("same");
+
+#define FillHist(name, ...)                                                    \
+  MDouble name##Value __VA_ARGS__;                                             \
+  hVec_##name.current().SetBinInfo(name##Value);
+
         double b_value, b_error;
         if (is_bInt) {
           b_value = h1_highSubLow_mass->IntegralAndError(
@@ -150,64 +197,14 @@ void AssoYeildGroupEtagapPt(
           b_value = h1_highSubLow_mass->GetBinContent(1);
           b_error = h1_highSubLow_mass->GetBinError(1);
         }
-#define FillHist(name, ...)                                                    \
-  MDouble name##Value __VA_ARGS__;                                             \
-  hVec_##name.current().SetBinInfo(name##Value);
-
         FillHist(b, (b_value, b_error));
-        double a0_value = 0;
-        double a0_error = 0;
-        a0_value = h1_highSubLow_mass->IntegralAndError(-1, -1, a0_error);
-        a0_value /= (double)h1_highSubLow_mass->GetNbinsX();
-        a0_error /= (double)h1_highSubLow_mass->GetNbinsX();
-        FillHist(a0, (a0_value, a0_error));
-        FillHist(a1, = GetSumWithError1D(h1_highSubLow_mass,
-                                         [](double x) { return cos(x); }));
-        FillHist(a2, = GetSumWithError1D(h1_highSubLow_mass,
-                                         [](double x) { return cos(2 * x); }));
-        FillHist(a3, = GetSumWithError1D(h1_highSubLow_mass,
-                                         [](double x) { return cos(3 * x); }));
+        FillHist(a0, (results_modu[0], f1_modu.GetParError(0)));
+        FillHist(a1, (results_modu[1], f1_modu.GetParError(1)));
+        FillHist(a2, (results_modu[2], f1_modu.GetParError(2)));
+        FillHist(a3, (results_modu[3], f1_modu.GetParError(3)));
         FillHist(v22, = a2Value / (a0Value + bValue));
         FillHist(v22part, = a2Value / a0Value);
         FillHist(a0PlusB, = a0Value + bValue);
-
-        TF1 f1_modu("f1_modu", "[0]+2*([1]*cos(x)+[2]*cos(2*x)+[3]*cos(3*x))",
-                    -M_PI_2, M_PI + M_PI_2);
-        f1_modu.SetParameter(0, a0Value.fValue);
-        f1_modu.SetParameter(1, a1Value.fValue);
-        f1_modu.SetParameter(2, a2Value.fValue);
-        f1_modu.SetParameter(3, a3Value.fValue);
-
-        gPublisherCanvas->NewPad()->cd();
-        // h1_highSubLow_mass->Fit(&f1_modu, "Q", "", -M_PI_2, M_PI + M_PI_2);
-
-        h1_highSubLow_mass->SetTitle(
-            Form("i_mass = %d, #Delta#eta_{gap} = % .2f ", i_mass,
-                 indexHistEtaGap.GetBinUpperEdge()));
-        h1_highSubLow_mass->Draw();
-        f1_modu.DrawClone("same");
-        TF1 f1_modu_0("f1_modu_0", "[0]", -M_PI_2, M_PI + M_PI_2);
-        TF1 f1_modu_1("f1_modu_1", "[0]+2*[1]*cos(x)", -M_PI_2, M_PI + M_PI_2);
-        TF1 f1_modu_2("f1_modu_2", "[0]+2*[1]*cos(2*x)", -M_PI_2,
-                      M_PI + M_PI_2);
-        TF1 f1_modu_3("f1_modu_3", "[0]+2*[1]*cos(3*x)", -M_PI_2,
-                      M_PI + M_PI_2);
-
-        f1_modu_0.SetParameter(0, a0Value.fValue);
-        f1_modu_1.SetParameter(0, a0Value.fValue);
-        f1_modu_1.SetParameter(1, a1Value.fValue);
-        f1_modu_2.SetParameter(0, a0Value.fValue);
-        f1_modu_2.SetParameter(1, a2Value.fValue);
-        f1_modu_3.SetParameter(0, a0Value.fValue);
-        f1_modu_3.SetParameter(1, a3Value.fValue);
-
-        f1_modu_0.SetLineColor(kBlue);
-        f1_modu_1.SetLineColor(kGreen + 2);
-        f1_modu_2.SetLineColor(kYellow + 2);
-        f1_modu_3.SetLineColor(kOrange + 2);
-        f1_modu_0.DrawClone("same");
-        f1_modu_1.DrawClone("same");
-        f1_modu_2.DrawClone("same");
 
         gPublisherCanvas->Draw(h1_highMult_mass)->Draw(h1_lowMult_mass);
       }
