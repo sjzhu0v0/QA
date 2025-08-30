@@ -14,7 +14,8 @@ void NJpsiCandidatePerEvent(
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
-  TTree *tree_event = (TTree *)file_event->Get("O2dqflowvecd");
+  // TTree *tree_event = (TTree *)file_event->Get("O2dqflowvecd");
+  TTree *tree_event = MRootIO::OpenChain(path_input, "O2dqflowvecd");
 
   vector<RResultHandle> gRResultHandlesFast;
   ROOT::RDataFrame rdf(*tree_event);
