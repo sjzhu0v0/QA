@@ -16,6 +16,9 @@ funcWithJson(void, AssoYeildPt)(
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
                           "AssoYeildPt") {
   SetUpJson();
+  Configurable<int> config_n_rebin_mass("n_rebin_mass", 2);
+  int n_rebin_mass = config_n_rebin_mass.data;
+
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
   auto hist_me_pr = MRootIO::GetObjectDiectly<THnD>(input_me_pr);
@@ -40,7 +43,7 @@ funcWithJson(void, AssoYeildPt)(
   AssocYeildHelper_v2 assoYeild(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
   assoYeild.Rebin(gtype_vars::kNumContrib, 5);
   assoYeild.Rebin(gtype_vars::kDeltaEta, 2);
-  assoYeild.Rebin(gtype_vars::kMass, 2);
+  assoYeild.Rebin(gtype_vars::kMass, n_rebin_mass);
 
   hnTool_se_pr.PrintAllAxis();
   // Axis 0: axis0, title: #Delta#eta_{J/#psi, track}  nbins:80

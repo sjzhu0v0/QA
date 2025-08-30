@@ -14,6 +14,9 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
                        "AssoYeildGroupEtagapPt_bInt.pdf",
     bool is_bInt = false) {
   SetUpJson();
+  Configurable<int> config_n_rebin_mass("n_rebin_mass", 2);
+  int n_rebin_mass = config_n_rebin_mass.data;
+
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -52,18 +55,18 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
   // StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", 3,
   // {1., 3., 5., 10.});
 
-  MHGroupTool2D *hgroupTool2d_total_mass =
-      new MHGroupTool2D(file_input, "h2_total_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
-  MHGroupTool2D *hgroupTool2d_lowMult_mass =
-      new MHGroupTool2D(file_input, "h2_lowMult_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
-  MHGroupTool2D *hgroupTool2d_highMult_mass =
-      new MHGroupTool2D(file_input, "h2_highMult_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
-  MHGroupTool2D *hgroupTool2d_highSubLow_mass =
-      new MHGroupTool2D(file_input, "h2_highSubLow_mass_pt_%d_%d",
-                        {var_MassJpsiCandidate, var_PtV2Jpsi}, {2, 1});
+  MHGroupTool2D *hgroupTool2d_total_mass = new MHGroupTool2D(
+      file_input, "h2_total_mass_pt_%d_%d",
+      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
+  MHGroupTool2D *hgroupTool2d_lowMult_mass = new MHGroupTool2D(
+      file_input, "h2_lowMult_mass_pt_%d_%d",
+      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
+  MHGroupTool2D *hgroupTool2d_highMult_mass = new MHGroupTool2D(
+      file_input, "h2_highMult_mass_pt_%d_%d",
+      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
+  MHGroupTool2D *hgroupTool2d_highSubLow_mass = new MHGroupTool2D(
+      file_input, "h2_highSubLow_mass_pt_%d_%d",
+      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
 
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 3, 600, 600);
   MRootGraphic::StyleCommon();
@@ -74,7 +77,7 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
 #define LGetBinError(hist, vec_index, ...)                                     \
   hist->GetHist(vec_index)->GetBinError(__VA_ARGS__)
 
-  MIndexHist indexHistMass(var_MassJpsiCandidate, 1, 2);
+  MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass);
   MIndexHist indexHistEtaGap(var_EtaGap, 1, 1);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
   // MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);

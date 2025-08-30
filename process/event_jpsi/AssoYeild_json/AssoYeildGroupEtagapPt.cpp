@@ -12,6 +12,10 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYeildGroupEtagapPt_bInt.pdf",
     bool is_bInt = false) {
+  SetUpJson();
+  Configurable<int> config_n_rebin_mass("n_rebin_mass", 2);
+  int n_rebin_mass = config_n_rebin_mass.data;
+  
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
