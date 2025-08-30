@@ -117,11 +117,11 @@ void NJpsiCandidatePerEvent(
   gRResultHandlesFast.push_back(rdf_all.Histo1D(
       {"k_star", "k* (GeV); k* (GeV)", 11000, -2, 10}, "k_star"));
   gRResultHandlesFast.push_back(rdf_all.Histo1D(
-      {"pair_mass1d", "Mass Pair; Mass (GeV); Counts", 80, 1., 5.},
+      {"pair_mass1d", "Mass Pair; Mass (GeV); Counts", 90, 1.8, 5.4},
       "mass_pair_together"));
   gRResultHandlesFast.push_back(rdf_all.Histo2D(
       {"pair_mass2d", "Mass Pair; Mass (GeV/c^{2}); Mass (GeV/c^{2}); Counts",
-       80, 1., 5., 80, 1., 5.},
+       90, 1.8, 5.4, 90, 1.8, 5.4},
       "mass_pair1", "mass_pair2"));
 
   RunGraphs(gRResultHandlesFast);
