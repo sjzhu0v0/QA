@@ -10,7 +10,10 @@ void NJpsiCandidatePerEvent(
     TString path_input =
         "/home/szhu/data/PairFlow/22pass4_highIR/sample/O2dqflowvecd.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "NJpsiCandidatePerEvent.root") {
+                          "NJpsiCandidatePerEvent.root",
+    TString path_output_tree =
+        "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+        "NJpsiCandidatePerEvent.root") {
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
@@ -108,7 +111,10 @@ void NJpsiCandidatePerEvent(
                     return k_star;
                   },
                   {"fMass", "fPhi", "fEta", "fPT", "fSign"});
+
   // ROOT::RDF::Experimental::AddProgressBar(rdf_all);
+
+  rdf_all.Snapshot("DiJpsi", path_output_tree, {"mass_pair1", "mass_pair2"});
   /* #endregion */
 
   gRResultHandlesFast.push_back(rdf_all.Histo1D(
@@ -135,5 +141,6 @@ void NJpsiCandidatePerEvent(
 int main(int argc, char **argv) {
   TString path_input = argv[1];
   TString path_output = argv[2];
-  NJpsiCandidatePerEvent(path_input, path_output);
+  TString path_output_tree = argv[3];
+  NJpsiCandidatePerEvent(path_input, path_output, path_output_tree);
 }
