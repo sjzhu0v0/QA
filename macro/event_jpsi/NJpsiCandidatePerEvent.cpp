@@ -42,7 +42,7 @@ void NJpsiCandidatePerEvent(
                  {"fMass", "fSign"})
           .Define(
               "mass_pair",
-              [isJPsiCandidate](
+              [](
                   const ROOT::RVec<float> &mass, const ROOT::RVec<float> &pt,
                   const ROOT::RVec<float> &eta, const ROOT::RVec<float> &sign,
                   const ROOT::RVec<float> &phi, const ROOT::RVec<float> &pt1,
