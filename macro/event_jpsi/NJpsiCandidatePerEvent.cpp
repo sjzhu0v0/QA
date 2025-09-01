@@ -74,7 +74,7 @@ void NJpsiCandidatePerEvent(
                           doContainSameDaughter = true;
                         }
                       }
-                      if (!doContainSameDaughter) {
+                      if (doContainSameDaughter) {
                         TLorentzVector p1, p2;
                         p1.SetPtEtaPhiM(pt[i], eta[i], phi[i], 3.0969);
                         p2.SetPtEtaPhiM(pt[j], eta[j], phi[j], 3.0969);
