@@ -83,7 +83,7 @@ void NJpsiCandidatePerEvent(
                 }
                 return pairs;
               },
-              {"fMass", "fPt", "fEta", "fPhi", "fSign", "fPt1", "fPt2", "fEta1",
+              {"fMass", "fPT", "fEta", "fPhi", "fSign", "fPt1", "fPt2", "fEta1",
                "fEta2", "fPhi1", "fPhi2", "fSign1", "fSign2"})
           .Define("mass_pair1",
                   [](const ROOT::VecOps::RVec<std::vector<double>> &pairs) {
