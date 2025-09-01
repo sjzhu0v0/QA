@@ -24,7 +24,7 @@ void NJpsiCandidatePerEvent(
   ROOT::RDataFrame rdf(*tree_event);
 
   auto isJPsiCandidate = [](float mass, int sign) {
-    return (mass > 2.5f && mass < 3.2f && sign == 0);
+    return (mass > 1.5f && mass < 5.f && sign == 0);
   };
 
   /* #region rdf_all definition */
