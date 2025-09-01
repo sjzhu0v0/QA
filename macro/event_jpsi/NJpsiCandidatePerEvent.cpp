@@ -60,13 +60,17 @@ void NJpsiCandidatePerEvent(
                       int val2_sign2 = sign2[j];
                       bool doContainSameDaughter = false;
                       if (val1_sign1 == val2_sign1) {
-                        if (doContainSameDaughter && phi1[i] == phi1[j] &&
-                            eta1[i] == eta1[j] && pt1[i] == pt1[j]) {
+                        if ((phi1[i] == phi1[j] && eta1[i] == eta1[j] &&
+                             pt1[i] == pt1[j]) ||
+                            (phi2[i] == phi2[j] && eta2[i] == eta2[j] &&
+                             pt2[i] == pt2[j])) {
                           doContainSameDaughter = true;
                         }
                       } else if (val1_sign1 == val2_sign2) {
-                        if (doContainSameDaughter && phi1[i] == phi2[j] &&
-                            eta1[i] == eta2[j] && pt1[i] == pt2[j]) {
+                        if ((phi1[i] == phi2[j] && eta1[i] == eta2[j] &&
+                             pt1[i] == pt2[j]) ||
+                            (phi2[i] == phi1[j] && eta2[i] == eta1[j] &&
+                             pt2[i] == pt1[j])) {
                           doContainSameDaughter = true;
                         }
                       }
@@ -76,7 +80,7 @@ void NJpsiCandidatePerEvent(
                         p2.SetPtEtaPhiM(pt[j], eta[j], phi[j], 3.0969);
                         double deltaY = p1.Rapidity() - p2.Rapidity();
                         pairs.push_back(
-                            {mass[i], mass[j], pt1[i], pt2[j], deltaY});
+                            {mass[i], mass[j], pt[i], pt[j], deltaY});
                       }
                     }
                   }
