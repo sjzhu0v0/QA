@@ -81,7 +81,7 @@ void NJpsiCandidatePerEvent(
                         double deltaY = p1.Rapidity() - p2.Rapidity();
                         pairs.push_back(
                             {mass[i], mass[j], pt[i], pt[j], deltaY});
-                      } else {
+                      } /* else {
                         cout << "info1_1:" << sign1[i] << " " << sign2[i] << " "
                              << pt1[i] << " " << eta1[i] << " " << phi1[i]
                              << " " << pt2[i] << " " << eta2[i] << " "
@@ -91,7 +91,7 @@ void NJpsiCandidatePerEvent(
                              << " " << pt2[j] << " " << eta2[j] << " "
                              << phi2[j] << endl;
                         cout << endl;
-                      }
+                      } */
                     }
                   }
                 }
