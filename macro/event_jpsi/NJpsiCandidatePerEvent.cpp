@@ -40,51 +40,106 @@ void NJpsiCandidatePerEvent(
                    return nJpsiCandidate;
                  },
                  {"fMass", "fSign"})
-          .Define("mass_pair",
-                  [isJPsiCandidate](const ROOT::RVec<float> &mass,
-                                    const ROOT::RVec<float> &sign) {
-                    ROOT::VecOps::RVec<std::pair<double, double>> pairs;
-                    for (size_t i = 0; i < mass.size(); ++i) {
-                      for (size_t j = i + 1; j < mass.size(); ++j) {
-                        if (sign[i] == 0 && sign[j] == 0) {
-                          pairs.push_back(std::make_pair(mass[i], mass[j]));
+          .Define(
+              "mass_pair",
+              [isJPsiCandidate](
+                  const ROOT::RVec<float> &mass, const ROOT::RVec<float> &pt,
+                  const ROOT::RVec<float> &eta, const ROOT::RVec<float> &sign,
+                  const ROOT::RVec<float> &phi, const ROOT::RVec<float> &pt1,
+                  const ROOT::RVec<float> &pt2, const ROOT::RVec<float> &eta1,
+                  const ROOT::RVec<float> &eta2, const ROOT::RVec<float> &phi1,
+                  const ROOT::RVec<float> &phi2, const ROOT::RVec<int> &sign1,
+                  const ROOT::RVec<int> &sign2) {
+                ROOT::VecOps::RVec<std::vector<double>> pairs;
+                for (size_t i = 0; i < mass.size(); ++i) {
+                  for (size_t j = i + 1; j < mass.size(); ++j) {
+                    if (sign[i] == 0 && sign[j] == 0) {
+                      int val1_sign1 = sign1[i];
+                      int val1_sign2 = sign2[i];
+                      int val2_sign1 = sign1[j];
+                      int val2_sign2 = sign2[j];
+                      bool doContainSameDaughter = false;
+                      if (val1_sign1 == val2_sign1) {
+                        if (doContainSameDaughter && phi1[i] == phi1[j] &&
+                            eta1[i] == eta1[j] && pt1[i] == pt1[j]) {
+                          doContainSameDaughter = true;
+                        }
+                      } else if (val1_sign1 == val2_sign2) {
+                        if (doContainSameDaughter && phi1[i] == phi2[j] &&
+                            eta1[i] == eta2[j] && pt1[i] == pt2[j]) {
+                          doContainSameDaughter = true;
                         }
                       }
+                      if (!doContainSameDaughter) {
+                        TLorentzVector p1, p2;
+                        p1.SetPtEtaPhiM(pt[i], eta[i], phi[i], 3.0969);
+                        p2.SetPtEtaPhiM(pt[j], eta[j], phi[j], 3.0969);
+                        double deltaY = p1.Rapidity() - p2.Rapidity();
+                        pairs.push_back(
+                            {mass[i], mass[j], pt1[i], pt2[j], deltaY});
+                      }
                     }
-                    return pairs;
+                  }
+                }
+                return pairs;
+              },
+              {"fMass", "fPt", "fEta", "fPhi", "fSign", "fPt1", "fPt2", "fEta1",
+               "fEta2", "fPhi1", "fPhi2", "fSign1", "fSign2"})
+          .Define("mass_pair1",
+                  [](const ROOT::VecOps::RVec<std::vector<double>> &pairs) {
+                    ROOT::VecOps::RVec<double> mass1;
+                    for (const auto &pair : pairs) {
+                      mass1.push_back(pair[0]);
+                    }
+                    return mass1;
                   },
-                  {"fMass", "fSign"})
-          .Define(
-              "mass_pair1",
-              [](const ROOT::VecOps::RVec<std::pair<double, double>> pairs) {
-                ROOT::VecOps::RVec<double> mass1;
-                for (const auto &pair : pairs) {
-                  mass1.push_back(pair.first);
-                }
-                return mass1;
-              },
-              {"mass_pair"})
-          .Define(
-              "mass_pair2",
-              [](const ROOT::VecOps::RVec<std::pair<double, double>> pairs) {
-                ROOT::VecOps::RVec<double> mass2;
-                for (const auto &pair : pairs) {
-                  mass2.push_back(pair.second);
-                }
-                return mass2;
-              },
-              {"mass_pair"})
-          .Define(
-              "mass_pair_together",
-              [](const ROOT::VecOps::RVec<std::pair<double, double>> pairs) {
-                ROOT::VecOps::RVec<double> mass_together;
-                for (const auto &pair : pairs) {
-                  mass_together.push_back(pair.first);
-                  mass_together.push_back(pair.second);
-                }
-                return mass_together;
-              },
-              {"mass_pair"})
+                  {"mass_pair"})
+          .Define("mass_pair2",
+                  [](const ROOT::VecOps::RVec<std::vector<double>> &pairs) {
+                    ROOT::VecOps::RVec<double> mass2;
+                    for (const auto &pair : pairs) {
+                      mass2.push_back(pair[1]);
+                    }
+                    return mass2;
+                  },
+                  {"mass_pair"})
+          .Define("pt_pair1",
+                  [](const ROOT::VecOps::RVec<std::vector<double>> &pairs) {
+                    ROOT::VecOps::RVec<double> mass2;
+                    for (const auto &pair : pairs) {
+                      mass2.push_back(pair[2]);
+                    }
+                    return mass2;
+                  },
+                  {"mass_pair"})
+          .Define("pt_pair2",
+                  [](const ROOT::VecOps::RVec<std::vector<double>> &pairs) {
+                    ROOT::VecOps::RVec<double> mass2;
+                    for (const auto &pair : pairs) {
+                      mass2.push_back(pair[3]);
+                    }
+                    return mass2;
+                  },
+                  {"mass_pair"})
+          .Define("deltaY",
+                  [](const ROOT::VecOps::RVec<std::vector<double>> &pairs) {
+                    ROOT::VecOps::RVec<double> mass2;
+                    for (const auto &pair : pairs) {
+                      mass2.push_back(pair[4]);
+                    }
+                    return mass2;
+                  },
+                  {"mass_pair"})
+          .Define("mass_pair_together",
+                  [](const ROOT::VecOps::RVec<std::vector<double>> &pairs) {
+                    ROOT::VecOps::RVec<double> mass_together;
+                    for (const auto &pair : pairs) {
+                      mass_together.push_back(pair[0]);
+                      mass_together.push_back(pair[1]);
+                    }
+                    return mass_together;
+                  },
+                  {"mass_pair"})
           .Define("k_star",
                   [](const ROOT::RVec<float> &mass,
                      const ROOT::RVec<float> &phi, const ROOT::RVec<float> &eta,
@@ -114,7 +169,9 @@ void NJpsiCandidatePerEvent(
 
   // ROOT::RDF::Experimental::AddProgressBar(rdf_all);
 
-  rdf_all.Snapshot("DiJpsi", path_output_tree, {"mass_pair1", "mass_pair2"});
+  rdf_all.Snapshot(
+      "DiJpsi", path_output_tree,
+      {"mass_pair1", "mass_pair2", "pt_pair1", "pt_pair2", "deltaY"});
   /* #endregion */
 
   gRResultHandlesFast.push_back(rdf_all.Histo1D(
