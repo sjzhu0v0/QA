@@ -3,13 +3,13 @@
 
 void CorrelationQA(
     TString path_input =
-        "/home/szhu/work/alice/analysis/QA/input/event_jpsi/AssoYeild_24pass1/"
+        "/home/szhu/work/alice/analysis/QA/input/event_jpsi/AssoYeild_24pass1/mass_rebin/"
         "AssoYeildGroupEtagapPt_bInt_f_BS_bs.root",
     // TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
     //                       "AssoYeildGroupEtagapPt_bLow.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
                        "LHC24_pass1_DiElectron/"
-                       "AssoYeildGroupEtagapPt_bInt_f_BS_bs.pdf") {
+                       "AssoYeildGroupEtagapPt_bInt_f_BS_bs_massRebin.pdf") {
   TFile *file_input = new TFile(path_input);
 
   struct StrAny_ptV2 {

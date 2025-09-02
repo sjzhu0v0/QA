@@ -120,6 +120,7 @@ void JpsiQA(
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_PtJpsiCandidateFine("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -131,6 +132,9 @@ void JpsiQA(
   obj2push_thnd(rdf_PartTrigger4Jpsi,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidate,
                  var_NumContribCalibBinned});
+  obj2push_thnd(rdf_PartTrigger4Jpsi,
+                {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidateFine,
+                 var_NumContribCalibBinned}, "", "ptFine");
 
   RunGraphs(gRResultHandles);
 

@@ -237,6 +237,7 @@ void JpsiAsso(
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_PtJpsiCandidateFine("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
   StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
                              {-4., 4.});
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
@@ -249,6 +250,8 @@ void JpsiAsso(
                                           "GeV^{2}/c^{4}", 90, {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidateSingle("PtUSSingle", "p_{T}", "GeV/c", 10,
                                         {0., 10.});
+  StrVar4Hist var_PtJpsiCandidateSingleFine("PtUSSingle", "p_{T}", "GeV/c", 10,
+                                            {0., 5.});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
@@ -264,6 +267,13 @@ void JpsiAsso(
   obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
                 {var_fPosZSingle, var_MassJpsiCandidateSingle,
                  var_PtJpsiCandidateSingle, var_NumContribCalibBinnedSingle});
+  obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
+                {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
+                 var_MassJpsiCandidate, var_PtJpsiCandidateFine,
+                 var_NumContribCalibBinned}, "", "ptFine");
+  obj2push_thnd(rdf_PartTriggerWithJpsiWithEvent,
+                {var_fPosZSingle, var_MassJpsiCandidateSingle,
+                 var_PtJpsiCandidateSingleFine, var_NumContribCalibBinnedSingle}, "ptFine");
 
   RunGraphs(gRResultHandles);
   // Long64_t totalSize = gRResultHandles[0].GetPtr<THnD>()->GetNbins() *
