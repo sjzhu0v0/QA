@@ -15,6 +15,7 @@
 #include "TColor.h"
 #include "TH1D.h"
 #include "TLegend.h"
+#include "TMath.h"
 #include "TProfile.h"
 #include "TStyle.h"
 #include "math.h"
