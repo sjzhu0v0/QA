@@ -469,3 +469,23 @@ funcWithJson(void, AssoYeildFit_noScale)(
   file_output->Write();
   file_output->Close();
 }
+
+int main(int argc, char **argv) {
+  TString path_input = argc > 1 ? argv[1]
+                                : "/home/szhu/work/alice/analysis/QA/test/"
+                                  "AssoYeildGroupEtagap_NoScale.root";
+  TString path_input_mass =
+      argc > 2 ? argv[2]
+               : "/home/szhu/work/alice/analysis/QA/input/jpsi/"
+                 "JpsiMass_LHC24_apass1_DiElectron.root";
+  TString path_output = argc > 3 ? argv[3]
+                                 : "/home/szhu/work/alice/analysis/QA/test/"
+                                   "AssoYeilFit_noScale.root";
+  TString path_pdf = argc > 4 ? argv[4]
+                              : "/home/szhu/work/alice/analysis/QA/test/"
+                                "AssoYeildFit_noScale.pdf";
+
+  AssoYeildFit_noScale(path_input, path_input_mass, path_output, path_pdf);
+
+  return 0;
+}
