@@ -222,6 +222,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
   MIndexHist indexHistDeltaPhiUS(var_DeltaPhiUS, 1, 1);
   MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, 2);
+  MIndexHist indexHistEtaGap(var_EtaGap, 1, 1);
   MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
 
@@ -257,6 +258,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   MHist1D h1_yeild_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
   MHist1D h1_yeild_highMult(indexHistPtV2Jpsi, "yield_highMult");
+  MHist2D h2_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, "yield_sub");
 
   gDirectory = nullptr;
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 1, 600, 600);
@@ -441,7 +443,28 @@ funcWithJson(void, AssoYeildFit_noScale)(
     }
   }
 
-   gPublisherCanvas->finalize();
+  auto ApplyEtaGap = [](std::shared_ptr<TH2D> h2, double gap_eta) {
+    h2->GetXaxis()->SetRangeUser(-1.8, -gap_eta / 2.);
+    auto h1_highSubLow_mass1 =
+        (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass1_%d", GenerateUID()));
+    h2->GetXaxis()->SetRangeUser(gap_eta / 2., 1.8);
+    auto h1_highSubLow_mass =
+        (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass_%d", GenerateUID()));
+    h1_highSubLow_mass->Add(h1_highSubLow_mass1);
+    return h1_highSubLow_mass;
+  };
+
+  for (auto iPtV2 : indexAnyPtV2Jpsi) {
+    auto h2_sub = h2Vec_AssoYeild_Sub.current().fHisto;
+    for (auto iEtaGap : indexHistEtaGap) {
+      double deltaEta = indexHistEtaGap.GetBinUpperEdge();
+      auto h1_sub = ApplyEtaGap(h2_sub, deltaEta);
+      double value_sub = h1_sub->GetBinContent(iEtaGap);
+      h2_yeild_sub.fHisto->SetBinContent(iPtV2, iEtaGap, value_sub);
+    }
+  }
+
+  gPublisherCanvas->finalize();
 
   file_output->Write();
   file_output->Close();
