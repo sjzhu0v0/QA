@@ -45,7 +45,7 @@ void MultCalibration(
   fNumContribRun->GetYaxis()->SetTitle("<fNumContrib>");
   fNumContribRun->GetYaxis()->SetLabelSize(0.02);
   MRootGraphic::StyleHistCommonHist(fNumContribRun);
-  fNumContribRun->GetYaxis()->SetRangeUser(30, 60);
+  fNumContribRun->GetYaxis()->SetRangeUser(30, 40);
   fNumContribRun->Draw();
   c_fNumContribRun->Modified();
   c_fNumContribRun->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"

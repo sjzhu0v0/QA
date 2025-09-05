@@ -13,4 +13,4 @@ virgo /lustre/alice/users/szhu/work/TinyTasks/TrackInfoMC/24fd4b/task/output/aa/
 virgo /lustre/alice/users/szhu/work/TinyTasks/TrackInfoMC/24fd4b/task/output/hist_merge.root ./track/trackInfoMC_24fd4b_550367_hist.root 
 virgo /lustre/alice/users/szhu/job/RunGrouping24/output/phi.tgz ./event/phi_24pass1_DiElectro/phi.tgz
 virgo /lustre/alice/users/szhu/job/QA/event/LHC24_pass1_DiElectron/MultRaw/merge/merge.root ./event/MultRaw_LHC24_pass1_DiElectron.root
-
+virgo /lustre/alice/users/szhu/job/QA/LHC24pass1_DiElectron_Group/merge/MultREFRaw.root ./event/MultREFRaw_LHC24_pass1_DiElectron.root

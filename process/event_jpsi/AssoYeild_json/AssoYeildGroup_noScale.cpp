@@ -20,14 +20,23 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   TFile *file_output = new TFile(path_output, "RECREATE");
 
   struct StrAny_ptV2 {
-    const vector<vector<int>> bins = {{1},
+     const vector<vector<int>> bins = {{1},
                                       {2},
                                       {3},
                                       {4},
                                       {5},
+                                      {1, 2},
                                       {2, 3},
+                                      {3, 4},
                                       {4, 5},
+                                      {5, 6},
                                       {1, 2, 3},
+                                      {2, 3, 4},
+                                      {3, 4, 5},
+                                      {4, 5, 6},
+                                      {1, 2, 3, 4},
+                                      {2, 3, 4, 5},
+                                      {3, 4, 5, 6},
                                       {1, 2, 3, 4, 5},
                                       {6, 7, 8, 9, 10},
                                       {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
