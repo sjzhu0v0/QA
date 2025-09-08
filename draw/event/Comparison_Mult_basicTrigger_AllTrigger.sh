@@ -15,5 +15,5 @@ cd /home/szhu/work/alice/analysis/QA/draw/event
 root -l -b<<EOF
 cout << "Start" << endl
 .L Comparison_Mult_basicTrigger_AllTrigger.cpp
-Comparison_Mult_basicTrigger_AllTrigger("/home/szhu/work/alice/analysis/QA/input/event/MultRaw_LHC24pass1_DiElectron.root", "LHC24pass1_DiElectron")
+Comparison_Mult_basicTrigger_AllTrigger("/home/szhu/work/alice/analysis/QA/input/event/MultQA_AllCut_LHC24pass1_DiElectron.root", "LHC24pass1_DiElectron")
 EOF
