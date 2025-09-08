@@ -7,7 +7,7 @@ void MultCalibration(
                    "MultRaw_LHC22pass4_dqfilter.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event/"
                           "MultCalibration_LHC22pass4_dqfilter.root",
-    TString tag_period = "LHC22pass4_dqfilter") {
+    TString tag_period = "LHC22pass4_dqfilter", double mult_target = 50.0) {
   // fNumContribfPosZ
   gROOT->SetBatch(true);
   MRootGraphic::StyleCommon();

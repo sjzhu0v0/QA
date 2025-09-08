@@ -10,8 +10,14 @@ void Trigger_Mult(TString path_input = "../input.root",
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
+  // find if O2reextended or O2reextended_001 is in the file
+  TString treeName = "O2reextended";
+  if (file_event->Get("O2reextended_001")) {
+    treeName = "O2reextended_001";
+  }
+
   TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
-  TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
+  TTree *tree_event_ext = (TTree *)file_event->Get(treeName);
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;

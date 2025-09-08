@@ -145,7 +145,8 @@ void Comparison_mb_dqfilter(
                            "triggerStudy_LHC22o_pass4_thin_526641_mb.root",
     TString path_hist_dqfilter =
         "/home/szhu/work/alice/analysis/QA/output/event/"
-        "triggerStudy_LHC22o_pass4_thin_526641_dqfilter.root") {
+        "triggerStudy_LHC22o_pass4_thin_526641_dqfilter.root",
+    TString tag = "") {
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(0);
   gStyle->SetPalette(1);
@@ -158,14 +159,18 @@ void Comparison_mb_dqfilter(
   /* #region :event selection comparison */
   TCanvas *c_mb = EventSelectionDraw(path_hist_mb + ":map_trigger");
   c_mb->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-               "Comparison_mb_dqfilter_effectiveTrigger_mb.pdf");
+               "Comparison_mb_dqfilter_effectiveTrigger_mb" +
+               tag + ".pdf");
   c_mb->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-               "Comparison_mb_dqfilter_effectiveTrigger_mb.json");
+               "Comparison_mb_dqfilter_effectiveTrigger_mb" +
+               tag + ".json");
   TCanvas *c_dqfilter = EventSelectionDraw(path_hist_dqfilter + ":map_trigger");
   c_dqfilter->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-                     "Comparison_mb_dqfilter_effectiveTrigger_dqfilter.pdf");
+                     "Comparison_mb_dqfilter_effectiveTrigger_dqfilter" +
+                     tag + ".pdf");
   c_dqfilter->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-                     "Comparison_mb_dqfilter_effectiveTrigger_dqfilter.json");
+                     "Comparison_mb_dqfilter_effectiveTrigger_dqfilter." +
+                     tag + ".json");
   // TH1D *hist_mb = GetObjectFromCanvas<TH1D>(c_mb, 1);
   // TH1D *hist_dqfilter = GetObjectFromCanvas<TH1D>(c_dqfilter, 0);
   // TCanvas *c_mb_dqfilter =
@@ -208,8 +213,8 @@ void Comparison_mb_dqfilter(
   fNumContrib_mb->Scale(fNumContrib_dqfilter->Integral() /
                         fNumContrib_mb->Integral());
   TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.9, "NumContrib Comparison");
-  leg->AddEntry(fNumContrib_mb, "minbias thin data", "l");
-  leg->AddEntry(fNumContrib_dqfilter, "DQfiltered thin data", "l");
+  leg->AddEntry(fNumContrib_mb, "Minbias", "l");
+  leg->AddEntry(fNumContrib_dqfilter, "DiElectron skimming 24", "l");
   leg->SetBorderSize(0);
   leg->SetTextSize(0.03);
   leg->SetTextFont(42);
@@ -217,7 +222,9 @@ void Comparison_mb_dqfilter(
   leg->SetFillStyle(0);
   leg->Draw("same");
   c_mb_dqfilter->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-                        "Comparison_mb_dqfilter_NumContributor.pdf");
+                        "Comparison_mb_dqfilter_NumContributor" +
+                        tag + ".pdf");
   c_mb_dqfilter->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
-                        "Comparison_mb_dqfilter_NumContributor.json");
+                        "Comparison_mb_dqfilter_NumContributor" +
+                        tag + ".json");
 }

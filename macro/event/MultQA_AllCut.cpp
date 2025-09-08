@@ -21,8 +21,10 @@ void MultPileupCut(
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   Cut_MultTPC_NumContrib::init(path_pileup);
 
-  TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
-  TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
+  // TTree *tree_event = (TTree *)file_event->Get("O2reducedevent");
+  // TTree *tree_event_ext = (TTree *)file_event->Get("O2reextended");
+  TTree *tree_event = MRootIO::OpenChain(file_event, "O2reducedevent");
+  TTree *tree_event_ext = MRootIO::OpenChain(file_event, "O2reextended");
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
