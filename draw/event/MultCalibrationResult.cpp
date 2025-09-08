@@ -30,17 +30,20 @@ void MultCalibrationResult(
   c_NumContrib->cd(1);
   auto fNumContribRun =
       MRootIO::GetObjectDiectly<TProfile>(path_input + ":fNumContribRun");
+  fNumContribRun->SetDirectory(0);
   auto NumContribCalibRun =
       MRootIO::GetObjectDiectly<TProfile>(path_input + ":NumContribCalibRun");
+  NumContribCalibRun->SetDirectory(0);
   MRootGraphic::StyleHistCommonHist(fNumContribRun);
   MRootGraphic::StyleHistCommonHist(NumContribCalibRun);
   fNumContribRun->SetLineColor(kRed);
   fNumContribRun->SetMarkerColor(kRed);
   NumContribCalibRun->SetLineColor(kBlue);
   NumContribCalibRun->SetMarkerColor(kBlue);
-
   fNumContribRun->SetTitle("fNumContribRun;Run;<fNumContrib>");
-  fNumContribRun->GetYaxis()->SetRangeUser(0, 65);
+  fNumContribRun->GetYaxis()->SetRangeUser(32, 36);
+//   if (tag_period == "LHC24pass1_DiElectron")
+//     fNumContribRun->GetYaxis()->SetRangeUser(0, 40);
 
   fNumContribRun->Draw();
   NumContribCalibRun->Draw("same");
@@ -66,7 +69,9 @@ void MultCalibrationResult(
   NumContribCalibPosZ->SetMarkerColor(kBlue);
 
   fNumContribfPosZ->SetTitle("fNumContribfPosZ;fPosZ [cm];<fNumContrib>");
-  fNumContribfPosZ->GetYaxis()->SetRangeUser(0, 65);
+  fNumContribfPosZ->GetYaxis()->SetRangeUser(32, 36);
+//   if (tag_period == "LHC24pass1_DiElectron")
+//     fNumContribfPosZ->GetYaxis()->SetRangeUser(0, 40);
 
   fNumContribfPosZ->Draw();
   NumContribCalibPosZ->Draw("same");

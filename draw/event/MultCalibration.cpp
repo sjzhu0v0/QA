@@ -85,7 +85,7 @@ void MultCalibration(
          i_vtxz++) {
       double content = h_NumContribPosZ_calibration->GetBinContent(i_vtxz);
       double error = h_NumContribPosZ_calibration->GetBinError(i_vtxz);
-      double content1 = 50.0 / content;
+      double content1 = mult_target / content;
       double error1 = content1 * content1 * error;
       h_NumContribPosZ_calibration->SetBinContent(i_vtxz, content1);
       h_NumContribPosZ_calibration->SetBinError(i_vtxz, error1);
