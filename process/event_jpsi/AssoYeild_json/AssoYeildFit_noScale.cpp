@@ -206,7 +206,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
+      {0,7,12,17,22,29,37,46,57,73,300});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
@@ -326,7 +326,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
     signal_fit_asso_highMult.CopySignal(signal_fit_highMult_new);
     signal_fit_asso_highMult.CopyBkg(signal_fit_highMult_new);
     chi2Fit4(signal_fit_asso_highMult);
-    signal_fit_asso_highMult >> (gPublisherCanvas->NewPad());
     StrSignalFit str_fit_result_mass_highMult =
         signal_fit_asso_highMult.getFitResult();
     h1_yeild_highMult.fHisto->SetBinContent(
@@ -342,81 +341,82 @@ funcWithJson(void, AssoYeildFit_noScale)(
     signal_fit_asso_lowMult.CopySignal(signal_fit_lowMult);
     signal_fit_asso_lowMult.CopyBkg(signal_fit_asso_highMult);
     chi2Fit4(signal_fit_asso_lowMult);
-    signal_fit_asso_lowMult >> (gPublisherCanvas->NewPad());
     StrSignalFit str_fit_result_mass_lowMult =
         signal_fit_asso_lowMult.getFitResult();
     h1_yeild_lowMult.fHisto->SetBinContent(
         iPtV2, str_fit_result_mass_lowMult.fNsig[0]);
     h1_yeild_lowMult.fHisto->SetBinError(iPtV2,
                                          str_fit_result_mass_lowMult.fNsig[1]);
+    signal_fit_asso_lowMult >> (gPublisherCanvas->NewPad());
+    signal_fit_asso_highMult >> (gPublisherCanvas->NewPad());
 
-    gPublisherCanvas->SetCanvasNwNh(5, 3);
+    // gPublisherCanvas->SetCanvasNwNh(5, 3);
 
-    for (auto i_deltaEta : indexHistDeltaEtaUS) {
-      if (i_deltaEta > 29 || i_deltaEta <= 11)
-        continue;
-      for (auto i_deltaPhi : indexHistDeltaPhiUS) {
-        auto assoYeild_diff_highMult = assoYeild_highMult->ProjectionX(
-            Form("assoYeild_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-                 i_deltaEta, i_deltaPhi),
-            i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
-        auto assoYeild_diff_lowMult = assoYeild_lowMult->ProjectionX(
-            Form("assoYeild_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-                 i_deltaEta, i_deltaPhi),
-            i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
+    // for (auto i_deltaEta : indexHistDeltaEtaUS) {
+    //   if (i_deltaEta > 29 || i_deltaEta <= 11)
+    //     continue;
+    //   for (auto i_deltaPhi : indexHistDeltaPhiUS) {
+    //     auto assoYeild_diff_highMult = assoYeild_highMult->ProjectionX(
+    //         Form("assoYeild_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+    //              i_deltaEta, i_deltaPhi),
+    //         i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
+    //     auto assoYeild_diff_lowMult = assoYeild_lowMult->ProjectionX(
+    //         Form("assoYeild_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+    //              i_deltaEta, i_deltaPhi),
+    //         i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
 
-        MSignalFit signal_fit_asso_diff_lowMult(
-            Form("JpsiFit_asso_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-                 i_deltaEta, i_deltaPhi),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-        signal_fit_asso_diff_lowMult.InputData(assoYeild_diff_lowMult);
-        signal_fit_asso_diff_lowMult.CopySignal(signal_fit_asso_lowMult);
-        signal_fit_asso_diff_lowMult.CopyBkg(signal_fit_asso_lowMult);
-        signal_fit_asso_diff_lowMult.FixSignal();
-        signal_fit_asso_diff_lowMult.FixBkg(false);
-        signal_fit_asso_diff_lowMult.Fit();
-        StrSignalFit str_fit_result_asso_diff_lowMult =
-            signal_fit_asso_diff_lowMult.getFitResult();
-        h2Vec_AssoYeild_lowMult.current().SetBinInfo(
-            str_fit_result_asso_diff_lowMult.fNsig[0],
-            str_fit_result_asso_diff_lowMult.fNsig[1]);
-        // if (i_deltaPhi == 1) {
-        signal_fit_asso_diff_lowMult >> (gPublisherCanvas->NewPad());
-        // }
-        MSignalFit signal_fit_asso_diff_highMult(
-            Form("JpsiFit_asso_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-                 i_deltaEta, i_deltaPhi),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-        signal_fit_asso_diff_highMult.InputData(assoYeild_diff_highMult);
-        signal_fit_asso_diff_highMult.CopySignal(signal_fit_asso_highMult);
-        signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_diff_lowMult);
-        // signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_highMult);
-        signal_fit_asso_diff_highMult.FixSignal();
-        signal_fit_asso_diff_highMult.FixBkg(false);
-        signal_fit_asso_diff_highMult.Fit();
-        StrSignalFit str_fit_result_asso_diff_highMult =
-            signal_fit_asso_diff_highMult.getFitResult();
-        h2Vec_AssoYeild_highMult.current().SetBinInfo(
-            str_fit_result_asso_diff_highMult.fNsig[0],
-            str_fit_result_asso_diff_highMult.fNsig[1]);
-        // if (i_deltaPhi == 1) {
-        signal_fit_asso_diff_highMult >> (gPublisherCanvas->NewPad());
-        // }
-        assoYeild_diff_highMult->Delete();
-        assoYeild_diff_lowMult->Delete();
-        signal_fit_asso_diff_highMult.clean();
-        signal_fit_asso_diff_lowMult.clean();
-      }
-      gPublisherCanvas->NextPage();
-    }
-    mass_highMult->Delete();
-    mass_lowMult->Delete();
-    assoYeild_highMult->Delete();
-    assoYeild_lowMult->Delete();
-    signal_fit_highMult.clean();
-    signal_fit_lowMult.clean();
+    //     MSignalFit signal_fit_asso_diff_lowMult(
+    //         Form("JpsiFit_asso_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+    //              i_deltaEta, i_deltaPhi),
+    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
+    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
+    //     signal_fit_asso_diff_lowMult.InputData(assoYeild_diff_lowMult);
+    //     signal_fit_asso_diff_lowMult.CopySignal(signal_fit_asso_lowMult);
+    //     signal_fit_asso_diff_lowMult.CopyBkg(signal_fit_asso_lowMult);
+    //     signal_fit_asso_diff_lowMult.FixSignal();
+    //     signal_fit_asso_diff_lowMult.FixBkg(false);
+    //     signal_fit_asso_diff_lowMult.Fit();
+    //     StrSignalFit str_fit_result_asso_diff_lowMult =
+    //         signal_fit_asso_diff_lowMult.getFitResult();
+    //     h2Vec_AssoYeild_lowMult.current().SetBinInfo(
+    //         str_fit_result_asso_diff_lowMult.fNsig[0],
+    //         str_fit_result_asso_diff_lowMult.fNsig[1]);
+    //     // if (i_deltaPhi == 1) {
+    //     signal_fit_asso_diff_lowMult >> (gPublisherCanvas->NewPad());
+    //     // }
+    //     MSignalFit signal_fit_asso_diff_highMult(
+    //         Form("JpsiFit_asso_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+    //              i_deltaEta, i_deltaPhi),
+    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
+    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
+    //     signal_fit_asso_diff_highMult.InputData(assoYeild_diff_highMult);
+    //     signal_fit_asso_diff_highMult.CopySignal(signal_fit_asso_highMult);
+    //     signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_diff_lowMult);
+    //     // signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_highMult);
+    //     signal_fit_asso_diff_highMult.FixSignal();
+    //     signal_fit_asso_diff_highMult.FixBkg(false);
+    //     signal_fit_asso_diff_highMult.Fit();
+    //     StrSignalFit str_fit_result_asso_diff_highMult =
+    //         signal_fit_asso_diff_highMult.getFitResult();
+    //     h2Vec_AssoYeild_highMult.current().SetBinInfo(
+    //         str_fit_result_asso_diff_highMult.fNsig[0],
+    //         str_fit_result_asso_diff_highMult.fNsig[1]);
+    //     // if (i_deltaPhi == 1) {
+    //     signal_fit_asso_diff_highMult >> (gPublisherCanvas->NewPad());
+    //     // }
+    //     assoYeild_diff_highMult->Delete();
+    //     assoYeild_diff_lowMult->Delete();
+    //     signal_fit_asso_diff_highMult.clean();
+    //     signal_fit_asso_diff_lowMult.clean();
+    //   }
+    //   gPublisherCanvas->NextPage();
+    // }
+    // mass_highMult->Delete();
+    // mass_lowMult->Delete();
+    // assoYeild_highMult->Delete();
+    // assoYeild_lowMult->Delete();
+    // signal_fit_highMult.clean();
+    // signal_fit_lowMult.clean();
   }
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {

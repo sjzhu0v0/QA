@@ -41,7 +41,7 @@ void MultCalibrationResult(
   NumContribCalibRun->SetLineColor(kBlue);
   NumContribCalibRun->SetMarkerColor(kBlue);
   fNumContribRun->SetTitle("fNumContribRun;Run;<fNumContrib>");
-  fNumContribRun->GetYaxis()->SetRangeUser(32, 36);
+  fNumContribRun->GetYaxis()->SetRangeUser(28, 36);
 //   if (tag_period == "LHC24pass1_DiElectron")
 //     fNumContribRun->GetYaxis()->SetRangeUser(0, 40);
 
@@ -69,7 +69,7 @@ void MultCalibrationResult(
   NumContribCalibPosZ->SetMarkerColor(kBlue);
 
   fNumContribfPosZ->SetTitle("fNumContribfPosZ;fPosZ [cm];<fNumContrib>");
-  fNumContribfPosZ->GetYaxis()->SetRangeUser(32, 36);
+  fNumContribfPosZ->GetYaxis()->SetRangeUser(28, 36);
 //   if (tag_period == "LHC24pass1_DiElectron")
 //     fNumContribfPosZ->GetYaxis()->SetRangeUser(0, 40);
 

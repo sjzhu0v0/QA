@@ -75,6 +75,7 @@ void MultREFRaw(
     hist->GetZaxis()->SetTitleSize(size);
   };
   vector<TH2D *> vec_fNumContrib_fMultREF;
+  vector<TH1D *> vec_proj_lowNumContrib_x;
   for (int i_CondSameBunchPileup = 0; i_CondSameBunchPileup < 3;
        i_CondSameBunchPileup++) {
     auto fNumContrib_fMultREF = MRootIO::GetObjectDiectly<TH2D>(
@@ -143,6 +144,7 @@ void MultREFRaw(
         GetHistName1D(var_fMultREF,
                       conditions_samePileup[i_CondSameBunchPileup][1]),
         1, 4);
+    vec_proj_lowNumContrib_x.push_back(proj_lowNumContrib_x);
     MRootGraphic::StyleHistCommonHist(proj_lowNumContrib_x);
     gPad->SetLogy();
     gPad->SetLeftMargin(0.1);
@@ -168,6 +170,52 @@ void MultREFRaw(
   c_fNumContrib_fMultREF->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/"
                                  "MultREFRaw_NumContrib_vs_MultREF_" +
                                  tag_period + ".json");
+
+  TCanvas *c_fNumContrib_fMultREF_atLowMultREF =
+      new TCanvas("c_fNumContrib_fMultREF_atLowMultREF",
+                  "c_fNumContrib_fMultREF_atLowMultREF", 400, 400);
+  c_fNumContrib_fMultREF_atLowMultREF->cd();
+  gPad->SetLogy();
+  for (auto hist : vec_proj_lowNumContrib_x) {
+    hist->Scale(1. / hist->Integral("width"));
+    TPaveStats *st = (TPaveStats *)hist->FindObject("stats");
+    if (st) {
+      hist->GetListOfFunctions()->Remove(st);
+    }
+  }
+  gStyle->SetOptStat(0);
+
+  auto fNumContrib_noCut_lowMult = vec_proj_lowNumContrib_x[0];
+  auto fNumContrib_onlySameBunch_lowMult = vec_proj_lowNumContrib_x[2];
+  auto fNumContrib_noSameBunch_lowMult = vec_proj_lowNumContrib_x[1];
+
+  fNumContrib_noCut_lowMult->SetLineColor(kBlack);
+  fNumContrib_noSameBunch_lowMult->SetLineColor(kRed);
+  fNumContrib_onlySameBunch_lowMult->SetLineColor(kBlue);
+
+  fNumContrib_onlySameBunch_lowMult->Draw();
+  fNumContrib_noCut_lowMult->Draw("same");
+  fNumContrib_noSameBunch_lowMult->Draw("same");
+
+  TLegend *legend_proj_lowNumContrib_x = new TLegend(0.5, 0.6, 0.8, 0.8);
+  legend_proj_lowNumContrib_x->SetHeader("Mult_{REF}<4");
+  legend_proj_lowNumContrib_x->AddEntry(fNumContrib_noCut_lowMult, "No cut",
+                                        "l");
+  legend_proj_lowNumContrib_x->AddEntry(fNumContrib_noSameBunch_lowMult,
+                                        "No same bunch pileup", "l");
+  legend_proj_lowNumContrib_x->AddEntry(fNumContrib_onlySameBunch_lowMult,
+                                        "Only same bunch pileup", "l");
+  legend_proj_lowNumContrib_x->SetLineColor(0);
+  legend_proj_lowNumContrib_x->SetTextSize(0.04);
+  legend_proj_lowNumContrib_x->Draw();
+  c_fNumContrib_fMultREF_atLowMultREF->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/plot/event/"
+      "MultREFRaw_NumContrib_atLowMultREF_" +
+      tag_period + ".pdf");
+  c_fNumContrib_fMultREF_atLowMultREF->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/plot/event/"
+      "MultREFRaw_NumContrib_atLowMultREF_" +
+      tag_period + ".json");
 
   TCanvas *c_NumContrib = new TCanvas("c_NumContrib", "c_NumContrib", 800, 800);
   auto fNumContrib_isntSameBunchPileup =

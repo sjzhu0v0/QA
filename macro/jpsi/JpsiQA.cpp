@@ -110,7 +110,7 @@ void JpsiQA(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
-      {0, 23, 31, 37, 43, 48, 54, 61, 69, 81, 297});
+      {0,7,12,17,22,29,37,46,57,73,300});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
