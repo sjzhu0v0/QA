@@ -8,3 +8,5 @@ backup/
 *.pdf
 *.tgz
 *ACLiC*
+*.so
+*.d
