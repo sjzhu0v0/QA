@@ -65,6 +65,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
                           "AssoYeilFit_noScale.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYeildFit_noScale.pdf") {
+  gErrorIgnoreLevel = kWarning;
   SetUpJson();
   RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
   Configurable<int> config_n_rebin_mass("n_rebin_mass", 3);
@@ -174,6 +175,8 @@ funcWithJson(void, AssoYeildFit_noScale)(
   TFile *file_input_mass = new TFile(path_input_mass);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
+  gDirectory = nullptr;
+
   struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
                                       {2},
@@ -206,7 +209,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0,7,12,17,22,29,37,46,57,73,300});
+      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
@@ -242,9 +245,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   TH2D *mass_pt_lowMult = hnTool_mass.Project(1, 2, {0, 1});
   TH2D *mass_pt_highMult = hnTool_mass.Project(1, 2, {0, 2});
-
-  gDirectory = nullptr;
-
+  gDirectory = file_output;
   MHist2D h2_AssoYeild_lowMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
                                "AssoYeild_lowMult");
   MHist2D h2_AssoYeild_highMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
@@ -259,6 +260,8 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MHist1D h1_yeild_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
   MHist1D h1_yeild_highMult(indexHistPtV2Jpsi, "yield_highMult");
   MHist2D h2_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, "yield_sub");
+
+  auto *dir_detail = file_output->mkdir("Detail");
 
   gDirectory = nullptr;
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 1, 600, 600);
@@ -350,73 +353,81 @@ funcWithJson(void, AssoYeildFit_noScale)(
     signal_fit_asso_lowMult >> (gPublisherCanvas->NewPad());
     signal_fit_asso_highMult >> (gPublisherCanvas->NewPad());
 
-    // gPublisherCanvas->SetCanvasNwNh(5, 3);
+    dir_detail->Add(mass_highMult);
+    dir_detail->Add(mass_lowMult);
+    dir_detail->Add(assoYeild_highMult_proj);
+    dir_detail->Add(assoYeild_lowMult_proj);
 
-    // for (auto i_deltaEta : indexHistDeltaEtaUS) {
-    //   if (i_deltaEta > 29 || i_deltaEta <= 11)
-    //     continue;
-    //   for (auto i_deltaPhi : indexHistDeltaPhiUS) {
-    //     auto assoYeild_diff_highMult = assoYeild_highMult->ProjectionX(
-    //         Form("assoYeild_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-    //              i_deltaEta, i_deltaPhi),
-    //         i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
-    //     auto assoYeild_diff_lowMult = assoYeild_lowMult->ProjectionX(
-    //         Form("assoYeild_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-    //              i_deltaEta, i_deltaPhi),
-    //         i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
+    gPublisherCanvas->SetCanvasNwNh(5, 4);
 
-    //     MSignalFit signal_fit_asso_diff_lowMult(
-    //         Form("JpsiFit_asso_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-    //              i_deltaEta, i_deltaPhi),
-    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-    //     signal_fit_asso_diff_lowMult.InputData(assoYeild_diff_lowMult);
-    //     signal_fit_asso_diff_lowMult.CopySignal(signal_fit_asso_lowMult);
-    //     signal_fit_asso_diff_lowMult.CopyBkg(signal_fit_asso_lowMult);
-    //     signal_fit_asso_diff_lowMult.FixSignal();
-    //     signal_fit_asso_diff_lowMult.FixBkg(false);
-    //     signal_fit_asso_diff_lowMult.Fit();
-    //     StrSignalFit str_fit_result_asso_diff_lowMult =
-    //         signal_fit_asso_diff_lowMult.getFitResult();
-    //     h2Vec_AssoYeild_lowMult.current().SetBinInfo(
-    //         str_fit_result_asso_diff_lowMult.fNsig[0],
-    //         str_fit_result_asso_diff_lowMult.fNsig[1]);
-    //     // if (i_deltaPhi == 1) {
-    //     signal_fit_asso_diff_lowMult >> (gPublisherCanvas->NewPad());
-    //     // }
-    //     MSignalFit signal_fit_asso_diff_highMult(
-    //         Form("JpsiFit_asso_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-    //              i_deltaEta, i_deltaPhi),
-    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-    //         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-    //     signal_fit_asso_diff_highMult.InputData(assoYeild_diff_highMult);
-    //     signal_fit_asso_diff_highMult.CopySignal(signal_fit_asso_highMult);
-    //     signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_diff_lowMult);
-    //     // signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_highMult);
-    //     signal_fit_asso_diff_highMult.FixSignal();
-    //     signal_fit_asso_diff_highMult.FixBkg(false);
-    //     signal_fit_asso_diff_highMult.Fit();
-    //     StrSignalFit str_fit_result_asso_diff_highMult =
-    //         signal_fit_asso_diff_highMult.getFitResult();
-    //     h2Vec_AssoYeild_highMult.current().SetBinInfo(
-    //         str_fit_result_asso_diff_highMult.fNsig[0],
-    //         str_fit_result_asso_diff_highMult.fNsig[1]);
-    //     // if (i_deltaPhi == 1) {
-    //     signal_fit_asso_diff_highMult >> (gPublisherCanvas->NewPad());
-    //     // }
-    //     assoYeild_diff_highMult->Delete();
-    //     assoYeild_diff_lowMult->Delete();
-    //     signal_fit_asso_diff_highMult.clean();
-    //     signal_fit_asso_diff_lowMult.clean();
-    //   }
-    //   gPublisherCanvas->NextPage();
-    // }
-    // mass_highMult->Delete();
-    // mass_lowMult->Delete();
-    // assoYeild_highMult->Delete();
-    // assoYeild_lowMult->Delete();
-    // signal_fit_highMult.clean();
-    // signal_fit_lowMult.clean();
+    for (auto i_deltaEta : indexHistDeltaEtaUS) {
+      if (i_deltaEta > 29 || i_deltaEta <= 11)
+        // if (i_deltaEta > 21 || i_deltaEta <= 19)
+        continue;
+      for (auto i_deltaPhi : indexHistDeltaPhiUS) {
+        auto assoYeild_diff_highMult = assoYeild_highMult->ProjectionX(
+            Form("assoYeild_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+                 i_deltaEta, i_deltaPhi),
+            i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
+        auto assoYeild_diff_lowMult = assoYeild_lowMult->ProjectionX(
+            Form("assoYeild_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+                 i_deltaEta, i_deltaPhi),
+            i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
+        dir_detail->Add(assoYeild_diff_highMult);
+        dir_detail->Add(assoYeild_diff_lowMult);
+
+        MSignalFit signal_fit_asso_diff_lowMult(
+            Form("JpsiFit_asso_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+                 i_deltaEta, i_deltaPhi),
+            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
+            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
+        signal_fit_asso_diff_lowMult.InputData(assoYeild_diff_lowMult);
+        signal_fit_asso_diff_lowMult.CopySignal(signal_fit_asso_lowMult);
+        signal_fit_asso_diff_lowMult.CopyBkg(signal_fit_asso_lowMult);
+        signal_fit_asso_diff_lowMult.FixSignal();
+        signal_fit_asso_diff_lowMult.FixBkg(false);
+        signal_fit_asso_diff_lowMult.Fit();
+        StrSignalFit str_fit_result_asso_diff_lowMult =
+            signal_fit_asso_diff_lowMult.getFitResult();
+        h2Vec_AssoYeild_lowMult.current().SetBinInfo(
+            str_fit_result_asso_diff_lowMult.fNsig[0],
+            str_fit_result_asso_diff_lowMult.fNsig[1]);
+        // if (i_deltaPhi == 1) {
+        signal_fit_asso_diff_lowMult >> (gPublisherCanvas->NewPad());
+        // }
+        MSignalFit signal_fit_asso_diff_highMult(
+            Form("JpsiFit_asso_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+                 i_deltaEta, i_deltaPhi),
+            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
+            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
+        signal_fit_asso_diff_highMult.InputData(assoYeild_diff_highMult);
+        signal_fit_asso_diff_highMult.CopySignal(signal_fit_asso_highMult);
+        signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_diff_lowMult);
+        // signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_highMult);
+        signal_fit_asso_diff_highMult.FixSignal();
+        signal_fit_asso_diff_highMult.FixBkg();
+        signal_fit_asso_diff_highMult.Fit();
+        StrSignalFit str_fit_result_asso_diff_highMult =
+            signal_fit_asso_diff_highMult.getFitResult();
+        h2Vec_AssoYeild_highMult.current().SetBinInfo(
+            str_fit_result_asso_diff_highMult.fNsig[0],
+            str_fit_result_asso_diff_highMult.fNsig[1]);
+        // if (i_deltaPhi == 1) {
+        signal_fit_asso_diff_highMult >> (gPublisherCanvas->NewPad());
+        // }
+        assoYeild_diff_highMult->Delete();
+        assoYeild_diff_lowMult->Delete();
+        signal_fit_asso_diff_highMult.clean();
+        signal_fit_asso_diff_lowMult.clean();
+      }
+      gPublisherCanvas->AddText(Form("dEta bin: %d", i_deltaEta));
+    }
+    mass_highMult->Delete();
+    mass_lowMult->Delete();
+    assoYeild_highMult->Delete();
+    assoYeild_lowMult->Delete();
+    signal_fit_highMult.clean();
+    signal_fit_lowMult.clean();
   }
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
@@ -469,6 +480,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   gPublisherCanvas->finalize();
 
   file_output->Write();
+  dir_detail->Write();
   file_output->Close();
 }
 
