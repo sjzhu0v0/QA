@@ -62,7 +62,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
     TString path_input_mass = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
                               "JpsiMass_LHC24_apass1_DiElectron.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYeilFit_noScale.root",
+                          "AssoYeildFit_noScale.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYeildFit_noScale.pdf") {
   gErrorIgnoreLevel = kWarning;
@@ -245,13 +245,13 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   TH2D *mass_pt_lowMult = hnTool_mass.Project(1, 2, {0, 1});
   TH2D *mass_pt_highMult = hnTool_mass.Project(1, 2, {0, 2});
-  gDirectory = file_output;
   MHist2D h2_AssoYeild_lowMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
                                "AssoYeild_lowMult");
   MHist2D h2_AssoYeild_highMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
                                 "AssoYeild_highMult");
   MHist2D h2_AssoYeild_Sub(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
                            "AssoYeild_Sub");
+  gDirectory = file_output;
   using MVec1 = MVec<MHist2D, MIndexAny<StrAny_ptV2>>;
   MVec1 h2Vec_AssoYeild_lowMult(indexAnyPtV2Jpsi, h2_AssoYeild_lowMult);
   MVec1 h2Vec_AssoYeild_highMult(indexAnyPtV2Jpsi, h2_AssoYeild_highMult);
@@ -264,11 +264,20 @@ funcWithJson(void, AssoYeildFit_noScale)(
   auto *dir_detail = file_output->mkdir("Detail");
 
   gDirectory = nullptr;
-  gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 1, 600, 600);
+  gPublisherCanvas = new MPublisherCanvas(path_pdf, 1, 1, 600, 600);
+
+  auto mass_template = mass_pt_highMult->ProjectionY("mass_template", -1, -1);
+  MFitterPoly fitterPoly(mass_template, 2., 4.);
+  fitterPoly.initializeBasis(4);
+
+  auto assoYeild_template = hg3_assoYeild_highMult->GetHist(vector<int>{1})
+                                ->ProjectionX("assoYeild_template");
+  MFitterPoly fitterPoly_asso(assoYeild_template, 2., 4.);
+  fitterPoly_asso.initializeBasis(4);
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     if (iPtV2 != 1) {
-      gPublisherCanvas->SetCanvasNwNh(3, 1);
+      gPublisherCanvas->SetCanvasNwNh(1, 1);
     }
 
     auto bins_pt = indexAnyPtV2Jpsi[iPtV2 - 1];
@@ -280,89 +289,48 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
     auto mass_highMult = mass_pt_highMult->ProjectionY(
         Form("mass_highMult_ptV2_%d", iPtV2), bins_pt.front(), bins_pt.back());
-    MSignalFit signal_fit_highMult(
-        Form("JpsiFit_highMult_ptV2_%d", iPtV2),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-    signal_fit_highMult.InputData(mass_highMult);
-    chi2Fit(signal_fit_highMult);
-    signal_fit_highMult >> (gPublisherCanvas->NewPad());
-
-    gPublisherCanvas->AddText(str_bins_pt.Data());
-
     auto mass_lowMult = mass_pt_lowMult->ProjectionY(
         Form("mass_lowMult_ptV2_%d", iPtV2), bins_pt.front(), bins_pt.back());
+
     MSignalFit signal_fit_lowMult(
         Form("JpsiFit_lowMult_ptV2_%d", iPtV2),
         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
         ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-    // signal_fit_lowMult.CopySignal(signal_fit_highMult);
-    // signal_fit_lowMult.CopyBkg(signal_fit_highMult);
     signal_fit_lowMult.InputData(mass_lowMult);
     chi2Fit2(signal_fit_lowMult);
     signal_fit_lowMult >> (gPublisherCanvas->NewPad());
 
-    MSignalFit signal_fit_highMult_new(
-        Form("JpsiFit_highMult_ptV2_%d_new", iPtV2),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-    signal_fit_highMult_new.InputData(mass_highMult);
-    chi2Fit(signal_fit_highMult_new);
-    signal_fit_highMult_new.CopySignal(signal_fit_lowMult);
-    signal_fit_highMult_new.FixSignal();
-    signal_fit_highMult_new.chi2Fit();
-    signal_fit_highMult_new >> (gPublisherCanvas->NewPad());
+    auto signal_fit_lowMult_func = signal_fit_lowMult.GetSignalFunc();
+    fitterPoly.inputSignal(signal_fit_lowMult_func.get());
+    fitterPoly_asso.inputSignal(signal_fit_lowMult_func.get());
 
     gPublisherCanvas->SetCanvasNwNh(2, 1);
+    fitterPoly.setHisto(mass_highMult);
+    fitterPoly.fitWithSignal();
+    gPublisherCanvas->NewPad()->cd();
+    fitterPoly.Draw();
+
+    double nsignal_highMult = fitterPoly.fNSignal;
+    fitterPoly.setHisto(mass_lowMult);
+    fitterPoly.fitWithSignal();
+    gPublisherCanvas->NewPad()->cd();
+    fitterPoly.Draw();
+
+    double nsignal_lowMult = fitterPoly.fNSignal;
+    h1_yeild_highMult.currentObject().SetBinInfo(nsignal_highMult);
+    h1_yeild_lowMult.currentObject().SetBinInfo(nsignal_lowMult);
 
     auto assoYeild_highMult =
         hg3_assoYeild_highMult->GetHist(vector<int>{iPtV2});
-    auto assoYeild_highMult_proj = assoYeild_highMult->ProjectionX();
     auto assoYeild_lowMult = hg3_assoYeild_lowMult->GetHist(vector<int>{iPtV2});
-    auto assoYeild_lowMult_proj = assoYeild_lowMult->ProjectionX();
 
-    MSignalFit signal_fit_asso_highMult(
-        Form("JpsiFit_asso_highMult_ptV2_%d", iPtV2),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-    signal_fit_asso_highMult.InputData(assoYeild_highMult_proj);
-    signal_fit_asso_highMult.CopySignal(signal_fit_highMult_new);
-    signal_fit_asso_highMult.CopyBkg(signal_fit_highMult_new);
-    chi2Fit4(signal_fit_asso_highMult);
-    StrSignalFit str_fit_result_mass_highMult =
-        signal_fit_asso_highMult.getFitResult();
-    h1_yeild_highMult.fHisto->SetBinContent(
-        iPtV2, str_fit_result_mass_highMult.fNsig[0]);
-    h1_yeild_highMult.fHisto->SetBinError(
-        iPtV2, str_fit_result_mass_highMult.fNsig[1]);
-
-    MSignalFit signal_fit_asso_lowMult(
-        Form("JpsiFit_asso_lowMult_ptV2_%d", iPtV2),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-        ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-    signal_fit_asso_lowMult.InputData(assoYeild_lowMult_proj);
-    signal_fit_asso_lowMult.CopySignal(signal_fit_lowMult);
-    signal_fit_asso_lowMult.CopyBkg(signal_fit_asso_highMult);
-    chi2Fit4(signal_fit_asso_lowMult);
-    StrSignalFit str_fit_result_mass_lowMult =
-        signal_fit_asso_lowMult.getFitResult();
-    h1_yeild_lowMult.fHisto->SetBinContent(
-        iPtV2, str_fit_result_mass_lowMult.fNsig[0]);
-    h1_yeild_lowMult.fHisto->SetBinError(iPtV2,
-                                         str_fit_result_mass_lowMult.fNsig[1]);
-    signal_fit_asso_lowMult >> (gPublisherCanvas->NewPad());
-    signal_fit_asso_highMult >> (gPublisherCanvas->NewPad());
-
-    dir_detail->Add(mass_highMult);
-    dir_detail->Add(mass_lowMult);
-    dir_detail->Add(assoYeild_highMult_proj);
-    dir_detail->Add(assoYeild_lowMult_proj);
+    dir_detail->Add(mass_highMult->Clone());
+    dir_detail->Add(mass_lowMult->Clone());
 
     gPublisherCanvas->SetCanvasNwNh(5, 4);
 
     for (auto i_deltaEta : indexHistDeltaEtaUS) {
       if (i_deltaEta > 29 || i_deltaEta <= 11)
-        // if (i_deltaEta > 21 || i_deltaEta <= 19)
         continue;
       for (auto i_deltaPhi : indexHistDeltaPhiUS) {
         auto assoYeild_diff_highMult = assoYeild_highMult->ProjectionX(
@@ -373,63 +341,35 @@ funcWithJson(void, AssoYeildFit_noScale)(
             Form("assoYeild_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
                  i_deltaEta, i_deltaPhi),
             i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
-        dir_detail->Add(assoYeild_diff_highMult);
-        dir_detail->Add(assoYeild_diff_lowMult);
+        dir_detail->Add(assoYeild_diff_highMult->Clone());
+        dir_detail->Add(assoYeild_diff_lowMult->Clone());
+        fitterPoly_asso.setHisto(assoYeild_diff_highMult);
+        fitterPoly_asso.fitWithSignal();
+        double nyeild_highmult = fitterPoly_asso.fNSignal;
+        gPublisherCanvas->NewPad()->cd();
+        fitterPoly_asso.Draw();
 
-        MSignalFit signal_fit_asso_diff_lowMult(
-            Form("JpsiFit_asso_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-                 i_deltaEta, i_deltaPhi),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-        signal_fit_asso_diff_lowMult.InputData(assoYeild_diff_lowMult);
-        signal_fit_asso_diff_lowMult.CopySignal(signal_fit_asso_lowMult);
-        signal_fit_asso_diff_lowMult.CopyBkg(signal_fit_asso_lowMult);
-        signal_fit_asso_diff_lowMult.FixSignal();
-        signal_fit_asso_diff_lowMult.FixBkg(false);
-        signal_fit_asso_diff_lowMult.Fit();
-        StrSignalFit str_fit_result_asso_diff_lowMult =
-            signal_fit_asso_diff_lowMult.getFitResult();
-        h2Vec_AssoYeild_lowMult.current().SetBinInfo(
-            str_fit_result_asso_diff_lowMult.fNsig[0],
-            str_fit_result_asso_diff_lowMult.fNsig[1]);
-        // if (i_deltaPhi == 1) {
-        signal_fit_asso_diff_lowMult >> (gPublisherCanvas->NewPad());
-        // }
-        MSignalFit signal_fit_asso_diff_highMult(
-            Form("JpsiFit_asso_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
-                 i_deltaEta, i_deltaPhi),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 0),
-            ProxyTemplate(strAny_ptV2.index_template[iPtV2 - 1], 1), 2., 4.);
-        signal_fit_asso_diff_highMult.InputData(assoYeild_diff_highMult);
-        signal_fit_asso_diff_highMult.CopySignal(signal_fit_asso_highMult);
-        signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_diff_lowMult);
-        // signal_fit_asso_diff_highMult.CopyBkg(signal_fit_asso_highMult);
-        signal_fit_asso_diff_highMult.FixSignal();
-        signal_fit_asso_diff_highMult.FixBkg();
-        signal_fit_asso_diff_highMult.Fit();
-        StrSignalFit str_fit_result_asso_diff_highMult =
-            signal_fit_asso_diff_highMult.getFitResult();
-        h2Vec_AssoYeild_highMult.current().SetBinInfo(
-            str_fit_result_asso_diff_highMult.fNsig[0],
-            str_fit_result_asso_diff_highMult.fNsig[1]);
-        // if (i_deltaPhi == 1) {
-        signal_fit_asso_diff_highMult >> (gPublisherCanvas->NewPad());
-        // }
-        assoYeild_diff_highMult->Delete();
-        assoYeild_diff_lowMult->Delete();
-        signal_fit_asso_diff_highMult.clean();
-        signal_fit_asso_diff_lowMult.clean();
+        fitterPoly_asso.setHisto(assoYeild_diff_lowMult);
+        fitterPoly_asso.fitWithSignal();
+        double nyeild_lowmult = fitterPoly_asso.fNSignal;
+        gPublisherCanvas->NewPad()->cd();
+        fitterPoly_asso.Draw();
+
+        h2Vec_AssoYeild_highMult.currentObject().SetBinInfo(nyeild_highmult);
+        h2Vec_AssoYeild_lowMult.currentObject().SetBinInfo(nyeild_lowmult);
+
+        // assoYeild_diff_highMult->Delete();
+        // assoYeild_diff_lowMult->Delete();
       }
       gPublisherCanvas->AddText(Form("dEta bin: %d", i_deltaEta));
     }
-    mass_highMult->Delete();
-    mass_lowMult->Delete();
-    assoYeild_highMult->Delete();
-    assoYeild_lowMult->Delete();
-    signal_fit_highMult.clean();
-    signal_fit_lowMult.clean();
+    // mass_highMult->Delete();
+    // mass_lowMult->Delete();
+    // assoYeild_highMult->Delete();
+    // assoYeild_lowMult->Delete();
+    // cout << "Finished ptV2 bin: " << str_bins_pt << endl;
   }
-
+  cout << "Start Subtraction" << endl;
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     auto assoYeild_lowMult =
         (TH1D *)h2Vec_AssoYeild_lowMult.current().fHisto->Clone();
