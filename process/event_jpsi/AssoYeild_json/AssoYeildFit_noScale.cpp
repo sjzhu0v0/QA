@@ -212,7 +212,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
       {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
+  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
   StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
                              {-4., 4.});
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
@@ -260,8 +260,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MHist1D h1_yeild_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
   MHist1D h1_yeild_highMult(indexHistPtV2Jpsi, "yield_highMult");
   // MHist2D h2_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, "yield_sub");
-  // MHist3D h3_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, indexHistDeltaPhiUS,
-  //                      "yield_sub");
 
   auto *dir_detail = file_output->mkdir("Detail");
 

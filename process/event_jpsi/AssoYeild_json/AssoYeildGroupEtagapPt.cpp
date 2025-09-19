@@ -19,7 +19,7 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
-  struct StrAny_ptV2 {
+   struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
                                       {2},
                                       {3},
