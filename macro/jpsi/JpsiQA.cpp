@@ -119,7 +119,7 @@ void JpsiQA(
                                 {0, 150});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
   StrVar4Hist var_PtJpsiCandidateFine("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
 
 #define obj2push_thnd(rdf2push, ...)                                           \

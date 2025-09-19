@@ -49,7 +49,7 @@ void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
                                 {0, 150});
   StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
                                     {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 5.});
 
   const vector<double> bins_mix_numContrib = var_NumContribCalibBinned.fBins;
   const vector<double> bins_mix_posZ = var_fPosZMix.fBins;

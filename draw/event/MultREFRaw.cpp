@@ -41,7 +41,7 @@ void MultREFRaw(
                                 {0, 150});
   StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
                                     {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("fPT", "M_{ee}", "GeV/c", 10, {0., 10.});
+  StrVar4Hist var_PtJpsiCandidate("fPT", "M_{ee}", "GeV/c", 10, {0., 5.});
 
   vector<array<string, 2>> conditions_samePileup = {
       {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},
