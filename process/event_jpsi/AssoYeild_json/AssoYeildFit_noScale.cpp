@@ -260,8 +260,8 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MHist1D h1_yeild_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
   MHist1D h1_yeild_highMult(indexHistPtV2Jpsi, "yield_highMult");
   // MHist2D h2_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, "yield_sub");
-  MHist3D h3_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, indexHistDeltaPhiUS,
-                       "yield_sub");
+  // MHist3D h3_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, indexHistDeltaPhiUS,
+  //                      "yield_sub");
 
   auto *dir_detail = file_output->mkdir("Detail");
 
@@ -373,72 +373,72 @@ funcWithJson(void, AssoYeildFit_noScale)(
     // assoYeild_lowMult->Delete();
     // cout << "Finished ptV2 bin: " << str_bins_pt << endl;
   }
-  cout << "Start Subtraction" << endl;
-  for (auto iPtV2 : indexAnyPtV2Jpsi) {
-    auto assoYeild_lowMult =
-        (TH1D *)h2Vec_AssoYeild_lowMult.current().fHisto->Clone();
-    auto assoYeild_highMult =
-        (TH1D *)h2Vec_AssoYeild_highMult.current().fHisto->Clone();
-    double yeild_low = h1_yeild_lowMult.fHisto->GetBinContent(iPtV2);
-    double yeild_high = h1_yeild_highMult.fHisto->GetBinContent(iPtV2);
+  // cout << "Start Subtraction" << endl;
+  // for (auto iPtV2 : indexAnyPtV2Jpsi) {
+  //   auto assoYeild_lowMult =
+  //       (TH1D *)h2Vec_AssoYeild_lowMult.current().fHisto->Clone();
+  //   auto assoYeild_highMult =
+  //       (TH1D *)h2Vec_AssoYeild_highMult.current().fHisto->Clone();
+  //   double yeild_low = h1_yeild_lowMult.fHisto->GetBinContent(iPtV2);
+  //   double yeild_high = h1_yeild_highMult.fHisto->GetBinContent(iPtV2);
 
-    assoYeild_lowMult->Scale(1. / yeild_low);
-    assoYeild_highMult->Scale(1. / yeild_high);
+  //   assoYeild_lowMult->Scale(1. / yeild_low);
+  //   assoYeild_highMult->Scale(1. / yeild_high);
 
-    assoYeild_highMult->Add(assoYeild_lowMult, -1);
+  //   assoYeild_highMult->Add(assoYeild_lowMult, -1);
 
-    for (auto iEta : indexHistDeltaEtaUS) {
-      for (auto iPhi : indexHistDeltaPhiUS) {
-        int bin = assoYeild_highMult->GetBin(iEta, iPhi);
-        double val = assoYeild_highMult->GetBinContent(bin);
-        double err = assoYeild_highMult->GetBinError(bin);
-        if (val < 0) {
-          val = 0;
-        }
-        h2Vec_AssoYeild_Sub.current().SetBinInfo(val, 0);
-      }
-    }
-  }
+  //   for (auto iEta : indexHistDeltaEtaUS) {
+  //     for (auto iPhi : indexHistDeltaPhiUS) {
+  //       int bin = assoYeild_highMult->GetBin(iEta, iPhi);
+  //       double val = assoYeild_highMult->GetBinContent(bin);
+  //       double err = assoYeild_highMult->GetBinError(bin);
+  //       if (val < 0) {
+  //         val = 0;
+  //       }
+  //       h2Vec_AssoYeild_Sub.current().SetBinInfo(val, 0);
+  //     }
+  //   }
+  // }
 
-  auto ApplyEtaGap = [](std::shared_ptr<TH2D> h2, double gap_eta) {
-    h2->GetXaxis()->SetRangeUser(-1.8, -gap_eta / 2.);
-    auto h1_highSubLow_mass1 =
-        (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass1_%d", GenerateUID()));
-    h2->GetXaxis()->SetRangeUser(gap_eta / 2., 1.8);
-    auto h1_highSubLow_mass =
-        (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass_%d", GenerateUID()));
-    h1_highSubLow_mass->Add(h1_highSubLow_mass1);
-    return h1_highSubLow_mass;
-  };
+  // auto ApplyEtaGap = [](std::shared_ptr<TH2D> h2, double gap_eta) {
+  //   h2->GetXaxis()->SetRangeUser(-1.8, -gap_eta / 2.);
+  //   auto h1_highSubLow_mass1 =
+  //       (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass1_%d", GenerateUID()));
+  //   h2->GetXaxis()->SetRangeUser(gap_eta / 2., 1.8);
+  //   auto h1_highSubLow_mass =
+  //       (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass_%d", GenerateUID()));
+  //   h1_highSubLow_mass->Add(h1_highSubLow_mass1);
+  //   return h1_highSubLow_mass;
+  // };
 
-  for (auto iPtV2 : indexAnyPtV2Jpsi) {
-    auto h2_sub = h2Vec_AssoYeild_Sub.current().fHisto;
-    for (auto iEtaGap : indexHistEtaGap) {
-      double deltaEta = indexHistEtaGap.GetBinUpperEdge();
-      auto h1_sub = ApplyEtaGap(h2_sub, deltaEta);
-      for (auto iDeltaPhi : indexHistDeltaPhiUS) {
-        double value_sub = h1_sub->GetBinContent(iDeltaPhi);
-        h3_yeild_sub.fHisto->SetBinContent(iPtV2, iEtaGap, iDeltaPhi,
-                                           value_sub);
-      }
-    }
-  }
+  // for (auto iPtV2 : indexAnyPtV2Jpsi) {
+  //   auto h2_sub = h2Vec_AssoYeild_Sub.current().fHisto;
+  //   for (auto iEtaGap : indexHistEtaGap) {
+  //     double deltaEta = indexHistEtaGap.GetBinUpperEdge();
+  //     auto h1_sub = ApplyEtaGap(h2_sub, deltaEta);
+  //     for (auto iDeltaPhi : indexHistDeltaPhiUS) {
+  //       double value_sub = h1_sub->GetBinContent(iDeltaPhi);
+  //       h3_yeild_sub.fHisto->SetBinContent(iPtV2, iEtaGap, iDeltaPhi,
+  //                                          value_sub);
+  //     }
+  //   }
+  // }
 
-  auto dir_detail2 = file_output->mkdir("yeild_sub");
+  // auto dir_detail2 = file_output->mkdir("yeild_sub");
 
-  for (auto iPtV2 : indexAnyPtV2Jpsi)
-    for (auto iEtaGap : indexHistEtaGap) {
-      auto h1 = h3_yeild_sub.fHisto->ProjectionZ(
-          Form("h1_yeild_sub_ptV2_%d_etaGap_%d", iPtV2, iEtaGap), iPtV2, iPtV2,
-          iEtaGap, iEtaGap);
-      dir_detail2->Add(h1->Clone());
-    }
+  // for (auto iPtV2 : indexAnyPtV2Jpsi)
+  //   for (auto iEtaGap : indexHistEtaGap) {
+  //     auto h1 = h3_yeild_sub.fHisto->ProjectionZ(
+  //         Form("h1_yeild_sub_ptV2_%d_etaGap_%d", iPtV2, iEtaGap), iPtV2, iPtV2,
+  //         iEtaGap, iEtaGap);
+  //     dir_detail2->Add(h1->Clone());
+  //   }
 
   gPublisherCanvas->finalize();
 
   file_output->Write();
-  dir_detail->Write();
-  dir_detail2->Write();
+  // dir_detail->Write();
+  // dir_detail2->Write();
   file_output->Close();
 }
 
