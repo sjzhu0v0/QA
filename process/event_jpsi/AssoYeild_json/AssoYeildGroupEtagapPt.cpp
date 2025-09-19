@@ -25,20 +25,46 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
                                       {3},
                                       {4},
                                       {5},
+                                      {6},
+                                      {7},
+                                      {8},
+                                      {9},
+                                      {10},
                                       {1, 2},
                                       {2, 3},
                                       {3, 4},
                                       {4, 5},
                                       {5, 6},
+                                      {6, 7},
+                                      {7, 8},
+                                      {8, 9},
+                                      {9, 10},
                                       {1, 2, 3},
                                       {2, 3, 4},
                                       {3, 4, 5},
                                       {4, 5, 6},
+                                      {5, 6, 7},
+                                      {6, 7, 8},
+                                      {7, 8, 9},
+                                      {8, 9, 10},
                                       {1, 2, 3, 4},
                                       {2, 3, 4, 5},
                                       {3, 4, 5, 6},
+                                      {4, 5, 6, 7},
+                                      {5, 6, 7, 8},
+                                      {6, 7, 8, 9},
+                                      {7, 8, 9, 10},
                                       {1, 2, 3, 4, 5},
+                                      {2, 3, 4, 5, 6},
+                                      {3, 4, 5, 6, 7},
+                                      {4, 5, 6, 7, 8},
+                                      {5, 6, 7, 8, 9},
                                       {6, 7, 8, 9, 10},
+                                      {1, 2, 3, 4, 5, 6},
+                                      {2, 3, 4, 5, 6, 7},
+                                      {3, 4, 5, 6, 7, 8},
+                                      {4, 5, 6, 7, 8, 9},
+                                      {5, 6, 7, 8, 9, 10},
                                       {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
     const int fNbins = bins.size();
     const TString fName = "ptV2";
@@ -49,7 +75,7 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0,7,12,17,22,29,37,46,57,73,300});
+      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
