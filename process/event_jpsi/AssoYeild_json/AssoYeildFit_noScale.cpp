@@ -259,7 +259,9 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   MHist1D h1_yeild_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
   MHist1D h1_yeild_highMult(indexHistPtV2Jpsi, "yield_highMult");
-  MHist2D h2_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, "yield_sub");
+  // MHist2D h2_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, "yield_sub");
+  MHist3D h3_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, indexHistDeltaPhiUS,
+                       "yield_sub");
 
   auto *dir_detail = file_output->mkdir("Detail");
 
@@ -317,8 +319,10 @@ funcWithJson(void, AssoYeildFit_noScale)(
     fitterPoly.Draw();
 
     double nsignal_lowMult = fitterPoly.fNSignal;
-    h1_yeild_highMult.currentObject().SetBinInfo(nsignal_highMult);
-    h1_yeild_lowMult.currentObject().SetBinInfo(nsignal_lowMult);
+    // h1_yeild_highMult.currentObject().SetBinInfo(nsignal_highMult);
+    // h1_yeild_lowMult.currentObject().SetBinInfo(nsignal_lowMult);
+    h1_yeild_highMult.fHisto->SetBinContent(iPtV2, nsignal_highMult);
+    h1_yeild_lowMult.fHisto->SetBinContent(iPtV2, nsignal_lowMult);
 
     auto assoYeild_highMult =
         hg3_assoYeild_highMult->GetHist(vector<int>{iPtV2});
@@ -412,15 +416,29 @@ funcWithJson(void, AssoYeildFit_noScale)(
     for (auto iEtaGap : indexHistEtaGap) {
       double deltaEta = indexHistEtaGap.GetBinUpperEdge();
       auto h1_sub = ApplyEtaGap(h2_sub, deltaEta);
-      double value_sub = h1_sub->GetBinContent(iEtaGap);
-      h2_yeild_sub.fHisto->SetBinContent(iPtV2, iEtaGap, value_sub);
+      for (auto iDeltaPhi : indexHistDeltaPhiUS) {
+        double value_sub = h1_sub->GetBinContent(iDeltaPhi);
+        h3_yeild_sub.fHisto->SetBinContent(iPtV2, iEtaGap, iDeltaPhi,
+                                           value_sub);
+      }
     }
   }
+
+  auto dir_detail2 = file_output->mkdir("yeild_sub");
+
+  for (auto iPtV2 : indexAnyPtV2Jpsi)
+    for (auto iEtaGap : indexHistEtaGap) {
+      auto h1 = h3_yeild_sub.fHisto->ProjectionZ(
+          Form("h1_yeild_sub_ptV2_%d_etaGap_%d", iPtV2, iEtaGap), iPtV2, iPtV2,
+          iEtaGap, iEtaGap);
+      dir_detail2->Add(h1->Clone());
+    }
 
   gPublisherCanvas->finalize();
 
   file_output->Write();
   dir_detail->Write();
+  dir_detail2->Write();
   file_output->Close();
 }
 
