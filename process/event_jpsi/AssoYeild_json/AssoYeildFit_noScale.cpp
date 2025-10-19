@@ -103,10 +103,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
     signal_fit_total.FixBkg();
     signal_fit_total.FixSignal();
     signal_fit_total.chi2Fit();
-    // signal_fit_total.FixBkg(false);
-    // signal_fit_total.FixSignal();
-    // signal_fit_total.Fit();
-    // signal_fit_total.FixBkg(false);
     signal_fit_total.FixSignal(false);
     signal_fit_total.chi2Fit();
     signal_fit_total.FixBkg(false);
@@ -114,18 +110,9 @@ funcWithJson(void, AssoYeildFit_noScale)(
   };
 
   auto chi2Fit3 = [](MSignalFit &signal_fit_total) {
-    // signal_fit_total.FixBkg();
-    // signal_fit_total.RemoveLimit();
     signal_fit_total.FixSignal();
     signal_fit_total.FixBkg(false);
     signal_fit_total.chi2Fit();
-    // signal_fit_total.FixBkg(false);
-    // signal_fit_total.FixSignal();
-    // signal_fit_total.chi2Fit();
-    // signal_fit_total.FixBkg(false);
-    // signal_fit_total.FixSignal(false);
-    // signal_fit_total.chi2Fit();
-    // signal_fit_total.chi2Fit();
   };
 
   auto chi2Fit4 = [](MSignalFit &signal_fit_total) {
@@ -135,19 +122,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
     signal_fit_total.FixBkg(false);
     signal_fit_total.FixSignal();
     signal_fit_total.chi2Fit();
-    // signal_fit_total.FixSignal(false);
-    // signal_fit_total.FixBkg();
-    // signal_fit_total.chi2Fit();
-    // signal_fit_total.FixBkg(false);
-    // signal_fit_total.chi2Fit();
-    // signal_fit_total.FixBkg(false);
-    // signal_fit_total.FixSignal();
-    // signal_fit_total.chi2Fit();
-    // signal_fit_total.FixBkg(false);
-    // signal_fit_total.FixSignal(false);
-    // signal_fit_total.chi2Fit();
-    // signal_fit_total.RemoveLimit();
-    // signal_fit_total.chi2Fit();
   };
 
   TFile *file_input2 = new TFile("/home/szhu/work/alice/analysis/QA/input/jpsi/"
@@ -156,8 +130,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
       GetTemplate("/home/szhu/work/alice/analysis/QA/output/jpsi/fit_template/"
                   "LHC22pass4_dqfilter");
   gTemplate = &vec_arr_template;
-  auto fPosZ_fMass_fPT_NumContribCalib_Binned = MRootIO::GetObjectDiectly<THnD>(
-      file_input2, "fPosZ_MassUS_PtUS_NumContribCalib");
 
   TF1 *gF_signal = new TF1(Form("signal"),
                            "ROOT::Math::crystalball_function(x,[Alpha],[N],["
@@ -183,23 +155,50 @@ funcWithJson(void, AssoYeildFit_noScale)(
                                       {3},
                                       {4},
                                       {5},
+                                      {6},
+                                      {7},
+                                      {8},
+                                      {9},
+                                      {10},
                                       {1, 2},
                                       {2, 3},
                                       {3, 4},
                                       {4, 5},
                                       {5, 6},
+                                      {6, 7},
+                                      {7, 8},
+                                      {8, 9},
+                                      {9, 10},
                                       {1, 2, 3},
                                       {2, 3, 4},
                                       {3, 4, 5},
                                       {4, 5, 6},
+                                      {5, 6, 7},
+                                      {6, 7, 8},
+                                      {7, 8, 9},
+                                      {8, 9, 10},
                                       {1, 2, 3, 4},
                                       {2, 3, 4, 5},
                                       {3, 4, 5, 6},
+                                      {4, 5, 6, 7},
+                                      {5, 6, 7, 8},
+                                      {6, 7, 8, 9},
+                                      {7, 8, 9, 10},
                                       {1, 2, 3, 4, 5},
+                                      {2, 3, 4, 5, 6},
+                                      {3, 4, 5, 6, 7},
+                                      {4, 5, 6, 7, 8},
+                                      {5, 6, 7, 8, 9},
                                       {6, 7, 8, 9, 10},
+                                      {1, 2, 3, 4, 5, 6},
+                                      {2, 3, 4, 5, 6, 7},
+                                      {3, 4, 5, 6, 7, 8},
+                                      {4, 5, 6, 7, 8, 9},
+                                      {5, 6, 7, 8, 9, 10},
                                       {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
-    const vector<int> index_template = {1, 2, 3, 4, 4, 2, 3, 4, 4, 4,
-                                        0, 0, 4, 4, 2, 3, 4, 0, 4, 0};
+    const vector<int> index_template = {
+        1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 1, 1, 2, 2, 2, 3, 4, 4, 4, 2, 2, 3, 3,
+        3, 4, 4, 4, 2, 2, 3, 3, 3, 4, 4, 2, 2, 3, 3, 3, 4, 2, 2, 3, 3, 3, 0};
     const int fNbins = bins.size();
     const TString fName = "ptV2";
 
@@ -255,11 +254,9 @@ funcWithJson(void, AssoYeildFit_noScale)(
   using MVec1 = MVec<MHist2D, MIndexAny<StrAny_ptV2>>;
   MVec1 h2Vec_AssoYeild_lowMult(indexAnyPtV2Jpsi, h2_AssoYeild_lowMult);
   MVec1 h2Vec_AssoYeild_highMult(indexAnyPtV2Jpsi, h2_AssoYeild_highMult);
-  MVec1 h2Vec_AssoYeild_Sub(indexAnyPtV2Jpsi, h2_AssoYeild_Sub);
 
   MHist1D h1_yeild_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
   MHist1D h1_yeild_highMult(indexHistPtV2Jpsi, "yield_highMult");
-  // MHist2D h2_yeild_sub(indexHistPtV2Jpsi, indexHistEtaGap, "yield_sub");
 
   auto *dir_detail = file_output->mkdir("Detail");
 
@@ -309,16 +306,13 @@ funcWithJson(void, AssoYeildFit_noScale)(
     fitterPoly.fitWithSignal();
     gPublisherCanvas->NewPad()->cd();
     fitterPoly.Draw();
-
     double nsignal_highMult = fitterPoly.fNSignal;
     fitterPoly.setHisto(mass_lowMult);
     fitterPoly.fitWithSignal();
     gPublisherCanvas->NewPad()->cd();
     fitterPoly.Draw();
-
     double nsignal_lowMult = fitterPoly.fNSignal;
-    // h1_yeild_highMult.currentObject().SetBinInfo(nsignal_highMult);
-    // h1_yeild_lowMult.currentObject().SetBinInfo(nsignal_lowMult);
+
     h1_yeild_highMult.fHisto->SetBinContent(iPtV2, nsignal_highMult);
     h1_yeild_lowMult.fHisto->SetBinContent(iPtV2, nsignal_lowMult);
 
@@ -326,8 +320,11 @@ funcWithJson(void, AssoYeildFit_noScale)(
         hg3_assoYeild_highMult->GetHist(vector<int>{iPtV2});
     auto assoYeild_lowMult = hg3_assoYeild_lowMult->GetHist(vector<int>{iPtV2});
 
-    dir_detail->Add(mass_highMult->Clone());
-    dir_detail->Add(mass_lowMult->Clone());
+    mass_highMult->SetDirectory(nullptr);
+    mass_lowMult->SetDirectory(nullptr);
+
+    dir_detail->Add(mass_highMult);
+    dir_detail->Add(mass_lowMult);
 
     gPublisherCanvas->SetCanvasNwNh(5, 4);
 
@@ -343,8 +340,10 @@ funcWithJson(void, AssoYeildFit_noScale)(
             Form("assoYeild_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
                  i_deltaEta, i_deltaPhi),
             i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
-        dir_detail->Add(assoYeild_diff_highMult->Clone());
-        dir_detail->Add(assoYeild_diff_lowMult->Clone());
+        assoYeild_diff_highMult->SetDirectory(nullptr);
+        assoYeild_diff_lowMult->SetDirectory(nullptr);
+        dir_detail->Add(assoYeild_diff_highMult);
+        dir_detail->Add(assoYeild_diff_lowMult);
         fitterPoly_asso.setHisto(assoYeild_diff_highMult);
         fitterPoly_asso.fitWithSignal();
         double nyeild_highmult = fitterPoly_asso.fNSignal;
@@ -359,83 +358,15 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
         h2Vec_AssoYeild_highMult.currentObject().SetBinInfo(nyeild_highmult);
         h2Vec_AssoYeild_lowMult.currentObject().SetBinInfo(nyeild_lowmult);
-
-        // assoYeild_diff_highMult->Delete();
-        // assoYeild_diff_lowMult->Delete();
       }
       gPublisherCanvas->AddText(Form("dEta bin: %d", i_deltaEta));
     }
-    // mass_highMult->Delete();
-    // mass_lowMult->Delete();
-    // assoYeild_highMult->Delete();
-    // assoYeild_lowMult->Delete();
-    // cout << "Finished ptV2 bin: " << str_bins_pt << endl;
   }
-  // cout << "Start Subtraction" << endl;
-  // for (auto iPtV2 : indexAnyPtV2Jpsi) {
-  //   auto assoYeild_lowMult =
-  //       (TH1D *)h2Vec_AssoYeild_lowMult.current().fHisto->Clone();
-  //   auto assoYeild_highMult =
-  //       (TH1D *)h2Vec_AssoYeild_highMult.current().fHisto->Clone();
-  //   double yeild_low = h1_yeild_lowMult.fHisto->GetBinContent(iPtV2);
-  //   double yeild_high = h1_yeild_highMult.fHisto->GetBinContent(iPtV2);
-
-  //   assoYeild_lowMult->Scale(1. / yeild_low);
-  //   assoYeild_highMult->Scale(1. / yeild_high);
-
-  //   assoYeild_highMult->Add(assoYeild_lowMult, -1);
-
-  //   for (auto iEta : indexHistDeltaEtaUS) {
-  //     for (auto iPhi : indexHistDeltaPhiUS) {
-  //       int bin = assoYeild_highMult->GetBin(iEta, iPhi);
-  //       double val = assoYeild_highMult->GetBinContent(bin);
-  //       double err = assoYeild_highMult->GetBinError(bin);
-  //       if (val < 0) {
-  //         val = 0;
-  //       }
-  //       h2Vec_AssoYeild_Sub.current().SetBinInfo(val, 0);
-  //     }
-  //   }
-  // }
-
-  // auto ApplyEtaGap = [](std::shared_ptr<TH2D> h2, double gap_eta) {
-  //   h2->GetXaxis()->SetRangeUser(-1.8, -gap_eta / 2.);
-  //   auto h1_highSubLow_mass1 =
-  //       (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass1_%d", GenerateUID()));
-  //   h2->GetXaxis()->SetRangeUser(gap_eta / 2., 1.8);
-  //   auto h1_highSubLow_mass =
-  //       (TH1D *)h2->ProjectionY(Form("h1_highSubLow_mass_%d", GenerateUID()));
-  //   h1_highSubLow_mass->Add(h1_highSubLow_mass1);
-  //   return h1_highSubLow_mass;
-  // };
-
-  // for (auto iPtV2 : indexAnyPtV2Jpsi) {
-  //   auto h2_sub = h2Vec_AssoYeild_Sub.current().fHisto;
-  //   for (auto iEtaGap : indexHistEtaGap) {
-  //     double deltaEta = indexHistEtaGap.GetBinUpperEdge();
-  //     auto h1_sub = ApplyEtaGap(h2_sub, deltaEta);
-  //     for (auto iDeltaPhi : indexHistDeltaPhiUS) {
-  //       double value_sub = h1_sub->GetBinContent(iDeltaPhi);
-  //       h3_yeild_sub.fHisto->SetBinContent(iPtV2, iEtaGap, iDeltaPhi,
-  //                                          value_sub);
-  //     }
-  //   }
-  // }
-
-  // auto dir_detail2 = file_output->mkdir("yeild_sub");
-
-  // for (auto iPtV2 : indexAnyPtV2Jpsi)
-  //   for (auto iEtaGap : indexHistEtaGap) {
-  //     auto h1 = h3_yeild_sub.fHisto->ProjectionZ(
-  //         Form("h1_yeild_sub_ptV2_%d_etaGap_%d", iPtV2, iEtaGap), iPtV2, iPtV2,
-  //         iEtaGap, iEtaGap);
-  //     dir_detail2->Add(h1->Clone());
-  //   }
 
   gPublisherCanvas->finalize();
 
   file_output->Write();
-  // dir_detail->Write();
+  dir_detail->Write();
   // dir_detail2->Write();
   file_output->Close();
 }
