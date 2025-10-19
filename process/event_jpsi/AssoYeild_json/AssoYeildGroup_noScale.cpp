@@ -75,7 +75,7 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0,7,12,17,22,29,37,46,57,73,300});
+      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
@@ -158,4 +158,25 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   gPublisherCanvas->finalize();
   file_output->Write();
   file_output->Close();
+}
+
+int main(int argc, char **argv) {
+  if (argc < 1) {
+    cerr << "Usage: ./AssoYeildGroup_noScale [path_input] [path_output] "
+            "[path_pdf]"
+         << endl;
+    return 1;
+  }
+  if (argc == 1) {
+    AssoYeildGroup_noScale();
+  } else if (argc == 4) {
+    AssoYeildGroup_noScale(TString(argv[1]), TString(argv[2]),
+                           TString(argv[3]));
+  } else {
+    cerr << "Usage: ./AssoYeildGroup_noScale [path_input] [path_output] "
+            "[path_pdf]"
+         << endl;
+    return 1;
+  }
+  return 0;
 }
