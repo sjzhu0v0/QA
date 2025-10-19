@@ -4,6 +4,7 @@
 #include "MRootGraphic.h"
 #include "MRootIO.h"
 #include "TApplication.h"
+#include "TSystem.h"
 
 funcWithJson(void, AssoYeildGroup_noScale)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
@@ -13,6 +14,7 @@ funcWithJson(void, AssoYeildGroup_noScale)(
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYeildGroup_noScale.pdf") {
   SetUpJson();
+  gROOT->SetBatch(kTRUE);
   Configurable<int> config_n_rebin_mass("n_rebin_mass", 3);
   int n_rebin_mass = config_n_rebin_mass.data;
 
@@ -104,15 +106,27 @@ funcWithJson(void, AssoYeildGroup_noScale)(
       file_input, "h2_highMult_mass_pt_%d_%d",
       {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
 
-  MHist3D h3_AssoYeild_lowMult(indexHistMass, indexHistDeltaEtaUS,
-                               indexHistDeltaPhiUS, "AssoYeild_lowMult");
-  MHist3D h3_AssoYeild_highMult(indexHistMass, indexHistDeltaEtaUS,
-                                indexHistDeltaPhiUS, "AssoYeild_highMult");
-  gDirectory = file_output;
-  using MVec1 = MVec<MHist3D, MIndexAny<StrAny_ptV2>>;
-  MVec1 h3Vec_AssoYeild_lowMult(indexAnyPtV2Jpsi, h3_AssoYeild_lowMult);
-  MVec1 h3Vec_AssoYeild_highMult(indexAnyPtV2Jpsi, h3_AssoYeild_highMult);
+  MHist1D h1_AssoYeild_lowMult(indexHistMass, "AssoYeild_lowMult");
+  MHist1D h1_AssoYeild_highMult(indexHistMass, "AssoYeild_highMult");
+
   gDirectory = nullptr;
+
+  MVec<MHist1D> h1_AssoYeild_lowMult_DeltaEta(indexHistDeltaEtaUS,
+                                              h1_AssoYeild_lowMult);
+  MVec<MHist1D> h1_AssoYeild_highMult_DeltaEta(indexHistDeltaEtaUS,
+                                               h1_AssoYeild_highMult);
+
+  MVec<MVec<MHist1D>> h1_AssoYeild_lowMult_DeltaEta_DeltaPhi(
+      indexHistDeltaPhiUS, h1_AssoYeild_lowMult_DeltaEta);
+  MVec<MVec<MHist1D>> h1_AssoYeild_highMult_DeltaEta_DeltaPhi(
+      indexHistDeltaPhiUS, h1_AssoYeild_highMult_DeltaEta);
+
+  gDirectory = file_output;
+  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYeild_lowMult(
+      indexAnyPtV2Jpsi, h1_AssoYeild_lowMult_DeltaEta_DeltaPhi);
+  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYeild_highMult(
+      indexAnyPtV2Jpsi, h1_AssoYeild_highMult_DeltaEta_DeltaPhi);
+
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 2, 1, 600, 600);
 
   for (auto i_ptV2 : indexAnyPtV2Jpsi) {
@@ -120,39 +134,17 @@ funcWithJson(void, AssoYeildGroup_noScale)(
       auto hist_high = hgroupTool2d_highMult_mass->GetHist({i_mass, i_ptV2});
       auto hist_low = hgroupTool2d_lowMult_mass->GetHist({i_mass, i_ptV2});
       gPublisherCanvas->Draw(hist_high)->Draw(hist_low);
-      // cout << hist_high->Integral() << " " << hist_low->Integral() << endl;
-      // cout << hist_high->GetXaxis()->GetTitle() << endl;
       for (auto i_deltaEta : indexHistDeltaEtaUS) {
-        if (i_deltaEta > 29 || i_deltaEta <= 11)
-          continue;
         for (auto i_deltaPhi : indexHistDeltaPhiUS) {
           MDouble valHigh(hist_high->GetBinContent(i_deltaEta, i_deltaPhi),
                           hist_high->GetBinError(i_deltaEta, i_deltaPhi));
           MDouble valLow(hist_low->GetBinContent(i_deltaEta, i_deltaPhi),
                          hist_low->GetBinError(i_deltaEta, i_deltaPhi));
-          // MDouble valHigh(
-          //     hist_high->GetBinContent(i_deltaEta + 1, i_deltaPhi + 1),
-          //     sqrt(hist_high->GetBinContent(i_deltaEta + 1, i_deltaPhi +
-          //     1)));
-          // MDouble valLow(
-          //     hist_low->GetBinContent(i_deltaEta + 1, i_deltaPhi + 1),
-          //     sqrt(hist_low->GetBinContent(i_deltaEta + 1, i_deltaPhi + 1)));
-          h3Vec_AssoYeild_lowMult.current().SetBinInfo(valLow);
-          h3Vec_AssoYeild_highMult.current().SetBinInfo(valHigh);
+          h1Vec_AssoYeild_lowMult.currentObject().SetBinInfo(valLow);
+          h1Vec_AssoYeild_highMult.currentObject().SetBinInfo(valHigh);
         }
       }
     }
-  }
-
-  for (auto i_ptV2 : indexAnyPtV2Jpsi) {
-    TString title = Form("Associated Yeild Low Mult p_{T} bin: ");
-    for (auto bin : strAny_ptV2[i_ptV2 - 1])
-      title += Form("%d ", bin);
-    h3Vec_AssoYeild_lowMult.current().fHisto->SetTitle(title);
-    gPublisherCanvas->Draw(
-        h3Vec_AssoYeild_lowMult.current().fHisto->ProjectionX());
-    gPublisherCanvas->Draw(
-        h3Vec_AssoYeild_highMult.current().fHisto->ProjectionX());
   }
 
   gPublisherCanvas->finalize();
