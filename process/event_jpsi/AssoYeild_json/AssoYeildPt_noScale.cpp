@@ -103,7 +103,7 @@ funcWithJson(void, AssoYeildPt)(
 
   // // gPublisherCanvas->SetCanvasNwNh(2, 2);
 
- struct StrAny_ptV2 {
+  struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
                                       {2},
                                       {3},

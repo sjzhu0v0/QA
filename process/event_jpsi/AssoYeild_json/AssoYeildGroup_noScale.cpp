@@ -15,6 +15,7 @@ funcWithJson(void, AssoYeildGroup_noScale)(
                        "AssoYeildGroup_noScale.pdf") {
   SetUpJson();
   gROOT->SetBatch(kTRUE);
+  RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   Configurable<int> config_n_rebin_mass("n_rebin_mass", 3);
   int n_rebin_mass = config_n_rebin_mass.data;
 
@@ -121,7 +122,6 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   MVec<MVec<MHist1D>> h1_AssoYeild_highMult_DeltaEta_DeltaPhi(
       indexHistDeltaPhiUS, h1_AssoYeild_highMult_DeltaEta);
 
-  gDirectory = file_output;
   MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYeild_lowMult(
       indexAnyPtV2Jpsi, h1_AssoYeild_lowMult_DeltaEta_DeltaPhi);
   MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYeild_highMult(
@@ -146,6 +146,11 @@ funcWithJson(void, AssoYeildGroup_noScale)(
       }
     }
   }
+  file_output->cd();
+  for (auto i_deltaEta : indexHistDeltaEtaUS)
+    for (auto i_deltaPhi : indexHistDeltaPhiUS)
+      for (auto i_ptV2 : indexAnyPtV2Jpsi)
+        h1Vec_AssoYeild_lowMult.currentObject().fHisto->Write();
 
   gPublisherCanvas->finalize();
   file_output->Write();
