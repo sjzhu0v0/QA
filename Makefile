@@ -20,43 +20,43 @@ all: \
 
 
 process/track/TrackInfoMC.exe: process/track/TrackInfoMC.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
 macro/event/MultRaw.exe: macro/event/MultRaw.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
 macro/event/MultCalib.exe: macro/event/MultCalib.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
 macro/event/MultPileupCut.exe: macro/event/MultPileupCut.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
 macro/event_jpsi/NJpsiCandidatePerEvent.exe: macro/event_jpsi/NJpsiCandidatePerEvent.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
 macro/event/MultQA_AllCut.exe: macro/event/MultQA_AllCut.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
 macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 
 macro/event_jpsi/JpsiAsso.exe: macro/event_jpsi/JpsiAsso.cpp
-	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 macro/event_jpsi/JpsiAsso_BS.exe: macro/event_jpsi/JpsiAsso_BS.cpp opt/libMRootDict.so
-	g++ -o $@ macro/event_jpsi/JpsiAsso_BS.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+	@g++ -o $@ macro/event_jpsi/JpsiAsso_BS.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 macro/jpsi/JpsiQA.exe: macro/jpsi/JpsiQA.cpp opt/libMRootDict.so opt/libMRootDict.so
-	g++ -o $@ macro/jpsi/JpsiQA.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+	@g++ -o $@ macro/jpsi/JpsiQA.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 macro/event_jpsi/EventMixingJpsiAsso.exe: macro/event_jpsi/EventMixingJpsiAsso.cpp opt/libMRootDict.so
-	g++ -o $@ macro/event_jpsi/EventMixingJpsiAsso.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+	@g++ -o $@ macro/event_jpsi/EventMixingJpsiAsso.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 macro/event_jpsi/MixEventReading.exe: macro/event_jpsi/MixEventReading.cpp opt/libMRootDict.so
-	g++ -o $@ macro/event_jpsi/MixEventReading.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+	@g++ -o $@ macro/event_jpsi/MixEventReading.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 opt/MRootDict.cxx: opt/EventData.h opt/LinkDef.h
 	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
 
 opt/libMRootDict.so: opt/MRootDict.cxx opt/EventData.cxx
-	g++ -o $@ $^ -I./ `root-config --cflags --libs` -shared -fPIC
+	@g++ -o $@ $^ -I./ `root-config --cflags --libs` -shared -fPIC

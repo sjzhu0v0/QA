@@ -17,7 +17,7 @@ void JpsiAsso(
     TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
-  TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
+  // TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *file_mult = TFile::Open(path_input_mult);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
@@ -29,8 +29,8 @@ void JpsiAsso(
   // Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   // Cut_MultTPC_NumContrib::init(path_pileup);
 
-  TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
-  TChain *tree_mult = MRootIO::OpenChain(file_mult, "MultCalib");
+  TChain *tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd.Data(), "O2dqflowvecd");
+  TChain *tree_mult = MRootIO::OpenChain(path_input_mult.Data(), "MultCalib");
 
   tree_flowVecd->AddFriend(tree_mult);
 
