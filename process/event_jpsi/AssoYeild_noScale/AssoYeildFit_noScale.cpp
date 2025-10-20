@@ -122,11 +122,11 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MHGroupTool1D assoYeild_lowMult(
       file_input,
       "MassUS_AssoYeild_lowMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
-      {var_PtV2Jpsi, var_DeltaPhiUS, var_DeltaEtaUS}, {1, 1, 1});
+      {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {1, 1, 1});
   MHGroupTool1D assoYeild_highMult(
       file_input,
       "MassUS_AssoYeild_highMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
-      {var_PtV2Jpsi, var_DeltaPhiUS, var_DeltaEtaUS}, {1, 1, 1});
+      {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {1, 1, 1});
   MFitterPoly fitterPoly_asso(assoYeild_highMult.GetHist(vector<int>{1, 1, 1}),
                               2., 4.32);
 
