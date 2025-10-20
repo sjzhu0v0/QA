@@ -18,7 +18,7 @@ void JpsiAsso(
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
   // TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
-  TFile *file_mult = TFile::Open(path_input_mult);
+  // TFile *file_mult = TFile::Open(path_input_mult);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
   cout << "Input file: " << path_input_flowVecd << endl;
