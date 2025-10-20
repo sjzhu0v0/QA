@@ -116,7 +116,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   TH2D *mass_pt_lowMult = hnTool_mass.Project(1, 2, {0, 1});
   TH2D *mass_pt_highMult = hnTool_mass.Project(1, 2, {0, 2});
-  MFitterPoly fitterPoly_mass(mass_pt_highMult->ProjectionX(), 1.88, 4.32);
+  MFitterPoly fitterPoly_mass(mass_pt_highMult->ProjectionY(), 1.88, 4.32);
   fitterPoly_mass.initializeBasis(6);
 
   MHGroupTool1D assoYeild_lowMult(
