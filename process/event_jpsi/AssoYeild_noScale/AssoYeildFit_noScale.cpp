@@ -74,9 +74,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
                                       {4, 5, 6, 7, 8, 9},
                                       {5, 6, 7, 8, 9, 10},
                                       {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
-    const vector<int> index_template = {
-        1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 1, 1, 2, 2, 2, 3, 4, 4, 4, 2, 2, 3, 3,
-        3, 4, 4, 4, 2, 2, 3, 3, 3, 4, 4, 2, 2, 3, 3, 3, 4, 2, 2, 3, 3, 3, 0};
     const int fNbins = bins.size();
     const TString fName = "ptV2";
 
@@ -97,6 +94,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
+  cout << var_PtV2Jpsi.fNbins << endl;
 
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
