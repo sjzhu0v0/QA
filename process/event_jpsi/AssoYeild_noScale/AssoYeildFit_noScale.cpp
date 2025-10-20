@@ -129,6 +129,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
       {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {2, 1, 1});
   MFitterPoly fitterPoly_asso(assoYeild_highMult.GetHist(vector<int>{1, 1, 1}),
                               2., 4.32);
+  fitterPoly_asso.initializeBasis(6);
 
   // MHist1D h1_assoYeild_lowMult(indexHistDeltaPhiUS, "AssoYeild_lowMult");
   // MHist1D h1_assoYeild_highMult(indexHistDeltaPhiUS, "AssoYeild_highMult");
