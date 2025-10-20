@@ -21,6 +21,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   int n_rebin_mass = config_n_rebin_mass.data;
 
   TFile *file_input = new TFile(path_input);
+  TFile *file_input_tf1 = new TFile(path_input_tf1);
   TFile *file_input_mass = new TFile(path_input_mass);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -105,7 +106,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
 
-  MHGroupTool<TF1> g_tf1_input(file_input, "fitted_signal_poly6_pt%d",
+  MHGroupTool<TF1> g_tf1_input(file_input_tf1, "fitted_signal_poly6_pt%d",
                                {var_PtV2Jpsi}, {1});
 
   auto h_mass =
