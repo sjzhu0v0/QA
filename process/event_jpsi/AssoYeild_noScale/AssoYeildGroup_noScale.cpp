@@ -149,8 +149,10 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   file_output->cd();
   for (auto i_deltaEta : indexHistDeltaEtaUS)
     for (auto i_deltaPhi : indexHistDeltaPhiUS)
-      for (auto i_ptV2 : indexAnyPtV2Jpsi)
+      for (auto i_ptV2 : indexAnyPtV2Jpsi) {
         h1Vec_AssoYeild_lowMult.currentObject().fHisto->Write();
+        h1Vec_AssoYeild_highMult.currentObject().fHisto->Write();
+      }
 
   gPublisherCanvas->finalize();
   file_output->Write();
