@@ -201,7 +201,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
         vec_assoYeild_sub.currentObject().SetBinInfo(normalized_nyeild_sub, 0);
       }
   }
-  
+
   for (auto iPt : indexHistPtV2Jpsi)
     for (auto i_deltaEta : indexHistDeltaEtaUS) {
       vec_assoYeild_sub.currentObject().fHisto->Write();
