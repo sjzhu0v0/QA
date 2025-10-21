@@ -5,7 +5,7 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-funcWithJson(void, AssoYeildFit_noScale)(
+funcWithJson(void, AssoYeildEtagap)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
                          "AssoYeildGroupEtagap_NoScale.root",
     TString path_input_mass =
@@ -224,7 +224,7 @@ int main(int argc, char **argv) {
                               : "/home/szhu/work/alice/analysis/QA/test/"
                                 "AssoYeildFit_noScale.pdf";
 
-  AssoYeildFit_noScale(path_input, path_input_mass, path_input_tf1, path_output,
+  AssoYeildEtagap(path_input, path_input_mass, path_input_tf1, path_output,
                        path_pdf);
 
   return 0;
