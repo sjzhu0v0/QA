@@ -26,8 +26,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
   TFile *file_input_tf1 = new TFile(path_input_tf1);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
-  gDirectory = nullptr;
-
   struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
                                       {2},
@@ -138,6 +136,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   //                                          h1_assoYeild_lowMult);
   // MVec<MHist1D> assoYeild_highMult_DeltaEta(indexHistDeltaEtaUS,
   //                                           h1_assoYeild_highMult);
+  gDirectory = nullptr;
   MHist1D h1_assoYeild_sub(indexHistDeltaPhiUS, "AssoYeild_sub");
   MVec<MHist1D> h1_assoYeild_sub_DeltaEta(indexHistDeltaEtaUS,
                                           h1_assoYeild_sub);
