@@ -122,12 +122,22 @@ funcWithJson(void, AssoYeildEtagap)(
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     for (auto iEtaGap : indexHistEtaGap) {
-      for (int i_deltaEta = 11; i_deltaEta <= 20 - iEtaGap + 1; i_deltaEta++)
+      for (int i_deltaEta = 11; i_deltaEta <= 20 - iEtaGap + 1; i_deltaEta++) {
         assoYeild_sub_EtaGap.currentObject().fHisto->Add(
             assoYeild_sub.MH1DGetBin(i_deltaEta, iPtV2));
-      for (int i_deltaEta = 20 + iEtaGap - 1; i_deltaEta <= 30; i_deltaEta++)
+        assoYeild_low_EtaGap.currentObject().fHisto->Add(
+            assoYeild_low.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYeild_high_EtaGap.currentObject().fHisto->Add(
+            assoYeild_high.MH1DGetBin(i_deltaEta, iPtV2));
+      }
+      for (int i_deltaEta = 20 + iEtaGap - 1; i_deltaEta <= 30; i_deltaEta++) {
         assoYeild_sub_EtaGap.currentObject().fHisto->Add(
             assoYeild_sub.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYeild_low_EtaGap.currentObject().fHisto->Add(
+            assoYeild_low.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYeild_high_EtaGap.currentObject().fHisto->Add(
+            assoYeild_high.MH1DGetBin(i_deltaEta, iPtV2));
+      }
     }
   }
 
