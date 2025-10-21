@@ -151,6 +151,9 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_sub(
       indexAnyPtV2Jpsi, h1_assoYeild_sub_DeltaEta);
+  for (auto _ : indexAnyPtV2Jpsi)
+    for (auto __ : indexHistDeltaEtaUS)
+      vec_assoYeild_sub.currentObject().fHisto->SetDirectory(file_output);
 
   gDirectory = nullptr;
 
