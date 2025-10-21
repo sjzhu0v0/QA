@@ -97,11 +97,26 @@ funcWithJson(void, AssoYeildEtagap)(
   MHGroupTool1D assoYeild_sub(file_input,
                               "DeltaPhiUS_AssoYeild_sub_DeltaEtaUS_%d_ptV2_%d",
                               {var_DeltaEtaUS, var_PtV2Jpsi}, {2, 1});
+  MHGroupTool1D assoYeild_low(file_input,
+                              "DeltaPhiUS_AssoYeild_low_DeltaEtaUS_%d_ptV2_%d",
+                              {var_DeltaEtaUS, var_PtV2Jpsi}, {2, 1});
+  MHGroupTool1D assoYeild_high(
+      file_input, "DeltaPhiUS_AssoYeild_high_DeltaEtaUS_%d_ptV2_%d",
+      {var_DeltaEtaUS, var_PtV2Jpsi}, {2, 1});
 
   MHist1D assoYeild_sub_int(indexHistDeltaPhiUS, "AssoYeild_sub_int");
+  MHist1D assoYeild_low_int(indexHistDeltaPhiUS, "AssoYeild_low_int");
+  MHist1D assoYeild_high_int(indexHistDeltaPhiUS, "AssoYeild_high_int");
+
   MVec<MHist1D> assoYeild_sub_DeltaEta(indexHistEtaGap, assoYeild_sub_int);
+  MVec<MHist1D> assoYeild_low_DeltaEta(indexHistEtaGap, assoYeild_low_int);
+  MVec<MHist1D> assoYeild_high_DeltaEta(indexHistEtaGap, assoYeild_high_int);
   MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYeild_sub_EtaGap(
       indexAnyPtV2Jpsi, assoYeild_sub_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYeild_low_EtaGap(
+      indexAnyPtV2Jpsi, assoYeild_low_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYeild_high_EtaGap(
+      indexAnyPtV2Jpsi, assoYeild_high_DeltaEta);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
 
@@ -120,6 +135,8 @@ funcWithJson(void, AssoYeildEtagap)(
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     for (auto iEtaGap : indexHistEtaGap) {
       assoYeild_sub_EtaGap.currentObject().fHisto->Write();
+      assoYeild_low_EtaGap.currentObject().fHisto->Write();
+      assoYeild_high_EtaGap.currentObject().fHisto->Write();
     }
   }
   file_output->Close();
