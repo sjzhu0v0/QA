@@ -105,10 +105,12 @@ funcWithJson(void, AssoYeildEtagap)(
 
 int main(int argc, char **argv) {
   gROOT->SetBatch(kTRUE);
-  TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
-                       "AssoYeildGroupEtagap_NoScale.root";
-  TString path_output =
-      "/home/szhu/work/alice/analysis/QA/test/AssoYeildFitEtagap_noScale.root";
+  TString path_input = argc > 1 ? argv[1]
+                                : "/home/szhu/work/alice/analysis/QA/test/"
+                                  "AssoYeildGroupEtagap_NoScale.root";
+  TString path_output = argc > 2 ? argv[2]
+                                 : "/home/szhu/work/alice/analysis/QA/test/"
+                                   "AssoYeildFit_noScale.root";
 
   AssoYeildEtagap(path_input, path_output);
 
