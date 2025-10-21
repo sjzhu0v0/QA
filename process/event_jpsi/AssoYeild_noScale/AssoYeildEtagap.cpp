@@ -82,10 +82,9 @@ funcWithJson(void, AssoYeildEtagap)(
                              {-4., 4.});
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
                              {-M_PI_2, M_PI + M_PI_2});
-  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
+  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.1, 1.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
-  cout << var_PtV2Jpsi.fNbins << endl;
 
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
@@ -94,13 +93,36 @@ funcWithJson(void, AssoYeildEtagap)(
   MIndexHist indexHistEtaGap(var_EtaGap, 1, 1);
   MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
-
+  gDirectory = nullptr;
   MHGroupTool1D assoYeild_sub(file_input,
                               "DeltaPhiUS_AssoYeild_sub_DeltaEtaUS_%d_ptV2_%d",
                               {var_DeltaEtaUS, var_PtV2Jpsi}, {2, 1});
 
-  // file_output->Write();
-  // file_output->Close();
+  MHist1D assoYeild_sub_int(indexHistDeltaPhiUS, "AssoYeild_sub_int");
+  MVec<MHist1D> assoYeild_sub_DeltaEta(indexHistEtaGap, assoYeild_sub_int);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYeild_sub_EtaGap(
+      indexAnyPtV2Jpsi, assoYeild_sub_DeltaEta);
+
+#define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
+
+  for (auto iPtV2 : indexAnyPtV2Jpsi) {
+    for (auto iEtaGap : indexHistEtaGap) {
+      for (int i_deltaEta = 11; i_deltaEta <= 20 - iEtaGap + 1; i_deltaEta++)
+        assoYeild_sub_EtaGap.currentObject().fHisto->Add(
+            assoYeild_sub.MH1DGetBin(i_deltaEta, iPtV2));
+      for (int i_deltaEta = 20 + iEtaGap - 1; i_deltaEta <= 30; i_deltaEta++)
+        assoYeild_sub_EtaGap.currentObject().fHisto->Add(
+            assoYeild_sub.MH1DGetBin(i_deltaEta, iPtV2));
+    }
+  }
+
+  file_output->cd();
+  for (auto iPtV2 : indexAnyPtV2Jpsi) {
+    for (auto iEtaGap : indexHistEtaGap) {
+      assoYeild_sub_EtaGap.currentObject().fHisto->Write();
+    }
+  }
+  file_output->Close();
 }
 
 int main(int argc, char **argv) {
