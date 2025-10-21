@@ -8,8 +8,10 @@
 funcWithJson(void, AssoYeildFit_noScale)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
                          "AssoYeildGroupEtagap_NoScale.root",
-    TString path_input_mass = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
-                              "JpsiMass_LHC24_apass1_DiElectron.root",
+    TString path_input_mass =
+        "/home/szhu/work/alice/analysis/QA/input/jpsi/"
+        "JpsiMass_LHC24_apass1_DiElectron.root:PosZUSSingle_MassUSSingle_"
+        "PtUSSingle_NumContribCalibUSSingle",
     TString path_input_tf1 = "",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
                           "AssoYeildFit_noScale.root",
@@ -22,7 +24,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   TFile *file_input = new TFile(path_input);
   TFile *file_input_tf1 = new TFile(path_input_tf1);
-  TFile *file_input_mass = new TFile(path_input_mass);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
   gDirectory = nullptr;
@@ -107,8 +108,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MHGroupTool<TF1> g_tf1_input(file_input_tf1, "fitted_signal_poly6_pt%d",
                                {var_PtV2Jpsi}, {1});
 
-  auto h_mass =
-      (THnD *)file_input_mass->Get("fPosZ_MassUS_PtUS_NumContribCalib");
+  auto h_mass = MRootIO::GetObjectDiectly<THnD>(path_input_mass);
   MHnTool hnTool_mass(h_mass);
   hnTool_mass.Rebin(0, 200);
   hnTool_mass.Rebin(3, 5);
