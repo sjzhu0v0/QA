@@ -204,10 +204,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
       }
   }
 
-  // for (auto iPt : indexHistPtV2Jpsi)
-  //   for (auto i_deltaEta : indexHistDeltaEtaUS) {
-  //     vec_assoYeild_sub.currentObject().fHisto->Write();
-  //   }
   file_output->Write();
   file_output->Close();
 }
