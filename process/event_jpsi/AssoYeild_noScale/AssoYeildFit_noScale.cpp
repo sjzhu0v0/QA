@@ -138,8 +138,14 @@ funcWithJson(void, AssoYeildEtagap)(
   //                                           h1_assoYeild_highMult);
   gDirectory = nullptr;
   MHist1D h1_assoYeild_sub(indexHistDeltaPhiUS, "AssoYeild_sub");
+  MHist1D h1_assoYeild_low(indexHistDeltaPhiUS, "AssoYeild_low");
+  MHist1D h1_assoYeild_high(indexHistDeltaPhiUS, "AssoYeild_high");
   MVec<MHist1D> h1_assoYeild_sub_DeltaEta(indexHistDeltaEtaUS,
                                           h1_assoYeild_sub);
+  MVec<MHist1D> h1_assoYeild_low_DeltaEta(indexHistDeltaEtaUS,
+                                          h1_assoYeild_low);
+  MVec<MHist1D> h1_assoYeild_high_DeltaEta(indexHistDeltaEtaUS,
+                                           h1_assoYeild_high);
 
   gDirectory = file_output;
   TH1D *nsignal_highMult_ptV2 =
@@ -151,9 +157,17 @@ funcWithJson(void, AssoYeildEtagap)(
 
   MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_sub(
       indexAnyPtV2Jpsi, h1_assoYeild_sub_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_low(
+      indexAnyPtV2Jpsi, h1_assoYeild_low_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_high(
+      indexAnyPtV2Jpsi, h1_assoYeild_high_DeltaEta);
+
   for (auto _ : indexAnyPtV2Jpsi)
-    for (auto __ : indexHistDeltaEtaUS)
+    for (auto __ : indexHistDeltaEtaUS) {
       vec_assoYeild_sub.currentObject().fHisto->SetDirectory(file_output);
+      vec_assoYeild_low.currentObject().fHisto->SetDirectory(file_output);
+      vec_assoYeild_high.currentObject().fHisto->SetDirectory(file_output);
+    }
 
   gDirectory = nullptr;
 
@@ -201,6 +215,10 @@ funcWithJson(void, AssoYeildEtagap)(
         double normalized_nyeild_sub =
             normalized_nyeild_highmult - normalized_nyeild_lowmult;
         vec_assoYeild_sub.currentObject().SetBinInfo(normalized_nyeild_sub, 0);
+        vec_assoYeild_low.currentObject().SetBinInfo(normalized_nyeild_lowmult,
+                                                     0);
+        vec_assoYeild_high.currentObject().SetBinInfo(
+            normalized_nyeild_highmult, 0);
       }
   }
 
@@ -225,7 +243,7 @@ int main(int argc, char **argv) {
                                 "AssoYeildFit_noScale.pdf";
 
   AssoYeildEtagap(path_input, path_input_mass, path_input_tf1, path_output,
-                       path_pdf);
+                  path_pdf);
 
   return 0;
 }
