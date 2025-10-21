@@ -153,11 +153,6 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_sub(
       indexAnyPtV2Jpsi, h1_assoYeild_sub_DeltaEta);
 
-  for (auto iPt : indexHistPtV2Jpsi)
-    for (auto i_deltaEta : indexHistDeltaEtaUS) {
-      vec_assoYeild_sub.currentObject().fHisto->SetDirectory(file_output);
-    }
-
   gDirectory = nullptr;
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
@@ -206,7 +201,11 @@ funcWithJson(void, AssoYeildFit_noScale)(
         vec_assoYeild_sub.currentObject().SetBinInfo(normalized_nyeild_sub, 0);
       }
   }
-
+  
+  for (auto iPt : indexHistPtV2Jpsi)
+    for (auto i_deltaEta : indexHistDeltaEtaUS) {
+      vec_assoYeild_sub.currentObject().fHisto->Write();
+    }
   file_output->Write();
   file_output->Close();
 }
