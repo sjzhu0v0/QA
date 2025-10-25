@@ -5,6 +5,7 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 #include "TSystem.h"
+#include "yaml-cpp/yaml.h"
 
 funcWithJson(void, AssoYeildGroup_noScale)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
@@ -16,8 +17,8 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   SetUpJson();
   gROOT->SetBatch(kTRUE);
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
-  Configurable<int> config_n_rebin_mass("n_rebin_mass", 3);
-  int n_rebin_mass = config_n_rebin_mass.data;
+  YAML::Node config = YAML::LoadFile("config.yaml");
+   int n_rebin_mass_assoYield = config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
@@ -90,7 +91,7 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
 
-  MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass);
+  MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass_assoYield);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
   MIndexHist indexHistDeltaPhiUS(var_DeltaPhiUS, 1, 1);
   MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, 2);
@@ -99,13 +100,13 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   gDirectory = nullptr;
   MHGroupTool2D *hgroupTool2d_total_mass = new MHGroupTool2D(
       file_input, "h2_total_mass_pt_%d_%d",
-      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
+      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass_assoYield, 1});
   MHGroupTool2D *hgroupTool2d_lowMult_mass = new MHGroupTool2D(
       file_input, "h2_lowMult_mass_pt_%d_%d",
-      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
+      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass_assoYield, 1});
   MHGroupTool2D *hgroupTool2d_highMult_mass = new MHGroupTool2D(
       file_input, "h2_highMult_mass_pt_%d_%d",
-      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
+      {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass_assoYield, 1});
 
   MHist1D h1_AssoYeild_lowMult(indexHistMass, "AssoYeild_lowMult");
   MHist1D h1_AssoYeild_highMult(indexHistMass, "AssoYeild_highMult");

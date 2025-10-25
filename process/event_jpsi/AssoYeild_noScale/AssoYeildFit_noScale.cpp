@@ -4,6 +4,7 @@
 #include "MRootGraphic.h"
 #include "MRootIO.h"
 #include "TApplication.h"
+#include "yaml-cpp/yaml.h"
 
 funcWithJson(void, AssoYeildEtagap)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
@@ -18,9 +19,9 @@ funcWithJson(void, AssoYeildEtagap)(
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYeildFit_noScale.pdf") {
   gErrorIgnoreLevel = kWarning;
-  SetUpJson();
-  Configurable<int> config_n_rebin_mass("n_rebin_mass", 3);
-  int n_rebin_mass = config_n_rebin_mass.data;
+  YAML::Node config = YAML::LoadFile("config.yaml");
+  int n_rebin_mass_assoYield =
+      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_input_tf1 = new TFile(path_input_tf1);
@@ -95,7 +96,7 @@ funcWithJson(void, AssoYeildEtagap)(
                            {0., 1.});
   cout << var_PtV2Jpsi.fNbins << endl;
 
-  MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass);
+  MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass_assoYield);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
   MIndexHist indexHistDeltaPhiUS(var_DeltaPhiUS, 1, 1);
   MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, 2);

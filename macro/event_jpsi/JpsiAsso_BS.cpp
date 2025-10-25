@@ -5,31 +5,23 @@
 #include "MHist.h"
 #include "MRootIO.h"
 #include "opt/EventData.h"
+#include "yaml-cpp/yaml.h"
 #include <ROOT/RDataFrame.hxx>
 
-void JpsiAsso(
-    TString path_input_flowVecd = "../input.root", TString path_input_mult = "../input2.root",
-    TString path_output = "output.root", /* int runNumber = 0, */
-    double threshold_bs = 1.
-  /*   ,TString path_calib =
-        "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
-    TString path_pileup =
-        " /home/szhu/work/alice/analysis/QA/output/event/"
-        "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
-  // TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
-  // TFile *file_mult = TFile::Open(path_input_mult);
+void JpsiAsso(TString path_input_flowVecd = "../input.root",
+              TString path_input_mult = "../input2.root",
+              TString path_output = "output.root", /* int runNumber = 0, */
+              double threshold_bs = 1.) {
   TFile *fOutput = new TFile(path_output, "RECREATE");
+  YAML::Node config = YAML::LoadFile("config.yaml");
 
   cout << "Input file: " << path_input_flowVecd << endl;
   cout << "Input file: " << path_input_mult << endl;
   cout << "Output file: " << path_output << endl;
   cout << "Threshold BS: " << threshold_bs << endl;
 
-  // Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
-  // Cut_MultTPC_NumContrib::init(path_pileup);
-
-  TChain *tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd.Data(), "O2dqflowvecd");
+  TChain *tree_flowVecd =
+      MRootIO::OpenChain(path_input_flowVecd.Data(), "O2dqflowvecd");
   TChain *tree_mult = MRootIO::OpenChain(path_input_mult.Data(), "MultCalib");
 
   tree_flowVecd->AddFriend(tree_mult);
@@ -234,12 +226,24 @@ void JpsiAsso(
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
       {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
-                                    {1.8, 5.4});
+  int n_bins_mass_assoYield =
+      config["hist_binning"]["n_bins_mass_assoYield"].as<int>();
+  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}",
+                                    n_bins_mass_assoYield, {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
-                             {-4., 4.});
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
+  int n_bins_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
+  double min_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
+  double max_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
+                             n_bins_deltaEta_assoYield,
+                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
+  int n_bins_deltaPhi_assoYeild =
+      config["hist_binning"]["n_bins_deltaPhi_assoYeild"].as<int>();
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
+                             n_bins_deltaPhi_assoYeild,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_fPosZSingle("PosZUSSingle", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinnedSingle(
@@ -266,7 +270,7 @@ void JpsiAsso(
                  var_PtJpsiCandidateSingle, var_NumContribCalibBinnedSingle});
 
   RunGraphs(gRResultHandles);
-  
+
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();

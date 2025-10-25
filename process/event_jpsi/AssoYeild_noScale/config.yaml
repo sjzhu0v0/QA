@@ -1,0 +1,8 @@
+hist_binning:
+  n_bins_mass_assoYield: 45 # max is 90 corresponding to bin width 0.04
+  binning_deltaEta_assoYield:
+    n_bins: 20
+    min: -2.
+    max: 2.
+  n_bins_deltaPhi_assoYeild: 30
+  

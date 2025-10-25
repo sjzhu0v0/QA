@@ -2,6 +2,7 @@
 #include "MRootGraphic.h"
 #include "MRootIO.h"
 #include "TApplication.h"
+#include "yaml-cpp/yaml.h"
 
 funcWithJson(void, AssoYeildPt)(
     TString input_se_pr =
@@ -15,9 +16,9 @@ funcWithJson(void, AssoYeildPt)(
                           "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
                           "AssoYeildPt") {
-  SetUpJson();
-  Configurable<int> config_n_rebin_mass("n_rebin_mass", 2);
-  int n_rebin_mass = config_n_rebin_mass.data;
+  YAML::Node config = YAML::LoadFile("config.yaml");
+  int n_rebin_mass_assoYield =
+      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
@@ -43,7 +44,7 @@ funcWithJson(void, AssoYeildPt)(
   AssocYeildHelper_v2 assoYeild(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
   assoYeild.Rebin(gtype_vars::kNumContrib, 5);
   assoYeild.Rebin(gtype_vars::kDeltaEta, 2);
-  assoYeild.Rebin(gtype_vars::kMass, n_rebin_mass);
+  assoYeild.Rebin(gtype_vars::kMass, n_rebin_mass_assoYield);
 
   hnTool_se_pr.PrintAllAxis();
   // Axis 0: axis0, title: #Delta#eta_{J/#psi, track}  nbins:80
@@ -177,12 +178,12 @@ funcWithJson(void, AssoYeildPt)(
       //     Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
       // HistSubstraction2D(h2_highSubLow_mass_pt, h2_highMult_mass_pt,
       //                    h2_lowMult_mass_pt);
-      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                   h2_total_mass_pt);
-      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                   h2_lowMult_mass_pt);
-      StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
-                                   h2_highMult_mass_pt);
+      // StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+      //                              h2_total_mass_pt);
+      // StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+      //                              h2_lowMult_mass_pt);
+      // StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
+      //                              h2_highMult_mass_pt);
       // StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
       //                              h2_highSubLow_mass_pt);
       h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass, i_pt));

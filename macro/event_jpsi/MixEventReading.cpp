@@ -6,12 +6,14 @@
 #include "MHist.h"
 #include "MRootIO.h"
 #include "opt/EventData.h"
+#include "yaml-cpp/yaml.h"
 #include <ROOT/RDataFrame.hxx>
 
 void EventMixingReading(TString path_input_flowVecd = "../input.root",
                         TString path_output = "output.root") {
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *fOutput = new TFile(path_output, "RECREATE");
+  YAML::Node config = YAML::LoadFile("config.yaml");
 
   TTree *tree_input = (TTree *)file_flowVecd->Get("EventMixing");
 
@@ -120,14 +122,26 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0,7,12,17,22,29,37,46,57,73,300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
-                                    {1.8, 5.4});
+      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
+  int n_bins_mass_assoYield =
+      config["hist_binning"]["n_bins_mass_assoYield"].as<int>();
+  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}",
+                                    n_bins_mass_assoYield, {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
   StrVar4Hist var_PtJpsiCandidateFine("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
-                             {-4., 4.});
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
+  int n_bins_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
+  double min_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
+  double max_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
+                             n_bins_deltaEta_assoYield,
+                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
+  int n_bins_deltaPhi_assoYeild =
+      config["hist_binning"]["n_bins_deltaPhi_assoYeild"].as<int>();
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
+                             n_bins_deltaPhi_assoYeild,
                              {-M_PI_2, M_PI + M_PI_2});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
@@ -140,9 +154,11 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   obj2push_thnd(rdf_AllVar, {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
                              var_MassJpsiCandidate, var_PtJpsiCandidate,
                              var_NumContribCalibBinned});
-  obj2push_thnd(rdf_AllVar, {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
-                             var_MassJpsiCandidate, var_PtJpsiCandidateFine,
-                             var_NumContribCalibBinned}, "", "ptFine");
+  obj2push_thnd(rdf_AllVar,
+                {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
+                 var_MassJpsiCandidate, var_PtJpsiCandidateFine,
+                 var_NumContribCalibBinned},
+                "", "ptFine");
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();
