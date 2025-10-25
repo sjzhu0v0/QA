@@ -1,27 +1,45 @@
+# Base directory for the analysis project
 DIR_BASE=/lustre/alice/users/szhu/work/Analysis/PairFlow
 PATH_INCLUDE=$(DIR_BASE)/include
 FLAGS_INCLUDE=-I$(DIR_BASE)/include -I$(DIR_BASE)/macro
 FLAGS_ROOT=$(shell root-config --cflags --libs)
 FLAGS_MINUIT=-lMinuit
 
-SRC_DIR := /home/szhu/work/alice/analysis/QA/process/jpsi
-SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
+# List of source directories (add more as needed)
+SRC_DIRS := /home/szhu/work/alice/analysis/QA/process/jpsi \
+            /home/szhu/work/alice/analysis/QA/process/upsilon \
+            /home/szhu/work/alice/analysis/QA/utils
+
+# Collect all .cpp files from all source directories
+SOURCES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
+
+# Derive executable names (strip path and replace .cpp with .exe)
 TARGETS := $(notdir $(SOURCES:.cpp=.exe))
 
+# Debug output
 $(info === Debug info ===)
 $(info SOURCES = $(SOURCES))
 $(info TARGETS = $(TARGETS))
 $(info ================)
 
-.PHONY: all clean print
+.PHONY: all clean
 
+# Build all targets
 all: $(TARGETS)
-	@echo "Target built: $(TARGETS)"
+	@echo "All targets built: $(TARGETS)"
 
-%.exe: $(SRC_DIR)/%.cpp
-	@g++ $< -o $@ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
-	@echo "Compiled: $< -> $@"
+# Dynamically generate a build rule for each source file
+# This ensures that each .exe correctly depends on its full-path .cpp
+define make_target_rule
+$(notdir $(1:.cpp=.exe)): $(1)
+	@g++ $$< -o $$@ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+	@echo "Compiled: $$< -> $$@"
+endef
 
+# Apply the rule to every source file
+$(foreach src,$(SOURCES),$(eval $(call make_target_rule,$(src))))
+
+# Clean all generated executables
 clean:
 	rm -f *.exe
 
