@@ -30,26 +30,25 @@ from typing import List, Iterable
 
 PLACEHOLDER_RE = re.compile(r"%((?P<file>\d+)f(?P<ops>(?:[^\d]\d+)*)?)%|%i%")
 
-from typing import List
-
 
 def generate_number_strings(start: int = 1, end: int = 10, step: int = 1) -> List[str]:
     """
-    生成从 start 到 end（包含）的等差整数序列的字符串列表，步长为 step。
+    Generate a list of strings representing an arithmetic sequence of integers
+    from `start` to `end` (inclusive), with a given `step`.
 
-    参数:
-        start (int): 起始数字（默认 1）
-        end (int): 结束数字（默认 10）
-        step (int): 步长，必须为正整数（默认 1）
+    Args:
+        start (int): Starting number (default: 1)
+        end (int): Ending number (default: 10)
+        step (int): Step size; must be a positive integer (default: 1)
 
-    返回:
-        List[str]: 字符串形式的数字列表
+    Returns:
+        List[str]: List of number strings
 
-    示例:
+    Examples:
         generate_number_strings(1, 5, 1)   → ["1", "2", "3", "4", "5"]
         generate_number_strings(0, 10, 2)  → ["0", "2", "4", "6", "8", "10"]
-        generate_number_strings(5, 1, 1)   → []  （start > end 且 step > 0）
-        generate_number_strings(10, 1, -1) → 报错（不支持负步长）
+        generate_number_strings(5, 1, 1)   → []  (start > end with positive step)
+        generate_number_strings(10, 1, -1) → raises ValueError (negative step not allowed)
     """
     if step <= 0:
         raise ValueError("step must be a positive integer")
@@ -60,17 +59,16 @@ def generate_number_strings(start: int = 1, end: int = 10, step: int = 1) -> Lis
 
 def write_lines_to_file(lines: List[str], filepath: str, mode: str = "a") -> None:
     """
-    将字符串列表写入文本文件，每行一个元素。
+    Write a list of strings to a text file, one per line.
 
-    参数:
-        lines (List[str]): 要写入的字符串列表。
-        filepath (str): 目标文件路径。
-        mode (str): 写入模式，默认 'a'（追加，不覆写）；
-                    设为 'w' 可强制覆盖文件。
+    Args:
+        lines (List[str]): List of strings to write.
+        filepath (str): Path to the target file.
+        mode (str): File mode: 'a' to append (default), 'w' to overwrite.
 
-    示例:
-        write_lines_to_file(["new entry"], "log.txt")          # 追加（默认）
-        write_lines_to_file(["fresh start"], "data.txt", 'w')  # 覆盖
+    Examples:
+        write_lines_to_file(["new entry"], "log.txt")          # Append
+        write_lines_to_file(["fresh start"], "data.txt", 'w')  # Overwrite
     """
     if not isinstance(lines, list):
         raise TypeError("lines must be a list of strings")
@@ -87,24 +85,25 @@ def write_lines_to_file(lines: List[str], filepath: str, mode: str = "a") -> Non
 
 def read_lines_from_file(filepath: str) -> List[str]:
     """
-    从文本文件中读取所有行，返回字符串列表（每行末尾的换行符已被去除）。
+    Read all lines from a text file, returning a list of strings with
+    trailing newline characters stripped.
 
-    参数:
-        filepath (str): 要读取的文件路径。
+    Args:
+        filepath (str): Path to the file to read.
 
-    返回:
-        List[str]: 文件中的每一行作为一个字符串元素。
+    Returns:
+        List[str]: Each line of the file as a string.
 
-    异常:
-        FileNotFoundError: 文件不存在。
-        OSError: 其他文件读取错误（如权限问题）。
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        OSError: For other I/O errors (e.g., permission denied).
 
-    示例:
+    Example:
         lines = read_lines_from_file("data.txt")
-        # 若 data.txt 内容为：
+        # If data.txt contains:
         #   apple
         #   banana
-        # 则 lines == ["apple", "banana"]
+        # Then lines == ["apple", "banana"]
     """
     try:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -147,7 +146,7 @@ def substitute(template: str, combo: List[str], line_no: int) -> str:
 def select_indices(
     total: int, first: int = None, last: int = None, line_range: str = None
 ) -> set:
-    """Return set of 1-based indices to output based on CLI options."""
+    """Return a set of 1-based indices to output based on CLI options."""
     if first is not None:
         return set(range(1, min(first, total) + 1))
     elif last is not None:
@@ -174,12 +173,12 @@ def generate_arg_list(
     line_range: str = None,
 ) -> Iterable[str]:
     """
-    Generate output lines from Cartesian product of `data` using `template`.
+    Generate output lines from the Cartesian product of `data` using `template`.
 
     Parameters:
-        template: string with placeholders like %1f%, %2f|1%, %i%
-        data: list of lists; each inner list is a "column"
-        first / last / line_range: same semantics as CLI options
+        template: String with placeholders like %1f%, %2f|1%, %i%
+        data: List of lists; each inner list represents a "column"
+        first / last / line_range: Same semantics as CLI options
 
     Yields:
         Expanded lines as strings.
@@ -202,25 +201,6 @@ def generate_arg_list(
             yield substitute(template, list(combo), idx)
 
 
-# def parse_args():
-#     ap = argparse.ArgumentParser(add_help=False, prog="arg_list")
-#     group = ap.add_mutually_exclusive_group()
-#     group.add_argument(
-#         "-f", type=int, metavar="N", help="output only first N combinations"
-#     )
-#     group.add_argument(
-#         "-l", type=int, metavar="N", help="output only last N combinations"
-#     )
-#     group.add_argument(
-#         "-L", metavar="a,b", help="output only combinations a‑b (inclusive, 1‑based)"
-#     )
-#     ap.add_argument("template", help="expansion template string")
-#     ap.add_argument(
-#         "-h", "--help", action="help", help="show this help message and exit"
-#     )
-#     return ap.parse_args()
-
-
 def main():
     # Example in-memory data — replace as needed
     data: List[List[str]] = [
@@ -229,14 +209,6 @@ def main():
     ]
 
     try:
-        # for line in generate_arg_list(
-        #     template=args.template,
-        #     data=data,
-        #     first=args.f,
-        #     last=args.l,
-        #     line_range=args.L,
-        # ):
-        #     print(line)
         lines = generate_arg_list(
             template="%1f%: %2f;1%",
             data=data,

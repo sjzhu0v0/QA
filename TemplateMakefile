@@ -6,7 +6,7 @@ FLAGS_ROOT=$(shell root-config --cflags --libs)
 FLAGS_MINUIT=-lMinuit
 
 # Output directory for executables
-DIR_EXE = exe
+DIR_EXE = exec
 
 # List of source directories (add more as needed)
 SRC_DIRS := /home/szhu/work/alice/analysis/QA/process/jpsi \
@@ -64,3 +64,16 @@ clean:
 
 # opt/libMRootDict.so: opt/MRootDict.cxx opt/EventData.cxx
 # 	g++ -o $@ $^ -I./ `root-config --cflags --libs` -shared -fPIC
+
+
+ g++ macro/event_jpsi/JpsiAsso_BS.cpp -o exe/JpsiAsso_BS.exe \
+  -std=c++20 -pthread -m64 \
+  -I/lustre/alice/users/szhu/work/Analysis/PairFlow/include \
+  -I./ \
+  -I/lustre/alice/users/szhu/opt/include \
+  $(root-config --cflags --libs) \
+  -lMinuit \
+  -L./opt -lMRootDict \
+  -L/lustre/alice/users/szhu/opt/lib64 \
+  -Wl,-rpath,/lustre/alice/users/szhu/opt/lib64 \
+  -lyaml-cpp
