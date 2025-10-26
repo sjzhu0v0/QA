@@ -13,16 +13,15 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
               TString path_output = "output.root", /* int runNumber = 0, */
               double threshold_bs = 1.) {
   TFile *fOutput = new TFile(path_output, "RECREATE");
-  YAML::Node config = YAML::LoadFile("config.yaml");
-
-  cout << "Input file: " << path_input_flowVecd << endl;
-  cout << "Input file: " << path_input_mult << endl;
-  cout << "Output file: " << path_output << endl;
-  cout << "Threshold BS: " << threshold_bs << endl;
 
   TChain *tree_flowVecd =
       MRootIO::OpenChain(path_input_flowVecd.Data(), "O2dqflowvecd");
   TChain *tree_mult = MRootIO::OpenChain(path_input_mult.Data(), "MultCalib");
+  cout << "Input file: " << path_input_flowVecd << endl;
+  cout << "Input file: " << path_input_mult << endl;
+  cout << "Output file: " << path_output << endl;
+  cout << "Threshold BS: " << threshold_bs << endl;
+  YAML::Node config = YAML::LoadFile("config.yaml");
 
   tree_flowVecd->AddFriend(tree_mult);
 
