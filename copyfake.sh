@@ -28,3 +28,4 @@ ln -s "$SCRIPT_DIR/task"
 mkdir plot output
 
 cp $SCRIPT_DIR/TemplateMakefile ./Makefile
+cp $SCRIPT_DIR/indexing.py ./indexing.py
