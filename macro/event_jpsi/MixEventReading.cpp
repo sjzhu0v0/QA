@@ -162,6 +162,7 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();
+  cout << "Output written to " << path_output << endl;
 }
 
 int main(int argc, char **argv) {
