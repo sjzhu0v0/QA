@@ -5,6 +5,9 @@ FLAGS_INCLUDE=-I$(DIR_BASE)/include -I$(DIR_BASE)/macro
 FLAGS_ROOT=$(shell root-config --cflags --libs)
 FLAGS_MINUIT=-lMinuit
 
+# Output directory for executables
+DIR_EXE = exe
+
 # List of source directories (add more as needed)
 SRC_DIRS := /home/szhu/work/alice/analysis/QA/process/jpsi \
             /home/szhu/work/alice/analysis/QA/process/upsilon \
@@ -13,8 +16,8 @@ SRC_DIRS := /home/szhu/work/alice/analysis/QA/process/jpsi \
 # Collect all .cpp files from all source directories
 SOURCES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
-# Derive executable names (strip path and replace .cpp with .exe)
-TARGETS := $(notdir $(SOURCES:.cpp=.exe))
+# Derive executable paths in exe/ directory (e.g., exe/process_jpsi.exe)
+TARGETS := $(addprefix $(DIR_EXE)/,$(notdir $(SOURCES:.cpp=.exe)))
 
 # Debug output
 $(info === Debug info ===)
@@ -28,10 +31,14 @@ $(info ================)
 all: $(TARGETS)
 	@echo "All targets built: $(TARGETS)"
 
+# Rule to create the exe directory (order-only prerequisite)
+$(DIR_EXE):
+	@mkdir -p $@
+
 # Dynamically generate a build rule for each source file
-# This ensures that each .exe correctly depends on its full-path .cpp
+# Each .exe is placed in $(DIR_EXE)/ and depends on its full-path .cpp
 define make_target_rule
-$(notdir $(1:.cpp=.exe)): $(1)
+$(DIR_EXE)/$(notdir $(1:.cpp=.exe)): $(1) | $(DIR_EXE)
 	@g++ $$< -o $$@ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
 	@echo "Compiled: $$< -> $$@"
 endef
@@ -39,9 +46,9 @@ endef
 # Apply the rule to every source file
 $(foreach src,$(SOURCES),$(eval $(call make_target_rule,$(src))))
 
-# Clean all generated executables
+# Clean all generated executables and the exe directory
 clean:
-	rm -f *.exe
+	rm -rf $(DIR_EXE)
 
 # macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
 # 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)

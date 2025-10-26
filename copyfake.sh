@@ -25,7 +25,7 @@ ln -s "$SCRIPT_DIR/macro"
 ln -s "$SCRIPT_DIR/opt"
 ln -s "$SCRIPT_DIR/process"
 ln -s "$SCRIPT_DIR/task"
-mkdir plot output
+mkdir plot output exe data job
 
 cp $SCRIPT_DIR/TemplateMakefile ./Makefile
 cp $SCRIPT_DIR/indexing.py ./indexing.py
