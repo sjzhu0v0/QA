@@ -6,18 +6,18 @@
 #include "TApplication.h"
 #include "yaml-cpp/yaml.h"
 
-void AssoYeildEtagap(
+void AssoYieldEtagap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
-                         "AssoYeildGroupEtagap_NoScale.root",
+                         "AssoYieldGroupEtagap_NoScale.root",
     TString path_input_mass =
         "/home/szhu/work/alice/analysis/QA/input/jpsi/"
         "JpsiMass_LHC24_apass1_DiElectron.root:PosZUSSingle_MassUSSingle_"
         "PtUSSingle_NumContribCalibUSSingle",
     TString path_input_tf1 = "",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYeildFit_noScale.root",
+                          "AssoYieldFit_noScale.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
-                       "AssoYeildFit_noScale.pdf") {
+                       "AssoYieldFit_noScale.pdf") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile("config.yaml");
 
@@ -94,10 +94,10 @@ void AssoYeildEtagap(
   StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
                              n_bins_deltaEta_assoYield,
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
-  int n_bins_deltaPhi_assoYeild =
-      config["hist_binning"]["n_bins_deltaPhi_assoYeild"].as<int>();
+  int n_bins_deltaPhi_assoYield =
+      config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
-                             n_bins_deltaPhi_assoYeild,
+                             n_bins_deltaPhi_assoYield,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
@@ -129,37 +129,37 @@ void AssoYeildEtagap(
   MFitterPoly fitterPoly_mass(mass_pt_highMult->ProjectionY(), 1.88, 4.32);
   fitterPoly_mass.initializeBasis(6);
 
-  MHGroupTool1D assoYeild_lowMult(
+  MHGroupTool1D assoYield_lowMult(
       file_input,
-      "MassUS_AssoYeild_lowMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
+      "MassUS_AssoYield_lowMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
       {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi},
       {n_rebin_deltaEta_assoYield, 1, 1});
-  MHGroupTool1D assoYeild_highMult(
+  MHGroupTool1D assoYield_highMult(
       file_input,
-      "MassUS_AssoYeild_highMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
+      "MassUS_AssoYield_highMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
       {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi},
       {n_rebin_deltaEta_assoYield, 1, 1});
-  MFitterPoly fitterPoly_asso(assoYeild_highMult.GetHist(vector<int>{1, 1, 1}),
+  MFitterPoly fitterPoly_asso(assoYield_highMult.GetHist(vector<int>{1, 1, 1}),
                               1.88, 4.32);
   fitterPoly_asso.initializeBasis(6);
 
-  // MHist1D h1_assoYeild_lowMult(indexHistDeltaPhiUS, "AssoYeild_lowMult");
-  // MHist1D h1_assoYeild_highMult(indexHistDeltaPhiUS, "AssoYeild_highMult");
-  // MHist1D h1_assoYeild_temp(indexHistDeltaPhiUS, "AssoYeild_sub");
-  // MVec<MHist1D> assoYeild_lowMult_DeltaEta(indexHistDeltaEtaUS,
-  //                                          h1_assoYeild_lowMult);
-  // MVec<MHist1D> assoYeild_highMult_DeltaEta(indexHistDeltaEtaUS,
-  //                                           h1_assoYeild_highMult);
+  // MHist1D h1_assoYield_lowMult(indexHistDeltaPhiUS, "AssoYield_lowMult");
+  // MHist1D h1_assoYield_highMult(indexHistDeltaPhiUS, "AssoYield_highMult");
+  // MHist1D h1_assoYield_temp(indexHistDeltaPhiUS, "AssoYield_sub");
+  // MVec<MHist1D> assoYield_lowMult_DeltaEta(indexHistDeltaEtaUS,
+  //                                          h1_assoYield_lowMult);
+  // MVec<MHist1D> assoYield_highMult_DeltaEta(indexHistDeltaEtaUS,
+  //                                           h1_assoYield_highMult);
   gDirectory = nullptr;
-  MHist1D h1_assoYeild_sub(indexHistDeltaPhiUS, "AssoYeild_sub");
-  MHist1D h1_assoYeild_low(indexHistDeltaPhiUS, "AssoYeild_low");
-  MHist1D h1_assoYeild_high(indexHistDeltaPhiUS, "AssoYeild_high");
-  MVec<MHist1D> h1_assoYeild_sub_DeltaEta(indexHistDeltaEtaUS,
-                                          h1_assoYeild_sub);
-  MVec<MHist1D> h1_assoYeild_low_DeltaEta(indexHistDeltaEtaUS,
-                                          h1_assoYeild_low);
-  MVec<MHist1D> h1_assoYeild_high_DeltaEta(indexHistDeltaEtaUS,
-                                           h1_assoYeild_high);
+  MHist1D h1_assoYield_sub(indexHistDeltaPhiUS, "AssoYield_sub");
+  MHist1D h1_assoYield_low(indexHistDeltaPhiUS, "AssoYield_low");
+  MHist1D h1_assoYield_high(indexHistDeltaPhiUS, "AssoYield_high");
+  MVec<MHist1D> h1_assoYield_sub_DeltaEta(indexHistDeltaEtaUS,
+                                          h1_assoYield_sub);
+  MVec<MHist1D> h1_assoYield_low_DeltaEta(indexHistDeltaEtaUS,
+                                          h1_assoYield_low);
+  MVec<MHist1D> h1_assoYield_high_DeltaEta(indexHistDeltaEtaUS,
+                                           h1_assoYield_high);
 
   gDirectory = file_output;
   TH1D *nsignal_highMult_ptV2 =
@@ -169,18 +169,18 @@ void AssoYeildEtagap(
       new TH1D("nsignal_lowMult_ptV2", "nsignal_lowMult_ptV2",
                strAny_ptV2.fNbins, 0, strAny_ptV2.fNbins);
 
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_sub(
-      indexAnyPtV2Jpsi, h1_assoYeild_sub_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_low(
-      indexAnyPtV2Jpsi, h1_assoYeild_low_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYeild_high(
-      indexAnyPtV2Jpsi, h1_assoYeild_high_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYield_sub(
+      indexAnyPtV2Jpsi, h1_assoYield_sub_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYield_low(
+      indexAnyPtV2Jpsi, h1_assoYield_low_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYield_high(
+      indexAnyPtV2Jpsi, h1_assoYield_high_DeltaEta);
 
   for (auto _ : indexAnyPtV2Jpsi)
     for (auto __ : indexHistDeltaEtaUS) {
-      vec_assoYeild_sub.currentObject().fHisto->SetDirectory(file_output);
-      vec_assoYeild_low.currentObject().fHisto->SetDirectory(file_output);
-      vec_assoYeild_high.currentObject().fHisto->SetDirectory(file_output);
+      vec_assoYield_sub.currentObject().fHisto->SetDirectory(file_output);
+      vec_assoYield_low.currentObject().fHisto->SetDirectory(file_output);
+      vec_assoYield_high.currentObject().fHisto->SetDirectory(file_output);
     }
 
   gDirectory = nullptr;
@@ -210,29 +210,29 @@ void AssoYeildEtagap(
 
     for (auto i_deltaEta : indexHistDeltaEtaUS)
       for (auto i_deltaPhi : indexHistDeltaPhiUS) {
-        auto assoYeild_lowMult_diff = assoYeild_lowMult.GetHist(
+        auto assoYield_lowMult_diff = assoYield_lowMult.GetHist(
             vector<int>{i_deltaEta, i_deltaPhi, iPtV2});
-        auto assoYeild_highMult_diff = assoYeild_highMult.GetHist(
+        auto assoYield_highMult_diff = assoYield_highMult.GetHist(
             vector<int>{i_deltaEta, i_deltaPhi, iPtV2});
 
-        fitterPoly_asso.setHisto(assoYeild_highMult_diff);
+        fitterPoly_asso.setHisto(assoYield_highMult_diff);
         fitterPoly_asso.fitWithSignal();
-        double nyeild_highmult = fitterPoly_asso.fNSignal;
+        double nyield_highmult = fitterPoly_asso.fNSignal;
 
-        fitterPoly_asso.setHisto(assoYeild_lowMult_diff);
+        fitterPoly_asso.setHisto(assoYield_lowMult_diff);
         fitterPoly_asso.fitWithSignal();
-        double nyeild_lowmult = fitterPoly_asso.fNSignal;
+        double nyield_lowmult = fitterPoly_asso.fNSignal;
 
-        double normalized_nyeild_highmult = nyeild_highmult / nsignal_highMult;
-        double normalized_nyeild_lowmult = nyeild_lowmult / nsignal_lowMult;
+        double normalized_nyield_highmult = nyield_highmult / nsignal_highMult;
+        double normalized_nyield_lowmult = nyield_lowmult / nsignal_lowMult;
 
-        double normalized_nyeild_sub =
-            normalized_nyeild_highmult - normalized_nyeild_lowmult;
-        vec_assoYeild_sub.currentObject().SetBinInfo(normalized_nyeild_sub, 0);
-        vec_assoYeild_low.currentObject().SetBinInfo(normalized_nyeild_lowmult,
+        double normalized_nyield_sub =
+            normalized_nyield_highmult - normalized_nyield_lowmult;
+        vec_assoYield_sub.currentObject().SetBinInfo(normalized_nyield_sub, 0);
+        vec_assoYield_low.currentObject().SetBinInfo(normalized_nyield_lowmult,
                                                      0);
-        vec_assoYeild_high.currentObject().SetBinInfo(
-            normalized_nyeild_highmult, 0);
+        vec_assoYield_high.currentObject().SetBinInfo(
+            normalized_nyield_highmult, 0);
       }
   }
 
@@ -243,7 +243,7 @@ void AssoYeildEtagap(
 int main(int argc, char **argv) {
   TString path_input = argc > 1 ? argv[1]
                                 : "/home/szhu/work/alice/analysis/QA/test/"
-                                  "AssoYeildGroupEtagap_NoScale.root";
+                                  "AssoYieldGroupEtagap_NoScale.root";
   TString path_input_mass =
       argc > 2 ? argv[2]
                : "/home/szhu/work/alice/analysis/QA/input/jpsi/"
@@ -254,9 +254,9 @@ int main(int argc, char **argv) {
                                    "AssoYeilFit_noScale.root";
   TString path_pdf = argc > 5 ? argv[5]
                               : "/home/szhu/work/alice/analysis/QA/test/"
-                                "AssoYeildFit_noScale.pdf";
+                                "AssoYieldFit_noScale.pdf";
 
-  AssoYeildEtagap(path_input, path_input_mass, path_input_tf1, path_output,
+  AssoYieldEtagap(path_input, path_input_mass, path_input_tf1, path_output,
                   path_pdf);
 
   return 0;

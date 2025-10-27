@@ -60,7 +60,7 @@ void V2Fit() {
       600, 600);
   MRootGraphic::StyleCommon();
   TFile *file_v2 = new TFile("/home/szhu/work/alice/analysis/QA/output/"
-                             "event_jpsi/AssoYeildGroupQAEtaGap.root");
+                             "event_jpsi/AssoYieldGroupQAEtaGap.root");
 
   auto MassUS_EtaGap_v22 =
       MRootIO::GetObjectDiectly<TH2D>(file_v2, "MassUS_EtaGap_v22");

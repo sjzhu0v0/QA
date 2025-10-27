@@ -6,11 +6,11 @@
 #include "TApplication.h"
 #include "yaml-cpp/yaml.h"
 
-void AssoYeildEtagap(
+void AssoYieldEtagap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
-                         "AssoYeildGroupEtagap_NoScale.root",
+                         "AssoYieldGroupEtagap_NoScale.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYeildFit_noScale.root") {
+                          "AssoYieldFit_noScale.root") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile("config.yaml");
   // int n_rebin_mass_assoYield =
@@ -99,49 +99,49 @@ void AssoYeildEtagap(
   MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
   gDirectory = nullptr;
-  MHGroupTool1D assoYeild_sub(
-      file_input, "DeltaPhiUS_AssoYeild_sub_DeltaEtaUS_%d_ptV2_%d",
+  MHGroupTool1D assoYield_sub(
+      file_input, "DeltaPhiUS_AssoYield_sub_DeltaEtaUS_%d_ptV2_%d",
       {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
-  MHGroupTool1D assoYeild_low(
-      file_input, "DeltaPhiUS_AssoYeild_low_DeltaEtaUS_%d_ptV2_%d",
+  MHGroupTool1D assoYield_low(
+      file_input, "DeltaPhiUS_AssoYield_low_DeltaEtaUS_%d_ptV2_%d",
       {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
-  MHGroupTool1D assoYeild_high(
-      file_input, "DeltaPhiUS_AssoYeild_high_DeltaEtaUS_%d_ptV2_%d",
+  MHGroupTool1D assoYield_high(
+      file_input, "DeltaPhiUS_AssoYield_high_DeltaEtaUS_%d_ptV2_%d",
       {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
 
-  MHist1D assoYeild_sub_int(indexHistDeltaPhiUS, "AssoYeild_sub_int");
-  MHist1D assoYeild_low_int(indexHistDeltaPhiUS, "AssoYeild_low_int");
-  MHist1D assoYeild_high_int(indexHistDeltaPhiUS, "AssoYeild_high_int");
+  MHist1D assoYield_sub_int(indexHistDeltaPhiUS, "AssoYield_sub_int");
+  MHist1D assoYield_low_int(indexHistDeltaPhiUS, "AssoYield_low_int");
+  MHist1D assoYield_high_int(indexHistDeltaPhiUS, "AssoYield_high_int");
 
-  MVec<MHist1D> assoYeild_sub_DeltaEta(indexHistEtaGap, assoYeild_sub_int);
-  MVec<MHist1D> assoYeild_low_DeltaEta(indexHistEtaGap, assoYeild_low_int);
-  MVec<MHist1D> assoYeild_high_DeltaEta(indexHistEtaGap, assoYeild_high_int);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYeild_sub_EtaGap(
-      indexAnyPtV2Jpsi, assoYeild_sub_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYeild_low_EtaGap(
-      indexAnyPtV2Jpsi, assoYeild_low_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYeild_high_EtaGap(
-      indexAnyPtV2Jpsi, assoYeild_high_DeltaEta);
+  MVec<MHist1D> assoYield_sub_DeltaEta(indexHistEtaGap, assoYield_sub_int);
+  MVec<MHist1D> assoYield_low_DeltaEta(indexHistEtaGap, assoYield_low_int);
+  MVec<MHist1D> assoYield_high_DeltaEta(indexHistEtaGap, assoYield_high_int);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYield_sub_EtaGap(
+      indexAnyPtV2Jpsi, assoYield_sub_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYield_low_EtaGap(
+      indexAnyPtV2Jpsi, assoYield_low_DeltaEta);
+  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYield_high_EtaGap(
+      indexAnyPtV2Jpsi, assoYield_high_DeltaEta);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     for (auto iEtaGap : indexHistEtaGap) {
       for (int i_deltaEta = 11; i_deltaEta <= 20 - iEtaGap + 1; i_deltaEta++) {
-        assoYeild_sub_EtaGap.currentObject().fHisto->Add(
-            assoYeild_sub.MH1DGetBin(i_deltaEta, iPtV2));
-        assoYeild_low_EtaGap.currentObject().fHisto->Add(
-            assoYeild_low.MH1DGetBin(i_deltaEta, iPtV2));
-        assoYeild_high_EtaGap.currentObject().fHisto->Add(
-            assoYeild_high.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYield_sub_EtaGap.currentObject().fHisto->Add(
+            assoYield_sub.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYield_low_EtaGap.currentObject().fHisto->Add(
+            assoYield_low.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYield_high_EtaGap.currentObject().fHisto->Add(
+            assoYield_high.MH1DGetBin(i_deltaEta, iPtV2));
       }
       for (int i_deltaEta = 20 + iEtaGap - 1; i_deltaEta <= 30; i_deltaEta++) {
-        assoYeild_sub_EtaGap.currentObject().fHisto->Add(
-            assoYeild_sub.MH1DGetBin(i_deltaEta, iPtV2));
-        assoYeild_low_EtaGap.currentObject().fHisto->Add(
-            assoYeild_low.MH1DGetBin(i_deltaEta, iPtV2));
-        assoYeild_high_EtaGap.currentObject().fHisto->Add(
-            assoYeild_high.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYield_sub_EtaGap.currentObject().fHisto->Add(
+            assoYield_sub.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYield_low_EtaGap.currentObject().fHisto->Add(
+            assoYield_low.MH1DGetBin(i_deltaEta, iPtV2));
+        assoYield_high_EtaGap.currentObject().fHisto->Add(
+            assoYield_high.MH1DGetBin(i_deltaEta, iPtV2));
       }
     }
   }
@@ -149,9 +149,9 @@ void AssoYeildEtagap(
   file_output->cd();
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     for (auto iEtaGap : indexHistEtaGap) {
-      assoYeild_sub_EtaGap.currentObject().fHisto->Write();
-      assoYeild_low_EtaGap.currentObject().fHisto->Write();
-      assoYeild_high_EtaGap.currentObject().fHisto->Write();
+      assoYield_sub_EtaGap.currentObject().fHisto->Write();
+      assoYield_low_EtaGap.currentObject().fHisto->Write();
+      assoYield_high_EtaGap.currentObject().fHisto->Write();
     }
   }
   file_output->Close();
@@ -161,12 +161,12 @@ int main(int argc, char **argv) {
   gROOT->SetBatch(kTRUE);
   TString path_input = argc > 1 ? argv[1]
                                 : "/home/szhu/work/alice/analysis/QA/test/"
-                                  "AssoYeildGroupEtagap_NoScale.root";
+                                  "AssoYieldGroupEtagap_NoScale.root";
   TString path_output = argc > 2 ? argv[2]
                                  : "/home/szhu/work/alice/analysis/QA/test/"
-                                   "AssoYeildFit_noScale.root";
+                                   "AssoYieldFit_noScale.root";
 
-  AssoYeildEtagap(path_input, path_output);
+  AssoYieldEtagap(path_input, path_output);
 
   return 0;
 }

@@ -56,15 +56,15 @@ TF1 *ProxyTemplate(int i, int j) {
   return (*gTemplate)[i][j_temp];
 }
 
-funcWithJson(void, AssoYeildFit_noScale)(
+funcWithJson(void, AssoYieldFit_noScale)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
-                         "AssoYeildGroupEtagap_NoScale.root",
+                         "AssoYieldGroupEtagap_NoScale.root",
     TString path_input_mass = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
                               "JpsiMass_LHC24_apass1_DiElectron.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYeildFit_noScale.root",
+                          "AssoYieldFit_noScale.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
-                       "AssoYeildFit_noScale.pdf") {
+                       "AssoYieldFit_noScale.pdf") {
   gErrorIgnoreLevel = kWarning;
   SetUpJson();
   RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
@@ -228,11 +228,11 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
 
-  MHGroupTool3D *hg3_assoYeild_highMult = new MHGroupTool3D(
-      file_input, "MassUS_DeltaEtaUS_DeltaPhiUS_AssoYeild_highMult_ptV2_%d",
+  MHGroupTool3D *hg3_assoYield_highMult = new MHGroupTool3D(
+      file_input, "MassUS_DeltaEtaUS_DeltaPhiUS_AssoYield_highMult_ptV2_%d",
       {var_PtV2Jpsi}, {1});
-  MHGroupTool3D *hg3_assoYeild_lowMult = new MHGroupTool3D(
-      file_input, "MassUS_DeltaEtaUS_DeltaPhiUS_AssoYeild_lowMult_ptV2_%d",
+  MHGroupTool3D *hg3_assoYield_lowMult = new MHGroupTool3D(
+      file_input, "MassUS_DeltaEtaUS_DeltaPhiUS_AssoYield_lowMult_ptV2_%d",
       {var_PtV2Jpsi}, {1});
 
   auto h_mass =
@@ -244,19 +244,19 @@ funcWithJson(void, AssoYeildFit_noScale)(
 
   TH2D *mass_pt_lowMult = hnTool_mass.Project(1, 2, {0, 1});
   TH2D *mass_pt_highMult = hnTool_mass.Project(1, 2, {0, 2});
-  MHist2D h2_AssoYeild_lowMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
-                               "AssoYeild_lowMult");
-  MHist2D h2_AssoYeild_highMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
-                                "AssoYeild_highMult");
-  MHist2D h2_AssoYeild_Sub(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
-                           "AssoYeild_Sub");
+  MHist2D h2_AssoYield_lowMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+                               "AssoYield_lowMult");
+  MHist2D h2_AssoYield_highMult(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+                                "AssoYield_highMult");
+  MHist2D h2_AssoYield_Sub(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+                           "AssoYield_Sub");
   gDirectory = file_output;
   using MVec1 = MVec<MHist2D, MIndexAny<StrAny_ptV2>>;
-  MVec1 h2Vec_AssoYeild_lowMult(indexAnyPtV2Jpsi, h2_AssoYeild_lowMult);
-  MVec1 h2Vec_AssoYeild_highMult(indexAnyPtV2Jpsi, h2_AssoYeild_highMult);
+  MVec1 h2Vec_AssoYield_lowMult(indexAnyPtV2Jpsi, h2_AssoYield_lowMult);
+  MVec1 h2Vec_AssoYield_highMult(indexAnyPtV2Jpsi, h2_AssoYield_highMult);
 
-  MHist1D h1_yeild_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
-  MHist1D h1_yeild_highMult(indexHistPtV2Jpsi, "yield_highMult");
+  MHist1D h1_yield_lowMult(indexHistPtV2Jpsi, "yield_lowMult");
+  MHist1D h1_yield_highMult(indexHistPtV2Jpsi, "yield_highMult");
 
   auto *dir_detail = file_output->mkdir("Detail");
 
@@ -267,9 +267,9 @@ funcWithJson(void, AssoYeildFit_noScale)(
   MFitterPoly fitterPoly(mass_template, 2., 4.);
   fitterPoly.initializeBasis(4);
 
-  auto assoYeild_template = hg3_assoYeild_highMult->GetHist(vector<int>{1})
-                                ->ProjectionX("assoYeild_template");
-  MFitterPoly fitterPoly_asso(assoYeild_template, 2., 4.);
+  auto assoYield_template = hg3_assoYield_highMult->GetHist(vector<int>{1})
+                                ->ProjectionX("assoYield_template");
+  MFitterPoly fitterPoly_asso(assoYield_template, 2., 4.);
   fitterPoly_asso.initializeBasis(4);
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
@@ -313,12 +313,12 @@ funcWithJson(void, AssoYeildFit_noScale)(
     fitterPoly.Draw();
     double nsignal_lowMult = fitterPoly.fNSignal;
 
-    h1_yeild_highMult.fHisto->SetBinContent(iPtV2, nsignal_highMult);
-    h1_yeild_lowMult.fHisto->SetBinContent(iPtV2, nsignal_lowMult);
+    h1_yield_highMult.fHisto->SetBinContent(iPtV2, nsignal_highMult);
+    h1_yield_lowMult.fHisto->SetBinContent(iPtV2, nsignal_lowMult);
 
-    auto assoYeild_highMult =
-        hg3_assoYeild_highMult->GetHist(vector<int>{iPtV2});
-    auto assoYeild_lowMult = hg3_assoYeild_lowMult->GetHist(vector<int>{iPtV2});
+    auto assoYield_highMult =
+        hg3_assoYield_highMult->GetHist(vector<int>{iPtV2});
+    auto assoYield_lowMult = hg3_assoYield_lowMult->GetHist(vector<int>{iPtV2});
 
     mass_highMult->SetDirectory(nullptr);
     mass_lowMult->SetDirectory(nullptr);
@@ -332,32 +332,32 @@ funcWithJson(void, AssoYeildFit_noScale)(
       if (i_deltaEta > 29 || i_deltaEta <= 11)
         continue;
       for (auto i_deltaPhi : indexHistDeltaPhiUS) {
-        auto assoYeild_diff_highMult = assoYeild_highMult->ProjectionX(
-            Form("assoYeild_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+        auto assoYield_diff_highMult = assoYield_highMult->ProjectionX(
+            Form("assoYield_diff_highMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
                  i_deltaEta, i_deltaPhi),
             i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
-        auto assoYeild_diff_lowMult = assoYeild_lowMult->ProjectionX(
-            Form("assoYeild_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
+        auto assoYield_diff_lowMult = assoYield_lowMult->ProjectionX(
+            Form("assoYield_diff_lowMult_ptV2_%d_dEta_%d_dPhi_%d", iPtV2,
                  i_deltaEta, i_deltaPhi),
             i_deltaEta, i_deltaEta, i_deltaPhi, i_deltaPhi);
-        assoYeild_diff_highMult->SetDirectory(nullptr);
-        assoYeild_diff_lowMult->SetDirectory(nullptr);
-        dir_detail->Add(assoYeild_diff_highMult);
-        dir_detail->Add(assoYeild_diff_lowMult);
-        fitterPoly_asso.setHisto(assoYeild_diff_highMult);
+        assoYield_diff_highMult->SetDirectory(nullptr);
+        assoYield_diff_lowMult->SetDirectory(nullptr);
+        dir_detail->Add(assoYield_diff_highMult);
+        dir_detail->Add(assoYield_diff_lowMult);
+        fitterPoly_asso.setHisto(assoYield_diff_highMult);
         fitterPoly_asso.fitWithSignal();
-        double nyeild_highmult = fitterPoly_asso.fNSignal;
+        double nyield_highmult = fitterPoly_asso.fNSignal;
         gPublisherCanvas->NewPad()->cd();
         fitterPoly_asso.Draw();
 
-        fitterPoly_asso.setHisto(assoYeild_diff_lowMult);
+        fitterPoly_asso.setHisto(assoYield_diff_lowMult);
         fitterPoly_asso.fitWithSignal();
-        double nyeild_lowmult = fitterPoly_asso.fNSignal;
+        double nyield_lowmult = fitterPoly_asso.fNSignal;
         gPublisherCanvas->NewPad()->cd();
         fitterPoly_asso.Draw();
 
-        h2Vec_AssoYeild_highMult.currentObject().SetBinInfo(nyeild_highmult);
-        h2Vec_AssoYeild_lowMult.currentObject().SetBinInfo(nyeild_lowmult);
+        h2Vec_AssoYield_highMult.currentObject().SetBinInfo(nyield_highmult);
+        h2Vec_AssoYield_lowMult.currentObject().SetBinInfo(nyield_lowmult);
       }
       gPublisherCanvas->AddText(Form("dEta bin: %d", i_deltaEta));
     }
@@ -374,7 +374,7 @@ funcWithJson(void, AssoYeildFit_noScale)(
 int main(int argc, char **argv) {
   TString path_input = argc > 1 ? argv[1]
                                 : "/home/szhu/work/alice/analysis/QA/test/"
-                                  "AssoYeildGroupEtagap_NoScale.root";
+                                  "AssoYieldGroupEtagap_NoScale.root";
   TString path_input_mass =
       argc > 2 ? argv[2]
                : "/home/szhu/work/alice/analysis/QA/input/jpsi/"
@@ -384,9 +384,9 @@ int main(int argc, char **argv) {
                                    "AssoYeilFit_noScale.root";
   TString path_pdf = argc > 4 ? argv[4]
                               : "/home/szhu/work/alice/analysis/QA/test/"
-                                "AssoYeildFit_noScale.pdf";
+                                "AssoYieldFit_noScale.pdf";
 
-  AssoYeildFit_noScale(path_input, path_input_mass, path_output, path_pdf);
+  AssoYieldFit_noScale(path_input, path_input_mass, path_output, path_pdf);
 
   return 0;
 }

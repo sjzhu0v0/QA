@@ -239,10 +239,10 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
   StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
                              n_bins_deltaEta_assoYield,
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
-  int n_bins_deltaPhi_assoYeild =
-      config["hist_binning"]["n_bins_deltaPhi_assoYeild"].as<int>();
+  int n_bins_deltaPhi_assoYield =
+      config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
   StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
-                             n_bins_deltaPhi_assoYeild,
+                             n_bins_deltaPhi_assoYield,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_fPosZSingle("PosZUSSingle", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinnedSingle(

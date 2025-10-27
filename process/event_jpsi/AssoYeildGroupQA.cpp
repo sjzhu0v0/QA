@@ -4,13 +4,13 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupQA(
+void AssoYieldGroupQA(
     TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "AssoYeildQA_cluster1_LHC22pass4.root",
+                         "AssoYieldQA_cluster1_LHC22pass4.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQA_cluster1.root",
+                          "AssoYieldGroupQA_cluster1.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "AssoYeildGroupQA_cluster1.pdf") {
+                       "AssoYieldGroupQA_cluster1.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 

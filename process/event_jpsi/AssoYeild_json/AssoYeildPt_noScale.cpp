@@ -3,7 +3,7 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-funcWithJson(void, AssoYeildPt)(
+funcWithJson(void, AssoYieldPt)(
     TString input_se_pr =
         "/home/szhu/work/alice/analysis/QA/test/JpsiAsso.root:DeltaEtaUS_"
         "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
@@ -14,7 +14,7 @@ funcWithJson(void, AssoYeildPt)(
                           "MixEventReading.root:DeltaEtaUS_"
                           "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYeildPt") {
+                          "AssoYieldPt") {
   SetUpJson();
   Configurable<int> config_n_rebin_mass("n_rebin_mass", 2);
   int n_rebin_mass = config_n_rebin_mass.data;
@@ -40,10 +40,10 @@ funcWithJson(void, AssoYeildPt)(
   }
   MHnTool hnTool_me_pr(hist_me_pr);
 
-  AssocYeildHelper_v2 assoYeild(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
-  assoYeild.Rebin(gtype_vars::kNumContrib, 5);
-  assoYeild.Rebin(gtype_vars::kDeltaEta, 2);
-  assoYeild.Rebin(gtype_vars::kMass, n_rebin_mass);
+  AssocYieldHelper_v2 assoYield(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
+  assoYield.Rebin(gtype_vars::kNumContrib, 5);
+  assoYield.Rebin(gtype_vars::kDeltaEta, 2);
+  assoYield.Rebin(gtype_vars::kMass, n_rebin_mass);
 
   hnTool_se_pr.PrintAllAxis();
   // Axis 0: axis0, title: #Delta#eta_{J/#psi, track}  nbins:80
@@ -76,14 +76,14 @@ funcWithJson(void, AssoYeildPt)(
   auto h2_me_pr = hnTool_me_pr.Project(1, 0, {0, 0, 0, 0});
   StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_me_pr);
 
-  assoYeild.SetMixMultInt(false);
+  assoYield.SetMixMultInt(false);
 
-  auto h2_total = assoYeild.AssociatedYeild(0, 0, 0);
+  auto h2_total = assoYield.AssociatedYield(0, 0, 0);
 
   StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(), h2_total);
 
-  auto h2_lowMult = assoYeild.AssociatedYeild(0, 0, 1);
-  auto h2_highMult = assoYeild.AssociatedYeild(0, 0, 2);
+  auto h2_lowMult = assoYield.AssociatedYield(0, 0, 1);
+  auto h2_highMult = assoYield.AssociatedYield(0, 0, 2);
   auto h2_highSubLow = (TH2D *)h2_highMult->Clone("h2_highSubLow");
   HistSubstraction2D(h2_highSubLow, h2_highMult, h2_lowMult);
 
@@ -160,18 +160,18 @@ funcWithJson(void, AssoYeildPt)(
   // int i_pt = 1;
   // double pt_min = 0.;
   // double pt_max = 10.;
-  // assoYeild.SetRangeUser(gtype_vars::kPt, pt_min, pt_max);
+  // assoYield.SetRangeUser(gtype_vars::kPt, pt_min, pt_max);
   // for (int ipt = 1; ipt <= strAny_ptV2.fNbins; ipt++)
 
   vector<int> pt_bins = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
   for (int i_pt = 1; i_pt <= strAny_ptV2.fNbins; i_pt++)
     for (int i_mass = 1; i_mass <= hnTool_se_pr.GetNbins(3); i_mass++) {
-      auto h2_total_mass_pt = assoYeild.AssociatedYeildPtSum(
+      auto h2_total_mass_pt = assoYield.AssociatedYieldPtSum(
           i_mass, strAny_ptV2[i_pt - 1], 0, false);
-      auto h2_lowMult_mass_pt = assoYeild.AssociatedYeildPtSum(
+      auto h2_lowMult_mass_pt = assoYield.AssociatedYieldPtSum(
           i_mass, strAny_ptV2[i_pt - 1], 1, false);
-      auto h2_highMult_mass_pt = assoYeild.AssociatedYeildPtSum(
+      auto h2_highMult_mass_pt = assoYield.AssociatedYieldPtSum(
           i_mass, strAny_ptV2[i_pt - 1], 2, false);
       // auto h2_highSubLow_mass_pt = (TH2D *)h2_highMult_mass_pt->Clone(
       //     Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
@@ -218,7 +218,7 @@ int main(int argc, char **argv) {
       "PosZUS_"
       "MassUS_PtUS_NumContribCalibUS";
   TString path_output =
-      "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYeildQA";
+      "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYieldQA";
 
   if (argc > 1) {
     path_input_se_pr = argv[1];
@@ -232,7 +232,7 @@ int main(int argc, char **argv) {
   if (argc > 4) {
     path_output = argv[4];
   }
-  AssoYeildPt(path_input_se_pr, path_input_se_raw, path_input_me_pr,
+  AssoYieldPt(path_input_se_pr, path_input_se_raw, path_input_me_pr,
               path_output);
 
   return 0;

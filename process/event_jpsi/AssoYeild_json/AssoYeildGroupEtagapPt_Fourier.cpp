@@ -5,13 +5,13 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-funcWithJson(void, AssoYeildGroupEtagapPt)(
+funcWithJson(void, AssoYieldGroupEtagapPt)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
-                         "AssoYeildPt.root",
+                         "AssoYieldPt.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYeildGroupEtagapPt_bLow.root",
+                          "AssoYieldGroupEtagapPt_bLow.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
-                       "AssoYeildGroupEtagapPt_bInt.pdf",
+                       "AssoYieldGroupEtagapPt_bInt.pdf",
     bool is_bInt = false) {
   SetUpJson();
   Configurable<int> config_n_rebin_mass("n_rebin_mass", 2);
@@ -295,11 +295,11 @@ funcWithJson(void, AssoYeildGroupEtagapPt)(
 int main(int argc, char **argv) {
   gROOT->SetBatch(kTRUE);
   TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                       "AssoYeildQA_LHC22pass4.root";
+                       "AssoYieldQA_LHC22pass4.root";
   TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                        "AssoYeildGroupQAEtaGap.root";
+                        "AssoYieldGroupQAEtaGap.root";
   TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                     "AssoYeildGroupQAEtaGap.pdf";
+                     "AssoYieldGroupQAEtaGap.pdf";
   bool is_bInt = false;
 
   if (argc > 1) {
@@ -315,6 +315,6 @@ int main(int argc, char **argv) {
     is_bInt = atoi(argv[4]);
   }
 
-  AssoYeildGroupEtagapPt(path_input, path_output, path_pdf, is_bInt);
+  AssoYieldGroupEtagapPt(path_input, path_output, path_pdf, is_bInt);
   return 0;
 }

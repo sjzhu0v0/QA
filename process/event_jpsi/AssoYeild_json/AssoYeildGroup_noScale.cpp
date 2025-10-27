@@ -6,13 +6,13 @@
 #include "TApplication.h"
 #include "TSystem.h"
 
-funcWithJson(void, AssoYeildGroup_noScale)(
+funcWithJson(void, AssoYieldGroup_noScale)(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                         "AssoYeild_24pass1/AssoYeild_noScale.root",
+                         "AssoYield_24pass1/AssoYield_noScale.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYeildGroupEtagap_NoScale.root",
+                          "AssoYieldGroupEtagap_NoScale.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
-                       "AssoYeildGroup_noScale.pdf") {
+                       "AssoYieldGroup_noScale.pdf") {
   SetUpJson();
   gROOT->SetBatch(kTRUE);
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
@@ -107,25 +107,25 @@ funcWithJson(void, AssoYeildGroup_noScale)(
       file_input, "h2_highMult_mass_pt_%d_%d",
       {var_MassJpsiCandidate, var_PtV2Jpsi}, {n_rebin_mass, 1});
 
-  MHist1D h1_AssoYeild_lowMult(indexHistMass, "AssoYeild_lowMult");
-  MHist1D h1_AssoYeild_highMult(indexHistMass, "AssoYeild_highMult");
+  MHist1D h1_AssoYield_lowMult(indexHistMass, "AssoYield_lowMult");
+  MHist1D h1_AssoYield_highMult(indexHistMass, "AssoYield_highMult");
 
   gDirectory = nullptr;
 
-  MVec<MHist1D> h1_AssoYeild_lowMult_DeltaEta(indexHistDeltaEtaUS,
-                                              h1_AssoYeild_lowMult);
-  MVec<MHist1D> h1_AssoYeild_highMult_DeltaEta(indexHistDeltaEtaUS,
-                                               h1_AssoYeild_highMult);
+  MVec<MHist1D> h1_AssoYield_lowMult_DeltaEta(indexHistDeltaEtaUS,
+                                              h1_AssoYield_lowMult);
+  MVec<MHist1D> h1_AssoYield_highMult_DeltaEta(indexHistDeltaEtaUS,
+                                               h1_AssoYield_highMult);
 
-  MVec<MVec<MHist1D>> h1_AssoYeild_lowMult_DeltaEta_DeltaPhi(
-      indexHistDeltaPhiUS, h1_AssoYeild_lowMult_DeltaEta);
-  MVec<MVec<MHist1D>> h1_AssoYeild_highMult_DeltaEta_DeltaPhi(
-      indexHistDeltaPhiUS, h1_AssoYeild_highMult_DeltaEta);
+  MVec<MVec<MHist1D>> h1_AssoYield_lowMult_DeltaEta_DeltaPhi(
+      indexHistDeltaPhiUS, h1_AssoYield_lowMult_DeltaEta);
+  MVec<MVec<MHist1D>> h1_AssoYield_highMult_DeltaEta_DeltaPhi(
+      indexHistDeltaPhiUS, h1_AssoYield_highMult_DeltaEta);
 
-  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYeild_lowMult(
-      indexAnyPtV2Jpsi, h1_AssoYeild_lowMult_DeltaEta_DeltaPhi);
-  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYeild_highMult(
-      indexAnyPtV2Jpsi, h1_AssoYeild_highMult_DeltaEta_DeltaPhi);
+  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYield_lowMult(
+      indexAnyPtV2Jpsi, h1_AssoYield_lowMult_DeltaEta_DeltaPhi);
+  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYield_highMult(
+      indexAnyPtV2Jpsi, h1_AssoYield_highMult_DeltaEta_DeltaPhi);
 
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 2, 1, 600, 600);
 
@@ -140,8 +140,8 @@ funcWithJson(void, AssoYeildGroup_noScale)(
                           hist_high->GetBinError(i_deltaEta, i_deltaPhi));
           MDouble valLow(hist_low->GetBinContent(i_deltaEta, i_deltaPhi),
                          hist_low->GetBinError(i_deltaEta, i_deltaPhi));
-          h1Vec_AssoYeild_lowMult.currentObject().SetBinInfo(valLow);
-          h1Vec_AssoYeild_highMult.currentObject().SetBinInfo(valHigh);
+          h1Vec_AssoYield_lowMult.currentObject().SetBinInfo(valLow);
+          h1Vec_AssoYield_highMult.currentObject().SetBinInfo(valHigh);
         }
       }
     }
@@ -150,7 +150,7 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   for (auto i_deltaEta : indexHistDeltaEtaUS)
     for (auto i_deltaPhi : indexHistDeltaPhiUS)
       for (auto i_ptV2 : indexAnyPtV2Jpsi)
-        h1Vec_AssoYeild_lowMult.currentObject().fHisto->Write();
+        h1Vec_AssoYield_lowMult.currentObject().fHisto->Write();
 
   gPublisherCanvas->finalize();
   file_output->Write();
@@ -159,18 +159,18 @@ funcWithJson(void, AssoYeildGroup_noScale)(
 
 int main(int argc, char **argv) {
   if (argc < 1) {
-    cerr << "Usage: ./AssoYeildGroup_noScale [path_input] [path_output] "
+    cerr << "Usage: ./AssoYieldGroup_noScale [path_input] [path_output] "
             "[path_pdf]"
          << endl;
     return 1;
   }
   if (argc == 1) {
-    AssoYeildGroup_noScale();
+    AssoYieldGroup_noScale();
   } else if (argc == 4) {
-    AssoYeildGroup_noScale(TString(argv[1]), TString(argv[2]),
+    AssoYieldGroup_noScale(TString(argv[1]), TString(argv[2]),
                            TString(argv[3]));
   } else {
-    cerr << "Usage: ./AssoYeildGroup_noScale [path_input] [path_output] "
+    cerr << "Usage: ./AssoYieldGroup_noScale [path_input] [path_output] "
             "[path_pdf]"
          << endl;
     return 1;

@@ -18,13 +18,13 @@ double ratio_s2t(double *x, double *par) {
 
 void CorrelationQA(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                         "AssoYeild_24pass1/mass_rebin/"
-                         "AssoYeildGroupEtagapPt_bInt_f_BS_bs.root",
+                         "AssoYield_24pass1/mass_rebin/"
+                         "AssoYieldGroupEtagapPt_bInt_f_BS_bs.root",
     TString path_input_mass = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
                               "JpsiMass_LHC24_apass1_DiElectron.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
                        "LHC24_pass1_DiElectron/"
-                       "AssoYeildGroupEtagapPt_bInt_f_BS_bs_massRebin.pdf") {
+                       "AssoYieldGroupEtagapPt_bInt_f_BS_bs_massRebin.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_input_mass = new TFile(path_input_mass);
 

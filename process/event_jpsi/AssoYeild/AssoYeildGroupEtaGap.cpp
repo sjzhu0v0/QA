@@ -4,13 +4,13 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupEtaGap(
+void AssoYieldGroupEtaGap(
     TString path_input =
-        "/home/szhu/work/alice/analysis/QA/test/AssoYeildQA.root",
+        "/home/szhu/work/alice/analysis/QA/test/AssoYieldQA.root",
     TString path_output =
-        "/home/szhu/work/alice/analysis/QA/test/AssoYeildGroupEtaGap_bInt.root",
+        "/home/szhu/work/alice/analysis/QA/test/AssoYieldGroupEtaGap_bInt.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
-                       "AssoYeildGroupEtaGap_bInt.pdf",
+                       "AssoYieldGroupEtaGap_bInt.pdf",
     bool is_bInt = true) {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
@@ -197,11 +197,11 @@ void AssoYeildGroupEtaGap(
 int main(int argc, char **argv) {
   gROOT->SetBatch(kTRUE);
   TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                       "AssoYeildQA_LHC22pass4.root";
+                       "AssoYieldQA_LHC22pass4.root";
   TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                        "AssoYeildGroupQAEtaGap.root";
+                        "AssoYieldGroupQAEtaGap.root";
   TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                     "AssoYeildGroupQAEtaGap.pdf";
+                     "AssoYieldGroupQAEtaGap.pdf";
   bool is_bInt = false;
 
   if (argc > 1) {
@@ -217,6 +217,6 @@ int main(int argc, char **argv) {
     is_bInt = atoi(argv[4]);
   }
 
-  AssoYeildGroupEtaGap(path_input, path_output, path_pdf, is_bInt);
+  AssoYieldGroupEtaGap(path_input, path_output, path_pdf, is_bInt);
   return 0;
 }

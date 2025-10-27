@@ -4,13 +4,13 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 
-void AssoYeildGroupQAEtaGap(
+void AssoYieldGroupQAEtaGap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "AssoYeildQA_LHC22pass4.root",
+                         "AssoYieldQA_LHC22pass4.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYeildGroupQAEtaGap.root",
+                          "AssoYieldGroupQAEtaGap.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "AssoYeildGroupQAEtaGap.pdf") {
+                       "AssoYieldGroupQAEtaGap.pdf") {
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
@@ -163,11 +163,11 @@ void AssoYeildGroupQAEtaGap(
 int main(int argc, char **argv) {
   gROOT->SetBatch(kTRUE);
   TString path_input = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                       "AssoYeildQA_LHC22pass4.root";
+                       "AssoYieldQA_LHC22pass4.root";
   TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                        "AssoYeildGroupQAEtaGap.root";
+                        "AssoYieldGroupQAEtaGap.root";
   TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                     "AssoYeildGroupQAEtaGap.pdf";
+                     "AssoYieldGroupQAEtaGap.pdf";
 
   if (argc > 1) {
     path_input = argv[1];
@@ -178,6 +178,6 @@ int main(int argc, char **argv) {
   if (argc > 3) {
     path_pdf = argv[3];
   }
-  AssoYeildGroupQAEtaGap(path_input, path_output, path_pdf);
+  AssoYieldGroupQAEtaGap(path_input, path_output, path_pdf);
   return 0;
 }
