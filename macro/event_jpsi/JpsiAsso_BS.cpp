@@ -22,10 +22,10 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
   cout << "Output file: " << path_output << endl;
   cout << "Threshold BS: " << threshold_bs << endl;
   YAML::Node config = YAML::LoadFile("config.yaml");
-  const int low_edge_deltaPhiToPi =
-      config["hist_binning"]["low_edge_deltaPhiToPi"].as<int>();
-  const int up_edge_deltaPhiToPi =
-      config["hist_binning"]["up_edge_deltaPhiToPi"].as<int>();
+  const double low_edge_deltaPhiToPi =
+      config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
+  const double up_edge_deltaPhiToPi =
+      config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
 
   tree_flowVecd->AddFriend(tree_mult);
 

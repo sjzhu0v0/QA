@@ -15,10 +15,10 @@ void AssoYieldEtagap(
   YAML::Node config = YAML::LoadFile("config.yaml");
   // int n_rebin_mass_assoYield =
   //     config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
-  const int low_edge_deltaPhiToPi =
-      config["hist_binning"]["low_edge_deltaPhiToPi"].as<int>();
-  const int up_edge_deltaPhiToPi =
-      config["hist_binning"]["up_edge_deltaPhiToPi"].as<int>();
+  const double low_edge_deltaPhiToPi =
+      config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
+  const double up_edge_deltaPhiToPi =
+      config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");

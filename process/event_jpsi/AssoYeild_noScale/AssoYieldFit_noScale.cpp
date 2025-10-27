@@ -20,10 +20,10 @@ void AssoYieldEtagap(
                        "AssoYieldFit_noScale.pdf") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile("config.yaml");
-  const int low_edge_deltaPhiToPi =
-      config["hist_binning"]["low_edge_deltaPhiToPi"].as<int>();
-  const int up_edge_deltaPhiToPi =
-      config["hist_binning"]["up_edge_deltaPhiToPi"].as<int>();
+  const double low_edge_deltaPhiToPi =
+      config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
+  const double up_edge_deltaPhiToPi =
+      config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_input_tf1 = new TFile(path_input_tf1);
