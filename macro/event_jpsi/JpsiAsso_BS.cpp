@@ -22,6 +22,10 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
   cout << "Output file: " << path_output << endl;
   cout << "Threshold BS: " << threshold_bs << endl;
   YAML::Node config = YAML::LoadFile("config.yaml");
+  const int low_edge_deltaPhiToPi =
+      config["hist_binning"]["low_edge_deltaPhiToPi"].as<int>();
+  const int up_edge_deltaPhiToPi =
+      config["hist_binning"]["up_edge_deltaPhiToPi"].as<int>();
 
   tree_flowVecd->AddFriend(tree_mult);
 
@@ -75,7 +79,8 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                    "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
           .Define(
               "JpsiInfoUS",
-              [&CutTrackInfo](const EventData &eventData) {
+              [&CutTrackInfo, &low_edge_deltaPhiToPi,
+               &up_edge_deltaPhiToPi](const EventData &eventData) {
                 ROOT::VecOps::RVec<array<float, 6>> vec2return;
                 for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
                   if (eventData.jpsi_info.fSign[i] == 0) {
@@ -88,11 +93,13 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                       float delta_phi = eventData.jpsi_info.fPhi[i] -
                                         eventData.track_info.fPhiREF[j];
                       int n = 0;
-                      while (delta_phi > 1.5 * M_PI && n < 10) {
+                      while (delta_phi > up_edge_deltaPhiToPi * M_PI &&
+                             n < 10) {
                         n++;
                         delta_phi -= 2 * M_PI;
                       }
-                      while (delta_phi < -0.5 * M_PI && n < 10) {
+                      while (delta_phi < low_edge_deltaPhiToPi * M_PI &&
+                             n < 10) {
                         n++;
                         delta_phi += 2 * M_PI;
                       }
@@ -241,9 +248,9 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
   int n_bins_deltaPhi_assoYield =
       config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
-                             n_bins_deltaPhi_assoYield,
-                             {-M_PI_2, M_PI + M_PI_2});
+  StrVar4Hist var_DeltaPhiUS(
+      "DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", n_bins_deltaPhi_assoYield,
+      {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
   StrVar4Hist var_fPosZSingle("PosZUSSingle", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinnedSingle(
       "NumContribCalibUSSingle", "N_{vtx contrib} Calibrated", "", 10,

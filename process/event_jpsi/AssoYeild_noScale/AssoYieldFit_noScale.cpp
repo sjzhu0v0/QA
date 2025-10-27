@@ -20,6 +20,10 @@ void AssoYieldEtagap(
                        "AssoYieldFit_noScale.pdf") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile("config.yaml");
+  const int low_edge_deltaPhiToPi =
+      config["hist_binning"]["low_edge_deltaPhiToPi"].as<int>();
+  const int up_edge_deltaPhiToPi =
+      config["hist_binning"]["up_edge_deltaPhiToPi"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_input_tf1 = new TFile(path_input_tf1);
@@ -96,9 +100,9 @@ void AssoYieldEtagap(
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
   int n_bins_deltaPhi_assoYield =
       config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
-                             n_bins_deltaPhi_assoYield,
-                             {-M_PI_2, M_PI + M_PI_2});
+  StrVar4Hist var_DeltaPhiUS(
+      "DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", n_bins_deltaPhi_assoYield,
+      {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});

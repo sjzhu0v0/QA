@@ -15,6 +15,11 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   TFile *fOutput = new TFile(path_output, "RECREATE");
   YAML::Node config = YAML::LoadFile("config.yaml");
 
+  const int low_edge_deltaPhiToPi =
+      config["hist_binning"]["low_edge_deltaPhiToPi"].as<int>();
+  const int up_edge_deltaPhiToPi =
+      config["hist_binning"]["up_edge_deltaPhiToPi"].as<int>();
+
   TTree *tree_input = (TTree *)file_flowVecd->Get("EventMixing");
 
   ROOT::RDataFrame rdf(*tree_input);
@@ -28,7 +33,8 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   auto rdf_AllVar =
       rdf.Define(
              "JpsiInfoUS",
-             [&CutTrackInfo](const vector<EventData> &vec_eventData) {
+             [&CutTrackInfo, &low_edge_deltaPhiToPi,
+              &up_edge_deltaPhiToPi](const vector<EventData> &vec_eventData) {
                ROOT::VecOps::RVec<array<float, 6>> vec2return;
                for (auto eventData : vec_eventData)
                  for (size_t i = 0; i < eventData.jpsi_info.fPT.size(); ++i) {
@@ -43,11 +49,13 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                        float delta_phi = eventData.jpsi_info.fPhi[i] -
                                          eventData.track_info.fPhiREF[j];
                        int n = 0;
-                       while (delta_phi > 1.5 * M_PI && n < 10) {
+                       while (delta_phi > up_edge_deltaPhiToPi * M_PI &&
+                              n < 10) {
                          n++;
                          delta_phi -= 2 * M_PI;
                        }
-                       while (delta_phi < -0.5 * M_PI && n < 10) {
+                       while (delta_phi < low_edge_deltaPhiToPi * M_PI &&
+                              n < 10) {
                          n++;
                          delta_phi += 2 * M_PI;
                        }
@@ -141,9 +149,9 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
   int n_bins_deltaPhi_assoYield =
       config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
-                             n_bins_deltaPhi_assoYield,
-                             {-M_PI_2, M_PI + M_PI_2});
+  StrVar4Hist var_DeltaPhiUS(
+      "DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", n_bins_deltaPhi_assoYield,
+      {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
