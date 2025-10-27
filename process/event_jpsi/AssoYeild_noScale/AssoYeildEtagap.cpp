@@ -13,8 +13,8 @@ void AssoYeildEtagap(
                           "AssoYeildFit_noScale.root") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile("config.yaml");
-  int n_rebin_mass_assoYield =
-      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
+  // int n_rebin_mass_assoYield =
+  //     config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
