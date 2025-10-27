@@ -100,7 +100,6 @@ void AssoYieldEtagap(
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.1, 1.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
-
   int n_rebin_mass_assoYield =
       config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass_assoYield);
