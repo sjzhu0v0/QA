@@ -13,7 +13,8 @@ void AssoYeildEtagap(
                           "AssoYeildFit_noScale.root") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile("config.yaml");
-  int n_rebin_mass_assoYield = config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
+  int n_rebin_mass_assoYield =
+      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
@@ -86,23 +87,27 @@ void AssoYeildEtagap(
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
 
+  int n_rebin_mass_assoYield =
+      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass_assoYield);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
   MIndexHist indexHistDeltaPhiUS(var_DeltaPhiUS, 1, 1);
-  MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, 2);
+  int n_rebin_deltaEta_assoYield =
+      config["hist_binning"]["n_rebin_deltaEta_assoYield"].as<int>();
+  MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, n_rebin_deltaEta_assoYield);
   MIndexHist indexHistEtaGap(var_EtaGap, 1, 1);
   MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
   gDirectory = nullptr;
-  MHGroupTool1D assoYeild_sub(file_input,
-                              "DeltaPhiUS_AssoYeild_sub_DeltaEtaUS_%d_ptV2_%d",
-                              {var_DeltaEtaUS, var_PtV2Jpsi}, {2, 1});
-  MHGroupTool1D assoYeild_low(file_input,
-                              "DeltaPhiUS_AssoYeild_low_DeltaEtaUS_%d_ptV2_%d",
-                              {var_DeltaEtaUS, var_PtV2Jpsi}, {2, 1});
+  MHGroupTool1D assoYeild_sub(
+      file_input, "DeltaPhiUS_AssoYeild_sub_DeltaEtaUS_%d_ptV2_%d",
+      {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
+  MHGroupTool1D assoYeild_low(
+      file_input, "DeltaPhiUS_AssoYeild_low_DeltaEtaUS_%d_ptV2_%d",
+      {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
   MHGroupTool1D assoYeild_high(
       file_input, "DeltaPhiUS_AssoYeild_high_DeltaEtaUS_%d_ptV2_%d",
-      {var_DeltaEtaUS, var_PtV2Jpsi}, {2, 1});
+      {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
 
   MHist1D assoYeild_sub_int(indexHistDeltaPhiUS, "AssoYeild_sub_int");
   MHist1D assoYeild_low_int(indexHistDeltaPhiUS, "AssoYeild_low_int");

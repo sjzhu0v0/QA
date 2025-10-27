@@ -4,7 +4,7 @@
 #include "TApplication.h"
 #include "yaml-cpp/yaml.h"
 
-funcWithJson(void, AssoYeildPt)(
+void AssoYeildPt(
     TString input_se_pr =
         "/home/szhu/work/alice/analysis/QA/test/JpsiAsso.root:DeltaEtaUS_"
         "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
@@ -17,8 +17,6 @@ funcWithJson(void, AssoYeildPt)(
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
                           "AssoYeildPt") {
   YAML::Node config = YAML::LoadFile("config.yaml");
-  int n_rebin_mass_assoYield =
-      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
@@ -43,7 +41,11 @@ funcWithJson(void, AssoYeildPt)(
 
   AssocYeildHelper_v2 assoYeild(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
   assoYeild.Rebin(gtype_vars::kNumContrib, 5);
-  assoYeild.Rebin(gtype_vars::kDeltaEta, 2);
+  int n_rebin_deltaEta_assoYield =
+      config["hist_binning"]["n_rebin_deltaEta_assoYield"].as<int>();
+  assoYeild.Rebin(gtype_vars::kDeltaEta, n_rebin_deltaEta_assoYield);
+  int n_rebin_mass_assoYield =
+      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
   assoYeild.Rebin(gtype_vars::kMass, n_rebin_mass_assoYield);
 
   hnTool_se_pr.PrintAllAxis();
@@ -163,8 +165,6 @@ funcWithJson(void, AssoYeildPt)(
   // double pt_max = 10.;
   // assoYeild.SetRangeUser(gtype_vars::kPt, pt_min, pt_max);
   // for (int ipt = 1; ipt <= strAny_ptV2.fNbins; ipt++)
-
-  vector<int> pt_bins = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
   for (int i_pt = 1; i_pt <= strAny_ptV2.fNbins; i_pt++)
     for (int i_mass = 1; i_mass <= hnTool_se_pr.GetNbins(3); i_mass++) {

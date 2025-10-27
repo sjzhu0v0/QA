@@ -6,7 +6,7 @@
 #include "TApplication.h"
 #include "yaml-cpp/yaml.h"
 
-funcWithJson(void, AssoYeildEtagap)(
+void AssoYeildEtagap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
                          "AssoYeildGroupEtagap_NoScale.root",
     TString path_input_mass =
@@ -20,8 +20,6 @@ funcWithJson(void, AssoYeildEtagap)(
                        "AssoYeildFit_noScale.pdf") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile("config.yaml");
-  int n_rebin_mass_assoYield =
-      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_input_tf1 = new TFile(path_input_tf1);
@@ -87,19 +85,32 @@ funcWithJson(void, AssoYeildEtagap)(
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
-                             {-4., 4.});
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
+  int n_bins_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
+  double min_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
+  double max_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
+                             n_bins_deltaEta_assoYield,
+                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
+  int n_bins_deltaPhi_assoYeild =
+      config["hist_binning"]["n_bins_deltaPhi_assoYeild"].as<int>();
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
+                             n_bins_deltaPhi_assoYeild,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
-  cout << var_PtV2Jpsi.fNbins << endl;
 
+  int n_rebin_mass_assoYield =
+      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass_assoYield);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
   MIndexHist indexHistDeltaPhiUS(var_DeltaPhiUS, 1, 1);
-  MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, 2);
+  int n_rebin_deltaEta_assoYield =
+      config["hist_binning"]["n_rebin_deltaEta_assoYield"].as<int>();
+  MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, n_rebin_deltaEta_assoYield);
   MIndexHist indexHistEtaGap(var_EtaGap, 1, 1);
   MIndexHist indexHistPtV2Jpsi(var_PtV2Jpsi, 1, 1);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
@@ -110,7 +121,7 @@ funcWithJson(void, AssoYeildEtagap)(
   auto h_mass = MRootIO::GetObjectDiectly<THnD>(path_input_mass);
   MHnTool hnTool_mass(h_mass);
   hnTool_mass.Rebin(0, 200);
-  hnTool_mass.Rebin(3, 5);
+  // hnTool_mass.Rebin(3, 5);
   hnTool_mass.PrintAllAxis();
 
   TH2D *mass_pt_lowMult = hnTool_mass.Project(1, 2, {0, 1});
@@ -121,13 +132,15 @@ funcWithJson(void, AssoYeildEtagap)(
   MHGroupTool1D assoYeild_lowMult(
       file_input,
       "MassUS_AssoYeild_lowMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
-      {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {2, 1, 1});
+      {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi},
+      {n_rebin_deltaEta_assoYield, 1, 1});
   MHGroupTool1D assoYeild_highMult(
       file_input,
       "MassUS_AssoYeild_highMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
-      {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {2, 1, 1});
+      {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi},
+      {n_rebin_deltaEta_assoYield, 1, 1});
   MFitterPoly fitterPoly_asso(assoYeild_highMult.GetHist(vector<int>{1, 1, 1}),
-                              2., 4.32);
+                              1.88, 4.32);
   fitterPoly_asso.initializeBasis(6);
 
   // MHist1D h1_assoYeild_lowMult(indexHistDeltaPhiUS, "AssoYeild_lowMult");

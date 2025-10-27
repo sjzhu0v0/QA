@@ -7,7 +7,7 @@
 #include "TSystem.h"
 #include "yaml-cpp/yaml.h"
 
-funcWithJson(void, AssoYeildGroup_noScale)(
+void AssoYeildGroup_noScale(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
                          "AssoYeild_24pass1/AssoYeild_noScale.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
@@ -18,7 +18,8 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   gROOT->SetBatch(kTRUE);
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   YAML::Node config = YAML::LoadFile("config.yaml");
-   int n_rebin_mass_assoYield = config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
+  int n_rebin_mass_assoYield =
+      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
@@ -80,12 +81,24 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
       {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
-                                    {1.8, 5.4});
+  int n_bins_mass_assoYield =
+      config["hist_binning"]["n_bins_mass_assoYield"].as<int>();
+  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}",
+                                    n_bins_mass_assoYield, {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 5.});
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
-                             {-4., 4.});
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
+  int n_bins_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
+  double min_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
+  double max_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
+                             n_bins_deltaEta_assoYield,
+                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
+  int n_bins_deltaPhi_assoYeild =
+      config["hist_binning"]["n_bins_deltaPhi_assoYeild"].as<int>();
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
+                             n_bins_deltaPhi_assoYeild,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
@@ -94,7 +107,9 @@ funcWithJson(void, AssoYeildGroup_noScale)(
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass_assoYield);
   MIndexHist indexHistPtJpsiCandidate(var_PtJpsiCandidate, 1, 1);
   MIndexHist indexHistDeltaPhiUS(var_DeltaPhiUS, 1, 1);
-  MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, 2);
+  int n_rebin_deltaEta_assoYield =
+      config["hist_binning"]["n_rebin_deltaEta_assoYield"]["n_bins"].as<int>();
+  MIndexHist indexHistDeltaEtaUS(var_DeltaEtaUS, 1, n_rebin_deltaEta_assoYield);
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
 
   gDirectory = nullptr;

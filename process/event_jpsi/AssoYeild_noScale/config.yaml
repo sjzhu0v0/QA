@@ -5,4 +5,5 @@ hist_binning:
     min: -2.
     max: 2.
   n_bins_deltaPhi_assoYeild: 30
-  
+  n_rebin_mass_assoYield: 1
+  n_rebin_deltaEta_assoYield: 1
