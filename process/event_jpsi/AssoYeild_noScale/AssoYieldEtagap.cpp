@@ -79,9 +79,19 @@ void AssoYieldEtagap(
   StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
                                     {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "", 80,
-                             {-4., 4.});
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", 10,
+  int n_bins_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
+  double min_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
+  double max_deltaEta_assoYield =
+      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
+  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
+                             n_bins_deltaEta_assoYield,
+                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
+  int n_bins_deltaPhi_assoYield =
+      config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
+  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
+                             n_bins_deltaPhi_assoYield,
                              {-M_PI_2, M_PI + M_PI_2});
   StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.1, 1.});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
@@ -127,7 +137,7 @@ void AssoYieldEtagap(
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     for (auto iEtaGap : indexHistEtaGap) {
-      for (int i_deltaEta = 11; i_deltaEta <= 20 - iEtaGap + 1; i_deltaEta++) {
+      for (int i_deltaEta = 1; i_deltaEta <= 10 - iEtaGap + 1; i_deltaEta++) {
         assoYield_sub_EtaGap.currentObject().fHisto->Add(
             assoYield_sub.MH1DGetBin(i_deltaEta, iPtV2));
         assoYield_low_EtaGap.currentObject().fHisto->Add(
@@ -135,7 +145,7 @@ void AssoYieldEtagap(
         assoYield_high_EtaGap.currentObject().fHisto->Add(
             assoYield_high.MH1DGetBin(i_deltaEta, iPtV2));
       }
-      for (int i_deltaEta = 20 + iEtaGap - 1; i_deltaEta <= 30; i_deltaEta++) {
+      for (int i_deltaEta = 10 + iEtaGap - 1; i_deltaEta <= 20; i_deltaEta++) {
         assoYield_sub_EtaGap.currentObject().fHisto->Add(
             assoYield_sub.MH1DGetBin(i_deltaEta, iPtV2));
         assoYield_low_EtaGap.currentObject().fHisto->Add(
