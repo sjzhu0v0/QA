@@ -14,7 +14,6 @@ void AssoYeildGroup_noScale(
                           "AssoYeildGroupEtagap_NoScale.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYeildGroup_noScale.pdf") {
-  SetUpJson();
   gROOT->SetBatch(kTRUE);
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   YAML::Node config = YAML::LoadFile("config.yaml");
