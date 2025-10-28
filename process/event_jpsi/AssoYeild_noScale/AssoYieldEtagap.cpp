@@ -89,6 +89,8 @@ void AssoYieldEtagap(
       config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
   double max_deltaEta_assoYield =
       config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
+  double bin_width_etaGap = (max_deltaEta_assoYield - min_deltaEta_assoYield) /
+                            (double)n_bins_deltaEta_assoYield / 2.;
   StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
                              n_bins_deltaEta_assoYield,
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
@@ -97,7 +99,10 @@ void AssoYieldEtagap(
   StrVar4Hist var_DeltaPhiUS(
       "DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", n_bins_deltaPhi_assoYield,
       {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
-  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.1, 1.});
+  StrVar4Hist var_EtaGap(
+      "EtaGap", "#Delta#eta_{gap}", "", n_bins_deltaEta_assoYield / 2 - 2,
+      {-1. * bin_width_etaGap,
+       (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
   int n_rebin_mass_assoYield =
@@ -140,7 +145,9 @@ void AssoYieldEtagap(
 
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     for (auto iEtaGap : indexHistEtaGap) {
-      for (int i_deltaEta = 1; i_deltaEta <= 10 - iEtaGap + 1; i_deltaEta++) {
+      for (int i_deltaEta = 1;
+           i_deltaEta <= n_bins_deltaEta_assoYield / 2 - iEtaGap + 1;
+           i_deltaEta++) {
         assoYield_sub_EtaGap.currentObject().fHisto->Add(
             assoYield_sub.MH1DGetBin(i_deltaEta, iPtV2));
         assoYield_low_EtaGap.currentObject().fHisto->Add(
@@ -148,7 +155,8 @@ void AssoYieldEtagap(
         assoYield_high_EtaGap.currentObject().fHisto->Add(
             assoYield_high.MH1DGetBin(i_deltaEta, iPtV2));
       }
-      for (int i_deltaEta = 10 + iEtaGap - 1; i_deltaEta <= 20; i_deltaEta++) {
+      for (int i_deltaEta = n_bins_deltaEta_assoYield / 2 + iEtaGap - 1;
+           i_deltaEta <= n_bins_deltaEta_assoYield; i_deltaEta++) {
         assoYield_sub_EtaGap.currentObject().fHisto->Add(
             assoYield_sub.MH1DGetBin(i_deltaEta, iPtV2));
         assoYield_low_EtaGap.currentObject().fHisto->Add(
@@ -156,6 +164,19 @@ void AssoYieldEtagap(
         assoYield_high_EtaGap.currentObject().fHisto->Add(
             assoYield_high.MH1DGetBin(i_deltaEta, iPtV2));
       }
+
+      TF1 func_modulation(
+          "f1_modulation", "[a0]+2*([a1]*cos(x)+[a2]*cos(2*x)+[a3]*cos(3*x))",
+          low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI);
+      assoYield_sub_EtaGap.currentObject().fHisto->Fit(
+          &func_modulation, "QR", "", low_edge_deltaPhiToPi * M_PI,
+          up_edge_deltaPhiToPi * M_PI);
+      assoYield_low_EtaGap.currentObject().fHisto->Fit(
+          &func_modulation, "QR", "", low_edge_deltaPhiToPi * M_PI,
+          up_edge_deltaPhiToPi * M_PI);
+      assoYield_high_EtaGap.currentObject().fHisto->Fit(
+          &func_modulation, "QR", "", low_edge_deltaPhiToPi * M_PI,
+          up_edge_deltaPhiToPi * M_PI);
     }
   }
 
