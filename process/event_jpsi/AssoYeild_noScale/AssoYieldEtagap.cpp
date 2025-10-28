@@ -205,7 +205,10 @@ void AssoYieldEtagap(
                                  fitFunc->GetParError(3));                     \
     }                                                                          \
   file_output->cd();                                                           \
-  a0_##mult_class.Write();
+  a0_##mult_class.Write();                                                     \
+  a1_##mult_class.Write();                                                     \
+  a2_##mult_class.Write();                                                     \
+  a3_##mult_class.Write();
 
   ModulationMultClass(high);
   ModulationMultClass(low);
