@@ -131,15 +131,12 @@ void AssoYieldEtagap(
   MHist1D assoYield_low_int(indexHistDeltaPhiUS, "AssoYield_low_int");
   MHist1D assoYield_high_int(indexHistDeltaPhiUS, "AssoYield_high_int");
 
-  MVec<MHist1D> assoYield_sub_DeltaEta(indexHistEtaGap, assoYield_sub_int);
-  MVec<MHist1D> assoYield_low_DeltaEta(indexHistEtaGap, assoYield_low_int);
-  MVec<MHist1D> assoYield_high_DeltaEta(indexHistEtaGap, assoYield_high_int);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYield_sub_EtaGap(
-      indexAnyPtV2Jpsi, assoYield_sub_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYield_low_EtaGap(
-      indexAnyPtV2Jpsi, assoYield_low_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> assoYield_high_EtaGap(
-      indexAnyPtV2Jpsi, assoYield_high_DeltaEta);
+  auto assoYield_sub_EtaGap =
+      MakeMVec(assoYield_sub_int, indexHistEtaGap, indexAnyPtV2Jpsi);
+  auto assoYield_low_EtaGap =
+      MakeMVec(assoYield_low_int, indexHistEtaGap, indexAnyPtV2Jpsi);
+  auto assoYield_high_EtaGap =
+      MakeMVec(assoYield_high_int, indexHistEtaGap, indexAnyPtV2Jpsi);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
 
