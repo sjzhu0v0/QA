@@ -180,6 +180,37 @@ void AssoYieldEtagap(
     }
   }
 
+#define ModulationMultClass(mult_class)                                        \
+  MHist2D a0_##mult_class(indexHistEtaGap, indexHistPtV2Jpsi,                  \
+                          "a0_" #mult_class);                                  \
+  MHist2D a1_##mult_class(indexHistEtaGap, indexHistPtV2Jpsi,                  \
+                          "a1_" #mult_class);                                  \
+  MHist2D a2_##mult_class(indexHistEtaGap, indexHistPtV2Jpsi,                  \
+                          "a2_" #mult_class);                                  \
+  MHist2D a3_##mult_class(indexHistEtaGap, indexHistPtV2Jpsi,                  \
+                          "a3_" #mult_class);                                  \
+                                                                               \
+  for (auto iPtV2 : indexAnyPtV2Jpsi)                                          \
+    for (auto iEtaGap : indexHistEtaGap) {                                     \
+      TF1 *fitFunc =                                                           \
+          assoYield_##mult_class##_EtaGap.currentObject().fHisto->GetFunction( \
+              "f1_modulation");                                                \
+      a0_##mult_class.SetBinInfo(fitFunc->GetParameter(0),                     \
+                                 fitFunc->GetParError(0));                     \
+      a1_##mult_class.SetBinInfo(fitFunc->GetParameter(1),                     \
+                                 fitFunc->GetParError(1));                     \
+      a2_##mult_class.SetBinInfo(fitFunc->GetParameter(2),                     \
+                                 fitFunc->GetParError(2));                     \
+      a3_##mult_class.SetBinInfo(fitFunc->GetParameter(3),                     \
+                                 fitFunc->GetParError(3));                     \
+    }                                                                          \
+  file_output->cd();                                                           \
+  a0_##mult_class.Write();
+
+  ModulationMultClass(high);
+  ModulationMultClass(low);
+  ModulationMultClass(sub);
+
   file_output->cd();
   for (auto iPtV2 : indexAnyPtV2Jpsi) {
     for (auto iEtaGap : indexHistEtaGap) {
