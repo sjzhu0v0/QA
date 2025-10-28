@@ -192,9 +192,8 @@ void AssoYieldEtagap(
                                                                                \
   for (auto iPtV2 : indexAnyPtV2Jpsi)                                          \
     for (auto iEtaGap : indexHistEtaGap) {                                     \
-      TF1 *fitFunc =                                                           \
-          assoYield_##mult_class##_EtaGap.currentObject().fHisto->GetFunction( \
-              "f1_modulation");                                                \
+      TF1 *fitFunc = assoYield_##mult_class##_EtaGap[iPtV2 - 1][iEtaGap - 1]   \
+                         .fHisto->GetFunction("f1_modulation");                \
       a0_##mult_class.SetBinInfo(fitFunc->GetParameter(0),                     \
                                  fitFunc->GetParError(0));                     \
       a1_##mult_class.SetBinInfo(fitFunc->GetParameter(1),                     \
