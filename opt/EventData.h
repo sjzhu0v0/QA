@@ -93,6 +93,15 @@ struct EventData {
   ClassDefNV(EventData, 1); // 添加这一行
 };
 
+struct EventDataREF {
+  EventInfo event_info;
+  EventInfo event_info2;
+  TrackInfo track_info;
+  TrackInfo track_info2;
+
+  ClassDefNV(EventDataREF, 1); // 添加这一行
+};
+
 EventData CreateEventData(Int_t fMultTPC, Int_t fMultTracklets,
                           Int_t fMultNTracksPV, Float_t fMultFT0C,
                           unsigned short fNumContrib, double fNumContribCalib,

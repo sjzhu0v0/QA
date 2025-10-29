@@ -7,18 +7,17 @@ void AssoYieldEtagap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
                          "JpsiAssocYield_24apass1.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "AssoYieldEtagap.root") {
+                          "AssoYieldEtagap.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                       "AssoYieldEtagap.pdf") {
+  gErrorIgnoreLevel = kWarning;
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
   YAML::Node config = YAML::LoadFile("config.yaml");
-  // int n_rebin_mass_assoYield =
-  //     config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
   const double low_edge_deltaPhiToPi =
       config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
   const double up_edge_deltaPhiToPi =
       config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
-
-  // TFile *file_input = new TFile(path_input);
 
   struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
@@ -113,13 +112,66 @@ void AssoYieldEtagap(
                               "DeltaPhiUS_AssoYield_high_int_EtaGap_%d_ptV2_%d",
                               {var_EtaGap, var_PtV2Jpsi}, {1, 1});
 
-  uint n_bins_varPtV2Jpsi = var_PtV2Jpsi.fNbins;
-  uint n_bins_varEtaGap = var_EtaGap.fNbins;
+  MIndexHist indexEtagap(var_EtaGap);
+  MIndexHist indexPtV2Jpsi(var_PtV2Jpsi);
+  file_output->cd();
+  MHist2D a0_high(indexEtagap, indexPtV2Jpsi, "a0_high");
+  MHist2D a0_low(indexEtagap, indexPtV2Jpsi, "a0_low");
+  MHist2D a0_sub(indexEtagap, indexPtV2Jpsi, "a0_sub");
+  MHist2D a1_high(indexEtagap, indexPtV2Jpsi, "a1_high");
+  MHist2D a1_low(indexEtagap, indexPtV2Jpsi, "a1_low");
+  MHist2D a1_sub(indexEtagap, indexPtV2Jpsi, "a1_sub");
+  MHist2D a2_high(indexEtagap, indexPtV2Jpsi, "a2_high");
+  MHist2D a2_low(indexEtagap, indexPtV2Jpsi, "a2_low");
+  MHist2D a2_sub(indexEtagap, indexPtV2Jpsi, "a2_sub");
+  MHist2D a3_high(indexEtagap, indexPtV2Jpsi, "a3_high");
+  MHist2D a3_low(indexEtagap, indexPtV2Jpsi, "a3_low");
+  MHist2D a3_sub(indexEtagap, indexPtV2Jpsi, "a3_sub");
+  MHist2D V2(indexEtagap, indexPtV2Jpsi, "V2");
+
+  gDirectory = file_output;
+  gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 1);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
-  for (int iPtV2 = 1; iPtV2 <= n_bins_varPtV2Jpsi; iPtV2++) {
-    for (int iEtaGap = 1; iEtaGap <= n_bins_varEtaGap; iEtaGap++) {
-      auto h_deltaPhi_low = DeltaPhi_low.MH1DGetBin(iEtaGap, iPtV2);
+  for (auto iPt : indexPtV2Jpsi)
+    for (auto iEtagpa : indexEtagap) {
+      auto f_sub = (TF1 *)(DeltaPhi_sub.MH1DGetBin(iEtagpa, iPt)
+                               ->GetFunction("f1_modulation"));
+      auto f_high = (TF1 *)(DeltaPhi_high.MH1DGetBin(iEtagpa, iPt)
+                                ->GetFunction("f1_modulation"));
+      auto f_low = (TF1 *)(DeltaPhi_low.MH1DGetBin(iEtagpa, iPt)
+                               ->GetFunction("f1_modulation"));
+      gPublisherCanvas->Draw(f_sub)->Draw(f_low)->Draw(f_high);
+
+      MDouble val_a0_sub(f_sub->GetParameter(0), f_sub->GetParError(0));
+      a0_sub.SetBinInfo(val_a0_sub);
+      MDouble val_a1_sub(f_sub->GetParameter(1), f_sub->GetParError(1));
+      a1_sub.SetBinInfo(val_a1_sub);
+      MDouble val_a2_sub(f_sub->GetParameter(2), f_sub->GetParError(2));
+      a2_sub.SetBinInfo(val_a2_sub);
+      MDouble val_a3_sub(f_sub->GetParameter(3), f_sub->GetParError(3));
+      a3_sub.SetBinInfo(val_a3_sub);
+      MDouble val_a0_low(f_low->GetParameter(0), f_low->GetParError(0));
+      a0_low.SetBinInfo(val_a0_low);
+      MDouble val_a1_low(f_low->GetParameter(1), f_low->GetParError(1));
+      a1_low.SetBinInfo(val_a1_low);
+      MDouble val_a2_low(f_low->GetParameter(2), f_low->GetParError(2));
+      a2_low.SetBinInfo(val_a2_low);
+      MDouble val_a3_low(f_low->GetParameter(3), f_low->GetParError(3));
+      a3_low.SetBinInfo(val_a3_low);
+      MDouble val_a0_high(f_high->GetParameter(0), f_high->GetParError(0));
+      a0_high.SetBinInfo(val_a0_high);
+      MDouble val_a1_high(f_high->GetParameter(1), f_high->GetParError(1));
+      a1_high.SetBinInfo(val_a1_high);
+      MDouble val_a2_high(f_high->GetParameter(2), f_high->GetParError(2));
+      a2_high.SetBinInfo(val_a2_high);
+      MDouble val_a3_high(f_high->GetParameter(3), f_high->GetParError(3));
+      a3_high.SetBinInfo(val_a3_high);
+      MDouble val_v2 = (val_a2_high - val_a2_low) / val_a0_high;
+      V2.SetBinInfo(val_v2);
     }
-  }
+
+  gPublisherCanvas->finalize();
+  file_output->Write();
+  file_output->Close();
 }

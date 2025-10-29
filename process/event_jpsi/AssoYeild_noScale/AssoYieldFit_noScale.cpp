@@ -147,23 +147,10 @@ void AssoYieldEtagap(
                               1.88, 4.32);
   fitterPoly_asso.initializeBasis(6);
 
-  // MHist1D h1_assoYield_lowMult(indexHistDeltaPhiUS, "AssoYield_lowMult");
-  // MHist1D h1_assoYield_highMult(indexHistDeltaPhiUS, "AssoYield_highMult");
-  // MHist1D h1_assoYield_temp(indexHistDeltaPhiUS, "AssoYield_sub");
-  // MVec<MHist1D> assoYield_lowMult_DeltaEta(indexHistDeltaEtaUS,
-  //                                          h1_assoYield_lowMult);
-  // MVec<MHist1D> assoYield_highMult_DeltaEta(indexHistDeltaEtaUS,
-  //                                           h1_assoYield_highMult);
   gDirectory = nullptr;
   MHist1D h1_assoYield_sub(indexHistDeltaPhiUS, "AssoYield_sub");
   MHist1D h1_assoYield_low(indexHistDeltaPhiUS, "AssoYield_low");
   MHist1D h1_assoYield_high(indexHistDeltaPhiUS, "AssoYield_high");
-  MVec<MHist1D> h1_assoYield_sub_DeltaEta(indexHistDeltaEtaUS,
-                                          h1_assoYield_sub);
-  MVec<MHist1D> h1_assoYield_low_DeltaEta(indexHistDeltaEtaUS,
-                                          h1_assoYield_low);
-  MVec<MHist1D> h1_assoYield_high_DeltaEta(indexHistDeltaEtaUS,
-                                           h1_assoYield_high);
 
   gDirectory = file_output;
   TH1D *nsignal_highMult_ptV2 =
@@ -173,12 +160,12 @@ void AssoYieldEtagap(
       new TH1D("nsignal_lowMult_ptV2", "nsignal_lowMult_ptV2",
                strAny_ptV2.fNbins, 0, strAny_ptV2.fNbins);
 
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYield_sub(
-      indexAnyPtV2Jpsi, h1_assoYield_sub_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYield_low(
-      indexAnyPtV2Jpsi, h1_assoYield_low_DeltaEta);
-  MVec<MVec<MHist1D>, MIndexAny<StrAny_ptV2>> vec_assoYield_high(
-      indexAnyPtV2Jpsi, h1_assoYield_high_DeltaEta);
+  auto vec_assoYield_sub =
+      MakeMVec(h1_assoYield_sub, indexHistDeltaEtaUS, indexAnyPtV2Jpsi);
+  auto vec_assoYield_low =
+      MakeMVec(h1_assoYield_low, indexHistDeltaEtaUS, indexAnyPtV2Jpsi);
+  auto vec_assoYield_high =
+      MakeMVec(h1_assoYield_high, indexHistDeltaEtaUS, indexAnyPtV2Jpsi);
 
   for (auto _ : indexAnyPtV2Jpsi)
     for (auto __ : indexHistDeltaEtaUS) {

@@ -163,11 +163,6 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   obj2push_thnd(rdf_AllVar, {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
                              var_MassJpsiCandidate, var_PtJpsiCandidate,
                              var_NumContribCalibBinned});
-  obj2push_thnd(rdf_AllVar,
-                {var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ,
-                 var_MassJpsiCandidate, var_PtJpsiCandidateFine,
-                 var_NumContribCalibBinned},
-                "", "ptFine");
   fOutput->cd();
   RResultWrite(gRResultHandles);
   fOutput->Close();

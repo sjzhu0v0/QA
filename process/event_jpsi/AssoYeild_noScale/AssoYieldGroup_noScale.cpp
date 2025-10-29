@@ -131,20 +131,12 @@ void AssoYieldGroup_noScale(
 
   gDirectory = nullptr;
 
-  MVec<MHist1D> h1_AssoYield_lowMult_DeltaEta(indexHistDeltaEtaUS,
-                                              h1_AssoYield_lowMult);
-  MVec<MHist1D> h1_AssoYield_highMult_DeltaEta(indexHistDeltaEtaUS,
-                                               h1_AssoYield_highMult);
-
-  MVec<MVec<MHist1D>> h1_AssoYield_lowMult_DeltaEta_DeltaPhi(
-      indexHistDeltaPhiUS, h1_AssoYield_lowMult_DeltaEta);
-  MVec<MVec<MHist1D>> h1_AssoYield_highMult_DeltaEta_DeltaPhi(
-      indexHistDeltaPhiUS, h1_AssoYield_highMult_DeltaEta);
-
-  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYield_lowMult(
-      indexAnyPtV2Jpsi, h1_AssoYield_lowMult_DeltaEta_DeltaPhi);
-  MVec<MVec<MVec<MHist1D>>, MIndexAny<StrAny_ptV2>> h1Vec_AssoYield_highMult(
-      indexAnyPtV2Jpsi, h1_AssoYield_highMult_DeltaEta_DeltaPhi);
+  auto h1Vec_AssoYield_lowMult =
+      MakeMVec(h1_AssoYield_lowMult, indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+               indexAnyPtV2Jpsi);
+  auto h1Vec_AssoYield_highMult =
+      MakeMVec(h1_AssoYield_highMult, indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+               indexAnyPtV2Jpsi);
 
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 2, 1, 600, 600);
 
