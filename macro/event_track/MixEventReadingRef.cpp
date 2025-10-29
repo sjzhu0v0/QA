@@ -31,7 +31,7 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   };
 
   auto rdf_AllVar =
-      rdf.Define("JpsiInfoUS",
+      rdf.Define("RefInfo",
                  [&CutTrackInfo, &low_edge_deltaPhiToPi, &up_edge_deltaPhiToPi](
                      const vector<EventDataREF> &vec_eventData) {
                    ROOT::VecOps::RVec<array<float, 4>> vec2return;
@@ -67,6 +67,7 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                               delta_phi});
                        }
                    }
+                   return vec2return;
                  },
                  {"MixedEvent"})
           .Define("DeltaPhiRef",
