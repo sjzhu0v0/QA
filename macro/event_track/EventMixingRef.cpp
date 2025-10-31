@@ -204,11 +204,11 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
                   },
                   {"MixedEvent"});
 
-  // rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
-  //     "EventMixingREF", path_output_tree, {"MixedEvent"});
+  rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
+      "EventMixingREF", path_output_tree, {"MixedEvent"});
 
-  // ROOT::RDF::Experimental::AddProgressBar(
-  //     rdf_PartTriggerWithJpsiWithEventWithEventMixing);
+  ROOT::RDF::Experimental::AddProgressBar(
+      rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 
 #define str_rresult_push(...)                                                  \
   gRResultHandles.push_back(                                                   \
