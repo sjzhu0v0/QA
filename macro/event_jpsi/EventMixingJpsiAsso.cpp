@@ -247,6 +247,7 @@ void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
 #undef str_rresult_push
 
   fOutput->cd();
+  RunGraphs(gRResultHandles);
   RResultWrite(gRResultHandles);
   cout << "EventMixingJpsiAsso: " << path_output << endl;
   fOutput->Close();
