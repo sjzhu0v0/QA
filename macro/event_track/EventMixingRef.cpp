@@ -207,8 +207,6 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
       "EventMixingREF", path_output_tree, {"MixedEvent"});
 
-  ROOT::RDF::Experimental::AddProgressBar(
-      rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 
 #define str_rresult_push(...)                                                  \
   gRResultHandles.push_back(                                                   \
@@ -249,6 +247,8 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   TFile *fOutput = new TFile(path_output, "RECREATE");
   fOutput->cd();
   RunGraphs(gRResultHandles);
+  ROOT::RDF::Experimental::AddProgressBar(
+      rdf_PartTriggerWithJpsiWithEventWithEventMixing);
   RResultWrite(gRResultHandles);
   cout << "EventMixingJpsiAsso: " << path_output << endl;
   fOutput->Close();
