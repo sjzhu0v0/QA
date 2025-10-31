@@ -63,7 +63,6 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   // TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
   // TChain *tree_mult = MRootIO::OpenChain(file_mult, "MultCalib");
 
-  TFile *fOutput = new TFile(path_output, "RECREATE");
   TChain *tree_flowVecd =
       MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
   TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
@@ -247,8 +246,9 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
 
 #undef str_rresult_push
 
+  TFile *fOutput = new TFile(path_output, "RECREATE");
   fOutput->cd();
-  RResultWrite(gRResultHandles, fOutput);
+  RResultWrite(gRResultHandles);
   cout << "EventMixingJpsiAsso: " << path_output << endl;
   fOutput->Close();
 }
