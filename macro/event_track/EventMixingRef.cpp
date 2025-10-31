@@ -56,7 +56,6 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
 
   // TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   // TFile *file_mult = TFile::Open(path_input_mult);
-  TFile *fOutput = new TFile(path_output, "RECREATE");
 
   // Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   // Cut_MultTPC_NumContrib::init(path_pileup);
@@ -70,6 +69,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
 
   tree_flowVecd->AddFriend(tree_mult);
 
+  TFile *fOutput = new TFile(path_output, "RECREATE");
   cout << "Input file: " << path_input_flowVecd << endl;
   cout << "Input file: " << path_input_mult << endl;
   cout << "Output file: " << path_output << endl;

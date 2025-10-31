@@ -140,12 +140,12 @@ void AssoYieldGroup_noScale(
 
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 2, 1, 600, 600);
 
-  for (auto i_ptV2 : indexAnyPtV2Jpsi) {
+  for (auto i_ptV2 : indexAnyPtV2Jpsi)
     for (auto i_mass : indexHistMass) {
       auto hist_high = hgroupTool2d_highMult_mass->GetHist({i_mass, i_ptV2});
       auto hist_low = hgroupTool2d_lowMult_mass->GetHist({i_mass, i_ptV2});
       gPublisherCanvas->Draw(hist_high)->Draw(hist_low);
-      for (auto i_deltaEta : indexHistDeltaEtaUS) {
+      for (auto i_deltaEta : indexHistDeltaEtaUS)
         for (auto i_deltaPhi : indexHistDeltaPhiUS) {
           MDouble valHigh(hist_high->GetBinContent(i_deltaEta, i_deltaPhi),
                           hist_high->GetBinError(i_deltaEta, i_deltaPhi));
@@ -154,9 +154,8 @@ void AssoYieldGroup_noScale(
           h1Vec_AssoYield_lowMult.currentObject().SetBinInfo(valLow);
           h1Vec_AssoYield_highMult.currentObject().SetBinInfo(valHigh);
         }
-      }
     }
-  }
+
   file_output->cd();
   for (auto i_deltaEta : indexHistDeltaEtaUS)
     for (auto i_deltaPhi : indexHistDeltaPhiUS)
