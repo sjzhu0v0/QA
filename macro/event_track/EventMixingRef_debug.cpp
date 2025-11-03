@@ -84,9 +84,12 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   tree_mult->Print();
 
   ROOT::RDataFrame rdf_flowVecd(*tree_mult);
-  ROOT::RDataFrame rdf_mult(*tree_mult);
-  auto report = rdf_flowVecd.Report();
-  report->Print();
+  ROOT::RDataFrame rdf_mult(
+      "MultCalib",
+      "/lustre/alice/users/szhu/job/QA/LHC24pass1_DiElectron_Group/"
+      "JpsiQA_mult/JpsiQA_mult_554207.root");
+  // auto report = rdf_flowVecd.Report();
+  // report->Print();
 
   // auto rdf_witTrigger =
   //     rdf_flowVecd.Define("map_trigger", MALICE::triggermapRVec,
