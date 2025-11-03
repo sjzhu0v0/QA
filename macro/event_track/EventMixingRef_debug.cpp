@@ -74,6 +74,8 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   tree_flowVecd->AddFriend(tree_mult);
 
   ROOT::RDataFrame rdf(*tree_flowVecd);
+  auto report = rdf.Report();
+  report->Print();
 
   auto rdf_witTrigger =
       rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"});
