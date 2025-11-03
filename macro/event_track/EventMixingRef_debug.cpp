@@ -95,7 +95,8 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   //     rdf_flowVecd.Define("map_trigger", MALICE::triggermapRVec,
   //     {"fSelection"});
 
-  rdf_mult.Histo1D("NumContribCalib")->Draw();
+  auto hist_mult = rdf_mult.Histo1D("NumContribCalib");
+  hist_mult->Draw();
 }
 
 int main(int argc, char **argv) {
