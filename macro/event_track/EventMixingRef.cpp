@@ -28,7 +28,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
                     TString path_output = "output.root",
                     TString path_output_tree = "output_tree.root") {
   // close multi-thread
-  ROOT::EnableImplicitMT(1);
+  ROOT::DisableImplicitMT();
 
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
