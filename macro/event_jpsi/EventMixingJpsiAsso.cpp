@@ -28,7 +28,8 @@ void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
                          TString path_output = "output.root",
                          TString path_output_tree = "output_tree.root") {
   // close multi-thread
-  ROOT::EnableImplicitMT(1);
+  // ROOT::EnableImplicitMT(4);
+  ROOT::DisableImplicitMT();
 
   StrVar4Hist var_fPosX("fPosX", "#it{V}_{x}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
@@ -40,7 +41,7 @@ void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
-      {0,7,12,17,22,29,37,46,57,73,300});
+      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
@@ -64,7 +65,8 @@ void EventMixingJpsiAsso(TString path_input_flowVecd = "../input.root",
   // TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
   // TChain *tree_mult = MRootIO::OpenChain(file_mult, "MultCalib");
 
-  TChain *tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
+  TChain *tree_flowVecd =
+      MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
   TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
 
   tree_flowVecd->AddFriend(tree_mult);
