@@ -56,7 +56,7 @@ macro/event_jpsi/MixEventReading.exe: macro/event_jpsi/MixEventReading.cpp opt/l
 	@g++ -o $@ macro/event_jpsi/MixEventReading.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 
 opt/MRootDict.cxx: opt/EventData.h opt/LinkDef.h
-	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
+	@rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
 
 opt/libMRootDict.so: opt/MRootDict.cxx opt/EventData.cxx
 	@g++ -o $@ $^ -I./ `root-config --cflags --libs` -shared -fPIC
