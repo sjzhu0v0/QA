@@ -42,7 +42,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   ROOT::RDataFrame rdf_mult(
       "MultCalib",
       "/lustre/alice/users/szhu/job/QA/LHC24pass1_DiElectron_Group/"
-      "JpsiQA_mult/JpsiQA_mult_554207.root");
+      "JpsiQA_mult/JpsiQA_mult_558275.root");
   // auto report = rdf_flowVecd.Report();
   // report->Print();
 
