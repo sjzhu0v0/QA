@@ -76,14 +76,15 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   tree_flowVecd->Print();
   tree_mult->Print();
 
-  ROOT::RDataFrame rdf(*tree_flowVecd);
-  auto report = rdf.Report();
+  ROOT::RDataFrame rdf_flowVecd(*tree_mult);
+  ROOT::RDataFrame rdf_mult(*tree_mult);
+  auto report = rdf_flowVecd.Report();
   report->Print();
 
-  auto rdf_witTrigger =
-      rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"});
+  // auto rdf_witTrigger =
+  //     rdf_flowVecd.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"});
 
-  rdf_witTrigger.Histo1D("map_trigger")->Draw();
+  rdf_mult.Histo1D("NumContribCalib")->Draw();
 }
 
 int main(int argc, char **argv) {
