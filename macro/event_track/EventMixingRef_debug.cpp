@@ -71,10 +71,10 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
       MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
   TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
 
-  tree_flowVecd->AddFriend(tree_mult);
+  // tree_flowVecd->AddFriend(tree_mult);
 
-  tree_flowVecd->GetListOfLeaves()->Print();
-  tree_mult->GetListOfLeaves()->Print();
+  tree_flowVecd->Print();
+  tree_mult->Print();
 
   ROOT::RDataFrame rdf(*tree_flowVecd);
   auto report = rdf.Report();
