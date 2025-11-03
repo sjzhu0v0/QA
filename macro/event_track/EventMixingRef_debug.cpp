@@ -70,9 +70,13 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   TChain *tree_flowVecd =
       MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
   // TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
-  TTree *tree_mult = GetObjectSingle<TTree>(
-      "/lustre/alice/users/szhu/job/QA/LHC24pass1_DiElectron_Group/JpsiQA_mult/"
-      "JpsiQA_mult_554207.root :MultCalib");
+  // TTree *tree_mult = GetObjectSingle<TTree>(
+  //     "/lustre/alice/users/szhu/job/QA/LHC24pass1_DiElectron_Group/JpsiQA_mult/"
+  //     "JpsiQA_mult_554207.root :MultCalib");
+  TFile *file_mult =
+      TFile::Open("/lustre/alice/users/szhu/job/QA/LHC24pass1_DiElectron_Group/"
+                  "JpsiQA_mult/JpsiQA_mult_554207.root");
+  TTree *tree_mult = (TTree *)file_mult->Get("MultCalib");
 
   // tree_flowVecd->AddFriend(tree_mult);
 
