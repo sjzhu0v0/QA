@@ -73,14 +73,17 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
 
   tree_flowVecd->AddFriend(tree_mult);
 
+  tree_flowVecd->GetListOfLeaves()->Print();
+  tree_mult->GetListOfLeaves()->Print();
+
   ROOT::RDataFrame rdf(*tree_flowVecd);
   auto report = rdf.Report();
   report->Print();
 
-  auto rdf_witTrigger =
-      rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"});
+  // auto rdf_witTrigger =
+  //     rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"});
 
-  rdf_witTrigger.Histo1D("map_trigger")->Draw();
+  // rdf_witTrigger.Histo1D("map_trigger")->Draw();
 }
 
 int main(int argc, char **argv) {

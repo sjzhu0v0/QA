@@ -73,7 +73,6 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
 
   tree_flowVecd->AddFriend(tree_mult);
 
-
   ROOT::RDataFrame rdf(*tree_flowVecd);
 
   tree_flowVecd->Print();
