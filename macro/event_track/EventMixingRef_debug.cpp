@@ -77,6 +77,8 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
 
   auto rdf_witTrigger =
       rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"});
+
+  rdf_witTrigger.Histo1D("map_trigger")->Draw();
 }
 
 int main(int argc, char **argv) {
