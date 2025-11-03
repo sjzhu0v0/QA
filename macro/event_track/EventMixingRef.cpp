@@ -63,16 +63,16 @@ void EventMixingRef(TString path_input_flowVecd = "../input.root",
   // TChain *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
   // TChain *tree_mult = MRootIO::OpenChain(file_mult, "MultCalib");
 
+  cout << "Input file: " << path_input_flowVecd << endl;
+  cout << "Input file: " << path_input_mult << endl;
+  cout << "Output file: " << path_output << endl;
+  cout << "Output tree file: " << path_output_tree << endl;
   TChain *tree_flowVecd =
       MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
   TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
 
   tree_flowVecd->AddFriend(tree_mult);
 
-  cout << "Input file: " << path_input_flowVecd << endl;
-  cout << "Input file: " << path_input_mult << endl;
-  cout << "Output file: " << path_output << endl;
-  cout << "Output tree file: " << path_output_tree << endl;
 
   ROOT::RDataFrame rdf(*tree_flowVecd);
 
