@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
   if (argc > 3) path_output         = argv[3];
   if (argc > 4) path_output_tree    = argv[4];
 
-  gROOT->SetBatch(kTRUE); // No graphics
+  // gROOT->SetBatch(kTRUE); // No graphics
 
   EventMixingRef(path_input_flowVecd, path_input_mult, path_output, path_output_tree);
 
