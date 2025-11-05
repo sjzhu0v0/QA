@@ -1,5 +1,4 @@
 #include "MFit.h"
-#include "MHelper.h"
 #include "MMath.h"
 #include "MRootGraphic.h"
 #include "MRootIO.h"
