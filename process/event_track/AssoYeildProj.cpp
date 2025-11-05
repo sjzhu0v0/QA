@@ -271,10 +271,11 @@ void AssoYieldProj(
   hnTool_se_raw.PrintAllAxis();
   hnTool_me_pr.PrintAllAxis();
 
-  gPublisherCanvas = new MPublisherCanvas(path_output + ".pdf", 3, 1, 600, 600);
+  // gPublisherCanvas = new MPublisherCanvas(path_output + ".pdf", 3, 1, 600,
+  // 600);
   MRootGraphic::StyleCommon();
   gStyle->SetPalette(kRainBow);
-
+  file_output->cd();
   auto h2_total_mass_pt = assoYield.AssociatedYieldPtSum(0, true);
   auto h2_lowMult_mass_pt = assoYield.AssociatedYieldPtSum(1, true);
   auto h2_highMult_mass_pt = assoYield.AssociatedYieldPtSum(2, true);
@@ -293,7 +294,7 @@ void AssoYieldProj(
   h2_highMult_mass_pt->Write();
   h2_sub_highLow_mass_pt->Write();
 
-  file_output->cd();
+  file_output->Close();
 }
 
 int main(int argc, char **argv) {
