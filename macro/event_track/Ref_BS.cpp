@@ -85,7 +85,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
           .Define(
               "RefInfo",
               [&CutTrackInfo, &low_edge_deltaPhiToPi,
-               &up_edge_deltaPhiToPi](const EventDataREF &eventData) {
+               &up_edge_deltaPhiToPi](const EventData &eventData) {
                 ROOT::VecOps::RVec<array<float, 4>> vec2return;
                 for (size_t i = 0; i < eventData.track_info.fEtaREF.size(); ++i)
                   for (size_t j = i + 1;
@@ -117,7 +117,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
               },
               {"EventData"})
           .Define("RefInfoSingle",
-                  [&CutTrackInfo](const EventDataREF &eventData) {
+                  [&CutTrackInfo](const EventData &eventData) {
                     ROOT::VecOps::RVec<array<float, 2>> vec2return;
                     for (size_t i = 0; i < eventData.track_info.fEtaREF.size();
                          ++i) {
