@@ -41,7 +41,8 @@ void MultRaw(TString path_input = "../input.root",
           .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
           .Filter("isntTimeFrameBorder", "no Time Frame border")
           .Filter("isntSameBunchPileup", "no same bunch pileup");
-  ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
+  if (is_interactive())
+    ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
 
   /* #region mult */
   gRResultHandlesFast.push_back(rdf_fullTrigger.Histo1D(

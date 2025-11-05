@@ -207,7 +207,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
   StrVar4Hist var_fPosZSingle("PosZRefSingle", "#it{V}_{Z}", "cm", 8,
                               {-10, 10});
   StrVar4Hist var_NumContribCalibBinnedSingle(
-      "NumContribCalibUSSingle", "N_{vtx contrib} Calibrated", "", 10,
+      "NumContribCalibRefSingle", "N_{vtx contrib} Calibrated", "", 10,
       {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
 
 #define obj2push_thnd(rdf2push, ...)                                           \

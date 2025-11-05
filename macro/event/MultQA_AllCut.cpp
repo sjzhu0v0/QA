@@ -85,7 +85,8 @@ void MultPileupCut(
           .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
           .Filter("isntTimeFrameBorder", "no Time Frame border")
           .Filter("isntSameBunchPileup", "no same bunch pileup");
-  ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
+  if (is_interactive())
+    ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
 
   gRResultHandlesFast.push_back(rdf_witTrigger.Histo1D(
       {"LevelTrigger", "Trigger Level; Trigger Level", 6, -0.5, 5.5},
