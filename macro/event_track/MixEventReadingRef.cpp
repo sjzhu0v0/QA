@@ -106,7 +106,7 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
                     return numContribCalibRef;
                   },
                   {"RefInfo"});
-  // ROOT::RDF::Experimental::AddProgressBar(rdf);
+  ROOT::RDF::Experimental::AddProgressBar(rdf);
 
   StrVar4Hist var_fPosZ("PosZRef", "#it{V}_{Z}", "cm", 8, {-10, 10});
   StrVar4Hist var_NumContribCalibBinned(
