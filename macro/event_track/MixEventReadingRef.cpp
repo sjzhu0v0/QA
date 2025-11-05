@@ -20,7 +20,7 @@ void EventMixingReading(TString path_input_flowVecd = "../input.root",
   const double up_edge_deltaPhiToPi =
       config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
 
-  TTree *tree_input = (TTree *)file_flowVecd->Get("EventMixing");
+  TTree *tree_input = (TTree *)file_flowVecd->Get("EventMixingREF");
 
   ROOT::RDataFrame rdf(*tree_input);
 
