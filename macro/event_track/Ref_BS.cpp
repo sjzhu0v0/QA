@@ -92,11 +92,11 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
                        j < eventData.track_info.fEtaREF.size(); ++j) {
                     if (!CutTrackInfo(eventData.track_info, j))
                       continue;
-                    if (!CutTrackInfo(eventData.track_info2, i))
+                    if (!CutTrackInfo(eventData.track_info, i))
                       continue;
-                    float delta_eta = eventData.track_info2.fEtaREF[i] -
+                    float delta_eta = eventData.track_info.fEtaREF[i] -
                                       eventData.track_info.fEtaREF[j];
-                    float delta_phi = eventData.track_info2.fPhiREF[i] -
+                    float delta_phi = eventData.track_info.fPhiREF[i] -
                                       eventData.track_info.fPhiREF[j];
                     int n = 0;
                     while (delta_phi > up_edge_deltaPhiToPi * M_PI && n < 10) {
