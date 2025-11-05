@@ -42,14 +42,13 @@ void NJpsiCandidatePerEvent(
                  {"fMass", "fSign"})
           .Define(
               "mass_pair",
-              [](
-                  const ROOT::RVec<float> &mass, const ROOT::RVec<float> &pt,
-                  const ROOT::RVec<float> &eta, const ROOT::RVec<float> &sign,
-                  const ROOT::RVec<float> &phi, const ROOT::RVec<float> &pt1,
-                  const ROOT::RVec<float> &pt2, const ROOT::RVec<float> &eta1,
-                  const ROOT::RVec<float> &eta2, const ROOT::RVec<float> &phi1,
-                  const ROOT::RVec<float> &phi2, const ROOT::RVec<int> &sign1,
-                  const ROOT::RVec<int> &sign2) {
+              [](const ROOT::RVec<float> &mass, const ROOT::RVec<float> &pt,
+                 const ROOT::RVec<float> &eta, const ROOT::RVec<float> &sign,
+                 const ROOT::RVec<float> &phi, const ROOT::RVec<float> &pt1,
+                 const ROOT::RVec<float> &pt2, const ROOT::RVec<float> &eta1,
+                 const ROOT::RVec<float> &eta2, const ROOT::RVec<float> &phi1,
+                 const ROOT::RVec<float> &phi2, const ROOT::RVec<int> &sign1,
+                 const ROOT::RVec<int> &sign2) {
                 ROOT::VecOps::RVec<std::vector<double>> pairs;
                 for (size_t i = 0; i < mass.size(); ++i) {
                   for (size_t j = i + 1; j < mass.size(); ++j) {
@@ -180,8 +179,8 @@ void NJpsiCandidatePerEvent(
                     return k_star;
                   },
                   {"fMass", "fPhi", "fEta", "fPT", "fSign"});
-
-  // ROOT::RDF::Experimental::AddProgressBar(rdf_all);
+  if (is_interactive())
+    ROOT::RDF::Experimental::AddProgressBar(rdf_all);
 
   rdf_all.Snapshot(
       "DiJpsi", path_output_tree,

@@ -45,7 +45,8 @@ void Trigger_Mult(TString path_input = "../input.root",
           .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
           .Filter("isntTimeFrameBorder", "no Time Frame border")
           .Filter("isntSameBunchPileup", "no same bunch pileup");
-  ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
+  if (is_interactive())
+    ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
 
   gRResultHandlesFast.push_back(rdf_witTrigger.Histo1D(
       {"map_trigger", "map_trigger", 51, 0, 51}, "map_trigger"));
