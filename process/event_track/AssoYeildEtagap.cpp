@@ -54,6 +54,8 @@ void AssoYieldEtagap(
   };
   file_output->cd();
 
+  gPublisherCanvas = new MPublisherCanvas("test.pdf", 2, 2);
+
 #define ModulationMultClass(mult_class)                                        \
   MHist1D a0_##mult_class(indexHistEtaGap, "a0_" #mult_class);                 \
   MHist1D a1_##mult_class(indexHistEtaGap, "a1_" #mult_class);                 \
@@ -65,10 +67,13 @@ void AssoYieldEtagap(
     h2_##mult_class->GetXaxis()->SetRangeUser(-1.8, -abs(val_etaGap));         \
     auto h1_##mult_class = h2_##mult_class->ProjectionY(                       \
         Form("%s_EtaGap%d", h2_##mult_class->GetName(), iEtaGap));             \
+    gPublisherCanvas->DrawClone(h1_##mult_class);                              \
     h2_##mult_class->GetXaxis()->SetRangeUser(abs(val_etaGap), 1.8);           \
     auto h1_temp = h2_##mult_class->ProjectionY(                               \
         Form("%s_posGap%d", h2_##mult_class->GetName(), iEtaGap));             \
+    gPublisherCanvas->DrawClone(h1_temp);                                      \
     h1_##mult_class->Add(h1_temp);                                             \
+    gPublisherCanvas->DrawClone(h1_##mult_class);                              \
     h1_temp->Delete();                                                         \
                                                                                \
     h2_##mult_class->GetXaxis()->SetRangeUser(-1.8, 1.8);                      \
@@ -78,6 +83,7 @@ void AssoYieldEtagap(
     TF1 func_modulation(                                                       \
         "f1_modulation", "[a0]+2*([a1]*cos(x)+[a2]*cos(2*x)+[a3]*cos(3*x))",   \
         low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI);            \
+    gPublisherCanvas->NewPad()->cd();                                          \
     h1_##mult_class->Fit(&func_modulation, "QR", "",                           \
                          low_edge_deltaPhiToPi * M_PI,                         \
                          up_edge_deltaPhiToPi * M_PI);                         \
