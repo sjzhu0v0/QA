@@ -62,7 +62,16 @@ void AssoYieldEtagap(
   for (auto iEtaGap : indexHistEtaGap) {                                       \
     double val_etaGap = var_EtaGap.GetBinUpperEdge(iEtaGap - 1);               \
     cout << "Fitting eta gap: " << val_etaGap << endl;                         \
-    auto h1_##mult_class = hist_etaGap(val_etaGap, h2_##mult_class);           \
+    h2_##mult_class->GetXaxis()->SetRangeUser(-1.8, -abs(val_etaGap));         \
+    auto h1_##mult_class = h2_##mult_class->ProjectionY(                       \
+        Form("%s_EtaGap%d", h2_##mult_class->GetName(), iEtaGap));             \
+    h2_##mult_class->GetXaxis()->SetRangeUser(abs(val_etaGap), 1.8);           \
+    auto h1_temp = h2_##mult_class->ProjectionY(                               \
+        Form("%s_posGap%d", h2_##mult_class->GetName(), iEtaGap));             \
+    h1_##mult_class->Add(h1_temp);                                             \
+    h1_temp->Delete();                                                         \
+                                                                               \
+    h2_##mult_class->GetXaxis()->SetRangeUser(-1.8, 1.8);                      \
     h1_##mult_class->SetName(                                                  \
         Form("%s_EtaGap%d", h2_##mult_class->GetName(), iEtaGap));             \
     h1_##mult_class->Write();                                                  \
