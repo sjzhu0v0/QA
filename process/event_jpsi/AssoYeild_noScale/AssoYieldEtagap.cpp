@@ -187,7 +187,7 @@ void AssoYieldEtagap(
   MHist2D a3_##mult_class(indexHistEtaGap, indexHistPtV2Jpsi,                  \
                           "a3_" #mult_class);                                  \
                                                                                \
-  for (auto iPtV2 : indexAnyPtV2Jpsi)                                          \
+  for (auto iPtV2 : indexHistPtV2Jpsi)                                         \
     for (auto iEtaGap : indexHistEtaGap) {                                     \
       TF1 *fitFunc = assoYield_##mult_class##_EtaGap[iPtV2 - 1][iEtaGap - 1]   \
                          .fHisto->GetFunction("f1_modulation");                \
