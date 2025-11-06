@@ -90,7 +90,7 @@ void AssoYieldEtagap(
   double max_deltaEta_assoYield =
       config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
   double bin_width_etaGap = (max_deltaEta_assoYield - min_deltaEta_assoYield) /
-                            (double)n_bins_deltaEta_assoYield / 2.;
+                            (double)n_bins_deltaEta_assoYield;
   StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
                              n_bins_deltaEta_assoYield,
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
