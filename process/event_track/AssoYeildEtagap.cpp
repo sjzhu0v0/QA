@@ -43,11 +43,9 @@ void AssoYieldEtagap(
 
   auto hist_etaGap = [](double eta_gap, TH2D *h2) {
     h2->GetXaxis()->SetRangeUser(-1.8, -abs(eta_gap));
-    auto h1_1 =
-        h2->ProjectionY(Form("%s_negEtaGap%.2f", h2->GetName(), eta_gap));
+    auto h1_1 = h2->ProjectionY(Form("%s_negEtaGap%.2f", h2->GetName()));
     h2->GetXaxis()->SetRangeUser(abs(eta_gap), 1.8);
-    auto h1_2 =
-        h2->ProjectionY(Form("%s_posEtaGap%.2f", h2->GetName(), eta_gap));
+    auto h1_2 = h2->ProjectionY(Form("%s_posEtaGap%.2f", h2->GetName()));
     h1_1->Add(h1_2);
     h1_1->SetTitle(
         Form("%s with #Delta#eta_{gap}=%.2f", h2->GetTitle(), eta_gap));
