@@ -64,11 +64,15 @@ void AssoYieldEtagap(
   for (auto iEtaGap : indexHistEtaGap) {                                       \
     double val_etaGap = var_EtaGap.GetBinUpperEdge(iEtaGap - 1);               \
     cout << "Fitting eta gap: " << val_etaGap << endl;                         \
-    h2_##mult_class->GetXaxis()->SetRangeUser(-1.8, -abs(val_etaGap));         \
+    h2_##mult_class->GetXaxis()->SetRange(                                     \
+        h2_##mult_class->GetXaxis()->FindBin(-1.8),                            \
+        h2_##mult_class->GetXaxis()->FindBin(-abs(val_etaGap)) - 1);           \
     auto h1_##mult_class = h2_##mult_class->ProjectionY(                       \
         Form("%s_EtaGap%d", h2_##mult_class->GetName(), iEtaGap));             \
     gPublisherCanvas->DrawClone(h1_##mult_class);                              \
-    h2_##mult_class->GetXaxis()->SetRangeUser(abs(val_etaGap), 1.8);           \
+    h2_##mult_class->GetXaxis()->SetRange(                                     \
+        h2_##mult_class->GetXaxis()->FindBin(abs(val_etaGap)),                 \
+        h2_##mult_class->GetXaxis()->FindBin(1.8) - 1);                        \
     auto h1_temp = h2_##mult_class->ProjectionY(                               \
         Form("%s_posGap%d", h2_##mult_class->GetName(), iEtaGap));             \
     gPublisherCanvas->DrawClone(h1_temp);                                      \
