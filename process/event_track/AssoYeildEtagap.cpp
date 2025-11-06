@@ -65,8 +65,9 @@ void AssoYieldEtagap(
     double val_etaGap = var_EtaGap.GetBinUpperEdge(iEtaGap - 1);               \
     cout << "Fitting eta gap: " << val_etaGap << endl;                         \
     auto h1_##mult_class = hist_etaGap(val_etaGap, h2_##mult_class);           \
+    h1_##mult_class->SetName(                                                  \
+        Form("%s_EtaGap%d", h2_##mult_class->GetName(), iEtaGap));             \
     h1_##mult_class->Write();                                                  \
-                                                                               \
     TF1 func_modulation(                                                       \
         "f1_modulation", "[a0]+2*([a1]*cos(x)+[a2]*cos(2*x)+[a3]*cos(3*x))",   \
         low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI);            \
