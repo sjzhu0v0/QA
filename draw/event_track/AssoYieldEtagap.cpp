@@ -19,13 +19,6 @@ void AssoYieldEtagap(
   const double up_edge_deltaPhiToPi =
       config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
 
-  StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
-  StrVar4Hist var_NumContribCalibBinned(
-      "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
-                                    {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
   int n_bins_deltaEta_assoYield =
       config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
   double min_deltaEta_assoYield =
@@ -46,6 +39,9 @@ void AssoYieldEtagap(
       "EtaGap", "#Delta#eta_{gap}", "", n_bins_deltaEta_assoYield / 2 - 2,
       {-1. * bin_width_etaGap,
        (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap});
+
+
+  
 
   gPublisherCanvas->finalize();
   file_output->Write();

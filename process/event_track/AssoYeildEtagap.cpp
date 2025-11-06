@@ -83,7 +83,6 @@ void AssoYieldEtagap(
     h2_##mult_class->GetXaxis()->SetRangeUser(-1.8, 1.8);                      \
     h1_##mult_class->SetName(                                                  \
         Form("%s_EtaGap%d", h2_##mult_class->GetName(), iEtaGap));             \
-    h1_##mult_class->Write();                                                  \
     TF1 func_modulation(                                                       \
         "f1_modulation", "[a0]+2*([a1]*cos(x)+[a2]*cos(2*x)+[a3]*cos(3*x))",   \
         low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI);            \
@@ -91,6 +90,7 @@ void AssoYieldEtagap(
     h1_##mult_class->Fit(&func_modulation, "QR", "",                           \
                          low_edge_deltaPhiToPi * M_PI,                         \
                          up_edge_deltaPhiToPi * M_PI);                         \
+    h1_##mult_class->Write();                                                  \
     a0_##mult_class.SetBinInfo(func_modulation.GetParameter(0),                \
                                func_modulation.GetParError(0));                \
     a1_##mult_class.SetBinInfo(func_modulation.GetParameter(1),                \
