@@ -271,8 +271,6 @@ void AssoYieldProj(
   hnTool_se_raw.PrintAllAxis();
   hnTool_me_pr.PrintAllAxis();
 
-  // gPublisherCanvas = new MPublisherCanvas(path_output + ".pdf", 3, 1, 600,
-  // 600);
   MRootGraphic::StyleCommon();
   gStyle->SetPalette(kRainBow);
   file_output->cd();
