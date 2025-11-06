@@ -104,6 +104,7 @@ void AssoYieldEtagap(
   ModulationMultClass(highMult);
   ModulationMultClass(lowMult);
   ModulationMultClass(sub);
+  gPublisherCanvas->finalize();
   file_output->Close();
 }
 
