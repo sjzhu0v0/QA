@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
   if (argc > 5) {
     path_pileup = argv[5];
   }
-  MultREF(path_input_flowVecd, path_output, runNumber, path_calib, path_pileup);
+  MultREF(path_input_flowVecd, path_output, runNumber, path_calib);
 
   return 0;
 }
