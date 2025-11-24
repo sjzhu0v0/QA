@@ -6,7 +6,9 @@
 #include <ROOT/RDataFrame.hxx>
 
 void MultRaw(TString path_input = "../input.root",
-             TString path_output = "output.root", int runNumber = 0) {
+             TString path_output = "output.root", int runNumber = 0,
+             TString name_tree_event = "O2reducedevent",
+             TString name_tree_event_ext = "O2reextended") {
   TFile *file_event = TFile::Open(path_input);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
@@ -85,6 +87,8 @@ int main(int argc, char **argv) {
   TString path_input = "../input.root";
   TString path_output = "output.root";
   int runNumber = 0;
+  TString name_tree_event = "O2reducedevent";
+  TString name_tree_event_ext = "O2reextended";
 
   if (argc > 1) {
     path_input = argv[1];
@@ -95,7 +99,14 @@ int main(int argc, char **argv) {
   if (argc > 3) {
     runNumber = atoi(argv[3]);
   }
+  if (argc > 4) {
+    name_tree_event = argv[4];
+  }
+  if (argc > 5) {
+    name_tree_event_ext = argv[5];
+  }
 
-  MultRaw(path_input, path_output, runNumber);
+  MultRaw(path_input, path_output, runNumber, name_tree_event,
+          name_tree_event_ext);
   return 0;
 }
