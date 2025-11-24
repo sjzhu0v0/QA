@@ -24,7 +24,7 @@ $(info SOURCES = $(SOURCES))
 $(info TARGETS = $(TARGETS))
 $(info ================)
 
-.PHONY: all clean
+.PHONY: all clean install help
 
 # Build all targets
 all: $(TARGETS)
@@ -35,12 +35,12 @@ $(DIR_EXE):
 	@mkdir -p $@
 
 # Rule to create the directory structure for each target
-$(DIR_EXE)/%/: 
-	@mkdir -p $@
+$(foreach src,$(SOURCES),$(eval $(DIR_EXE)/$(dir $(src)): | $(DIR_EXE)))
 
 # Rule to build each executable, preserving directory structure
-$(DIR_EXE)/%.exe: %.cpp | $(DIR_EXE)/$(dir %.)/
-	g++ $< -o $@ $(FLAGS_ROOT) $(FLAGS_INCLUDE) $(FLAGS_MINUIT) $(FLAGS_OPT)
+$(DIR_EXE)/%.exe: %.cpp | $(DIR_EXE)
+	@mkdir -p $(dir $@)
+	@g++ $< -o $@ $(FLAGS_ROOT) $(FLAGS_INCLUDE) $(FLAGS_MINUIT) $(FLAGS_OPT)
 	@echo "Compiled: $< -> $@"
 
 # Clean all generated executables and the exe directory
@@ -68,6 +68,3 @@ help:
 	@echo "Source directories: $(SRC_DIRS)"
 	@echo "Source files: $(SOURCES)"
 	@echo "Target executables: $(TARGETS)"
-
-
-

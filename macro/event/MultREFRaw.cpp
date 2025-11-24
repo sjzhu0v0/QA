@@ -12,14 +12,14 @@ void MultREF(
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
         "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
-    TString path_pileup =
+   /*  TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
-        "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
+        "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
-  Cut_MultTPC_NumContrib::init(path_pileup);
+  // Cut_MultTPC_NumContrib::init(path_pileup);
 
   // TTree *tree_flowVecd = (TTree *)file_flowVecd->Get("O2dqflowvecd");
   TTree *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
