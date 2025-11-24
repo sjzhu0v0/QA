@@ -1,23 +1,22 @@
-# Base directory for the analysis project
 DIR_BASE=/lustre/alice/users/szhu/work/Analysis/PairFlow
 PATH_INCLUDE=$(DIR_BASE)/include
-FLAGS_INCLUDE=-I$(DIR_BASE)/include -I$(DIR_BASE)/macro
+FLAGS_INCLUDE=-I$(DIR_BASE)/include
 FLAGS_ROOT=$(shell root-config --cflags --libs)
+FLAGS_OPT=-I/lustre/alice/users/szhu/opt/include -I./ -L./opt -lMRootDict  -L/lustre/alice/users/szhu/opt/lib64   -Wl,-rpath,/lustre/alice/users/szhu/opt/lib64   -lyaml-cpp -lRooFitCore -lRooFit
 FLAGS_MINUIT=-lMinuit
 
 # Output directory for executables
 DIR_EXE = exec
 
 # List of source directories (add more as needed)
-SRC_DIRS := /home/szhu/work/alice/analysis/QA/process/jpsi \
-            /home/szhu/work/alice/analysis/QA/process/upsilon \
-            /home/szhu/work/alice/analysis/QA/utils
+SRC_DIRS := macro/event_track process/event_track
 
 # Collect all .cpp files from all source directories
 SOURCES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
-# Derive executable paths in exe/ directory (e.g., exe/process_jpsi.exe)
-TARGETS := $(addprefix $(DIR_EXE)/,$(notdir $(SOURCES:.cpp=.exe)))
+# Create target paths that preserve directory structure in exe/ directory
+# For example: macro/event_track/analysis.cpp -> exec/macro/event_track/analysis.exe
+TARGETS := $(SOURCES:%.cpp=$(DIR_EXE)/%.exe)
 
 # Debug output
 $(info === Debug info ===)
@@ -31,49 +30,44 @@ $(info ================)
 all: $(TARGETS)
 	@echo "All targets built: $(TARGETS)"
 
-# Rule to create the exe directory (order-only prerequisite)
+# Rule to create the exe directory and subdirectories (order-only prerequisite)
 $(DIR_EXE):
 	@mkdir -p $@
 
-# Dynamically generate a build rule for each source file
-# Each .exe is placed in $(DIR_EXE)/ and depends on its full-path .cpp
-define make_target_rule
-$(DIR_EXE)/$(notdir $(1:.cpp=.exe)): $(1) | $(DIR_EXE)
-	@g++ $$< -o $$@ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
-	@echo "Compiled: $$< -> $$@"
-endef
+# Rule to create the directory structure for each target
+$(DIR_EXE)/%/: 
+	@mkdir -p $@
 
-# Apply the rule to every source file
-$(foreach src,$(SOURCES),$(eval $(call make_target_rule,$(src))))
+# Rule to build each executable, preserving directory structure
+$(DIR_EXE)/%.exe: %.cpp | $(DIR_EXE)/$(dir %.)/
+	g++ $< -o $@ $(FLAGS_ROOT) $(FLAGS_INCLUDE) $(FLAGS_MINUIT) $(FLAGS_OPT)
+	@echo "Compiled: $< -> $@"
 
 # Clean all generated executables and the exe directory
 clean:
 	rm -rf $(DIR_EXE)
 
-# macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
-# 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT)
+# Install rule to copy executables to a common bin directory
+install: $(TARGETS)
+	@mkdir -p bin
+	@for target in $(TARGETS); do \
+		dest_dir=$$(dirname $$target | sed 's|$(DIR_EXE)/||'); \
+		mkdir -p bin/$$dest_dir; \
+		cp $$target bin/$$dest_dir/; \
+	done
+	@echo "Installation complete. Executables copied to bin/"
 
-# macro/event_jpsi/JpsiAsso.exe: macro/event_jpsi/JpsiAsso.cpp
-# 	g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
+# Help target to show available commands
+help:
+	@echo "Available targets:"
+	@echo "  all     - Build all executables"
+	@echo "  clean   - Remove all executables and build directory"
+	@echo "  install - Install executables to bin/ directory"
+	@echo "  help    - Show this help message"
+	@echo ""
+	@echo "Source directories: $(SRC_DIRS)"
+	@echo "Source files: $(SOURCES)"
+	@echo "Target executables: $(TARGETS)"
 
-# macro/event_jpsi/MixEventReading.exe: macro/event_jpsi/MixEventReading.cpp opt/libMRootDict.so
-# 	g++ -o $@ macro/event_jpsi/MixEventReading.cpp $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
-
-# opt/MRootDict.cxx: opt/EventData.h opt/LinkDef.h
-# 	rootcint -f $@ -c opt/EventData.h opt/LinkDef.h $(FLAGS_INCLUDE)
-
-# opt/libMRootDict.so: opt/MRootDict.cxx opt/EventData.cxx
-# 	g++ -o $@ $^ -I./ `root-config --cflags --libs` -shared -fPIC
 
 
- g++ macro/event_jpsi/JpsiAsso_BS.cpp -o exe/JpsiAsso_BS.exe \
-  -std=c++20 -pthread -m64 \
-  -I/lustre/alice/users/szhu/work/Analysis/PairFlow/include \
-  -I./ \
-  -I/lustre/alice/users/szhu/opt/include \
-  $(root-config --cflags --libs) \
-  -lMinuit \
-  -L./opt -lMRootDict \
-  -L/lustre/alice/users/szhu/opt/lib64 \
-  -Wl,-rpath,/lustre/alice/users/szhu/opt/lib64 \
-  -lyaml-cpp

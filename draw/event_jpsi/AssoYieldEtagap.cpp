@@ -1,7 +1,62 @@
 #include "MHist.h"
 #include "MRootGraphic.h"
 #include "MRootIO.h"
+#include "TFitResult.h"
 #include "yaml-cpp/yaml.h"
+
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
+#include "TMatrixDSym.h"
+#include <cmath>
+#include <stdexcept>
+#include <utility>
+
+std::pair<double, double>
+compute_V2_and_error(const TFitResultPtr &result_sub,
+                     const TFitResultPtr &result_low,
+                     int idx_a0_sub = 0, // result_sub 中 a0 的参数索引
+                     int idx_a2_sub = 2, // result_sub 中 a2 的参数索引
+                     int idx_a0_low = 0) // result_low 中 a0 的参数索引
+{
+  if (!result_sub.Get() || !result_low.Get()) {
+    throw std::runtime_error("compute_v2_and_error: empty TFitResultPtr.");
+  }
+
+  const double a0s = result_sub->Parameter(idx_a0_sub);
+  const double sa0s = result_sub->ParError(idx_a0_sub);
+  const double a2s = result_sub->Parameter(idx_a2_sub);
+  const double sa2s = result_sub->ParError(idx_a2_sub);
+
+  const double a0l = result_low->Parameter(idx_a0_low);
+  const double sa0l = result_low->ParError(idx_a0_low);
+
+  const TMatrixDSym cov_sub = result_sub->GetCovarianceMatrix();
+  const double cov_a2s_a0s =
+      cov_sub(idx_a2_sub, idx_a0_sub); // = (idx_a0_sub, idx_a2_sub)
+
+  const double D = a0s + a0l;
+  if (D == 0.0 || !std::isfinite(D)) {
+    throw std::runtime_error(
+        "compute_v2_and_error: D=a0_sub+a0_low is zero or not finite.");
+  }
+
+  const double v2 = a2s / D;
+
+  // 线性误差传播（独立近似）：
+  // Var(v2) = (sa2s^2)/D^2 + (a2s^2)(sa0s^2 + sa0l^2)/D^4 -
+  // 2*a2s*Cov(a2s,a0s)/D^3
+  double var_v2 =
+      (sa2s * sa2s) / (D * D) +
+      (a2s * a2s) * ((sa0s * sa0s) + (sa0l * sa0l)) / (D * D * D * D) -
+      2.0 * a2s * cov_a2s_a0s / (D * D * D);
+
+  // 数值稳健性：负的极小值视作 0（浮点误差可能造成）
+  if (var_v2 < 0 && var_v2 > -1e-30)
+    var_v2 = 0.0;
+
+  const double sv2 = std::sqrt(var_v2);
+  return {v2, sv2};
+}
 
 void AssoYieldEtagap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
@@ -86,7 +141,7 @@ void AssoYieldEtagap(
   double max_deltaEta_assoYield =
       config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
   double bin_width_etaGap = (max_deltaEta_assoYield - min_deltaEta_assoYield) /
-                            (double)n_bins_deltaEta_assoYield / 2.;
+                            (double)n_bins_deltaEta_assoYield;
   StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
                              n_bins_deltaEta_assoYield,
                              {min_deltaEta_assoYield, max_deltaEta_assoYield});
@@ -102,6 +157,10 @@ void AssoYieldEtagap(
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
                            {0., 1.});
 
+  // selected bins for ptV2
+  // 10, 12, 14, 16, 18
+  // 10, 12, 14, 33
+
   MHGroupTool1D DeltaPhi_sub(file_input,
                              "DeltaPhiUS_AssoYield_sub_int_EtaGap_%d_ptV2_%d",
                              {var_EtaGap, var_PtV2Jpsi}, {1, 1});
@@ -112,66 +171,144 @@ void AssoYieldEtagap(
                               "DeltaPhiUS_AssoYield_high_int_EtaGap_%d_ptV2_%d",
                               {var_EtaGap, var_PtV2Jpsi}, {1, 1});
 
+  gStyle->SetOptStat(0);
+  TCanvas *c_assocYield =
+      new TCanvas("c_assocYield", "c_assocYield", 1800, 600);
+  c_assocYield->Divide(3, 1);
+  auto assocYield_highMult_ptInt =
+      (TH1D *)DeltaPhi_high.GetHist({1, 46})->Clone(
+          "assocYield_highMult_ptInt");
+  auto assocYield_lowMult_ptInt =
+      (TH1D *)DeltaPhi_low.GetHist({1, 46})->Clone("assocYield_lowMult_ptInt");
+  auto assocYield_sub_ptInt =
+      (TH1D *)DeltaPhi_sub.GetHist({1, 46})->Clone("assocYield_sub_ptInt");
+  MRootGraphic::StyleHistCommon(assocYield_highMult_ptInt);
+  MRootGraphic::StyleHistCommon(assocYield_lowMult_ptInt);
+  MRootGraphic::StyleHistCommon(assocYield_sub_ptInt);
+  // MRootGraphic::StyleCommon();
+  c_assocYield->cd(1);
+  assocYield_highMult_ptInt->SetTitle("Associated yield in high mult.");
+  assocYield_highMult_ptInt->GetYaxis()->SetTitle(
+      "Associated yield per J/#psi");
+  assocYield_highMult_ptInt->DrawClone();
+  c_assocYield->cd(2);
+  assocYield_lowMult_ptInt->SetTitle("Associated yield in low mult.");
+  assocYield_lowMult_ptInt->GetYaxis()->SetTitle("Associated yield per J/#psi");
+  assocYield_lowMult_ptInt->DrawClone();
+  c_assocYield->cd(3);
+  assocYield_sub_ptInt->SetTitle("Substracted associated yield");
+  assocYield_sub_ptInt->GetYaxis()->SetTitle("Associated yield per J/#psi");
+  assocYield_sub_ptInt->DrawClone();
+
   MIndexHist indexEtagap(var_EtaGap);
   MIndexHist indexPtV2Jpsi(var_PtV2Jpsi);
-  file_output->cd();
-  MHist2D a0_high(indexEtagap, indexPtV2Jpsi, "a0_high");
-  MHist2D a0_low(indexEtagap, indexPtV2Jpsi, "a0_low");
-  MHist2D a0_sub(indexEtagap, indexPtV2Jpsi, "a0_sub");
-  MHist2D a1_high(indexEtagap, indexPtV2Jpsi, "a1_high");
-  MHist2D a1_low(indexEtagap, indexPtV2Jpsi, "a1_low");
-  MHist2D a1_sub(indexEtagap, indexPtV2Jpsi, "a1_sub");
-  MHist2D a2_high(indexEtagap, indexPtV2Jpsi, "a2_high");
-  MHist2D a2_low(indexEtagap, indexPtV2Jpsi, "a2_low");
-  MHist2D a2_sub(indexEtagap, indexPtV2Jpsi, "a2_sub");
-  MHist2D a3_high(indexEtagap, indexPtV2Jpsi, "a3_high");
-  MHist2D a3_low(indexEtagap, indexPtV2Jpsi, "a3_low");
-  MHist2D a3_sub(indexEtagap, indexPtV2Jpsi, "a3_sub");
-  MHist2D V2(indexEtagap, indexPtV2Jpsi, "V2");
 
-  gDirectory = file_output;
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 1);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
-  for (auto iPt : indexPtV2Jpsi)
-    for (auto iEtagpa : indexEtagap) {
-      auto f_sub = (TF1 *)(DeltaPhi_sub.MH1DGetBin(iEtagpa, iPt)
-                               ->GetFunction("f1_modulation"));
-      auto f_high = (TF1 *)(DeltaPhi_high.MH1DGetBin(iEtagpa, iPt)
-                                ->GetFunction("f1_modulation"));
-      auto f_low = (TF1 *)(DeltaPhi_low.MH1DGetBin(iEtagpa, iPt)
-                               ->GetFunction("f1_modulation"));
-      gPublisherCanvas->Draw(f_sub)->Draw(f_low)->Draw(f_high);
 
-      MDouble val_a0_sub(f_sub->GetParameter(0), f_sub->GetParError(0));
-      a0_sub.SetBinInfo(val_a0_sub);
-      MDouble val_a1_sub(f_sub->GetParameter(1), f_sub->GetParError(1));
-      a1_sub.SetBinInfo(val_a1_sub);
-      MDouble val_a2_sub(f_sub->GetParameter(2), f_sub->GetParError(2));
-      a2_sub.SetBinInfo(val_a2_sub);
-      MDouble val_a3_sub(f_sub->GetParameter(3), f_sub->GetParError(3));
-      a3_sub.SetBinInfo(val_a3_sub);
-      MDouble val_a0_low(f_low->GetParameter(0), f_low->GetParError(0));
-      a0_low.SetBinInfo(val_a0_low);
-      MDouble val_a1_low(f_low->GetParameter(1), f_low->GetParError(1));
-      a1_low.SetBinInfo(val_a1_low);
-      MDouble val_a2_low(f_low->GetParameter(2), f_low->GetParError(2));
-      a2_low.SetBinInfo(val_a2_low);
-      MDouble val_a3_low(f_low->GetParameter(3), f_low->GetParError(3));
-      a3_low.SetBinInfo(val_a3_low);
-      MDouble val_a0_high(f_high->GetParameter(0), f_high->GetParError(0));
-      a0_high.SetBinInfo(val_a0_high);
-      MDouble val_a1_high(f_high->GetParameter(1), f_high->GetParError(1));
-      a1_high.SetBinInfo(val_a1_high);
-      MDouble val_a2_high(f_high->GetParameter(2), f_high->GetParError(2));
-      a2_high.SetBinInfo(val_a2_high);
-      MDouble val_a3_high(f_high->GetParameter(3), f_high->GetParError(3));
-      a3_high.SetBinInfo(val_a3_high);
-      MDouble val_v2 = (val_a2_high - val_a2_low) / val_a0_high;
-      V2.SetBinInfo(val_v2);
+  auto v2REF_etaGap = MRootIO::GetObjectDiectly<TH1D>(
+      "/home/szhu/work/alice/analysis/QA/output/event_track/"
+      "v2_etagap_24pass1.root:EtaGap_v2");
+
+  file_output->cd();
+
+  auto V2_pT_etaGap =
+      new TH2D("V2Jpsi_pT_etaGap",
+               "V2Jpsi_pT_etaGap;p_{T} "
+               "(GeV/c);#Delta#eta;V_{2}^{J/#psi}",
+               4, vector<double>{0., 1., 2., 3., 5.}.data(),
+               n_bins_deltaEta_assoYield / 2 - 2, -1. * bin_width_etaGap,
+               (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
+  auto v2_pT_etaGap =
+      new TH2D("v2Jpsi_pT_etaGap",
+               "v2Jpsi_pT_etaGap;p_{T} "
+               "(GeV/c);#Delta#eta;v_{2}^{J/#psi}",
+               4, vector<double>{0., 1., 2., 3., 5.}.data(),
+               n_bins_deltaEta_assoYield / 2 - 2, -1. * bin_width_etaGap,
+               (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
+  gDirectory = nullptr;
+
+  int iPt_v2_pT_etaGap = 0;
+  for (auto iPt : {11, 13, 15, 34}) {
+    iPt_v2_pT_etaGap++;
+    for (auto iEtagpa : indexEtagap) {
+      auto h_sub = DeltaPhi_sub.MH1DGetBin(iEtagpa, iPt);
+      auto h_high = DeltaPhi_high.MH1DGetBin(iEtagpa, iPt);
+      auto h_low = DeltaPhi_low.MH1DGetBin(iEtagpa, iPt);
+      auto f_sub = (TF1 *)(h_sub->GetFunction("f1_modulation"));
+      auto f_high = (TF1 *)(h_high->GetFunction("f1_modulation"));
+      auto f_low = (TF1 *)(h_low->GetFunction("f1_modulation"));
+      // gPublisherCanvas->Draw(f_sub)->Draw(f_low)->Draw(f_high);
+      auto result_sub = h_sub->Fit(f_sub, "S Q N R");
+      auto result_low = h_low->Fit(f_low, "S Q N R");
+      auto result_high = h_high->Fit(f_high, "S Q N R");
+      auto [val_V2, err_V2] = compute_V2_and_error(result_sub, result_low);
+      V2_pT_etaGap->SetBinContent(iPt_v2_pT_etaGap, iEtagpa, val_V2);
+      V2_pT_etaGap->SetBinError(iPt_v2_pT_etaGap, iEtagpa, err_V2);
+      double val_v2REF = v2REF_etaGap->GetBinContent(iEtagpa);
+      double err_v2REF = v2REF_etaGap->GetBinError(iEtagpa);
+
+      double v2Jpsi = val_V2 / val_v2REF;
+      double err_v2Jpsi =
+          std::sqrt((err_V2 * err_V2) / (val_v2REF * val_v2REF) +
+                    (val_V2 * val_V2) * (err_v2REF * err_v2REF) /
+                        (val_v2REF * val_v2REF * val_v2REF * val_v2REF));
+      v2_pT_etaGap->SetBinContent(iPt_v2_pT_etaGap, iEtagpa, v2Jpsi);
+      v2_pT_etaGap->SetBinError(iPt_v2_pT_etaGap, iEtagpa, err_v2Jpsi);
     }
+  }
+
+  file_output->cd();
+  for (int i = 1; i <= v2_pT_etaGap->GetNbinsX(); ++i) {
+    auto h_proj = v2_pT_etaGap->ProjectionY(
+        TString::Format("v2Jpsi_etaGap_pTbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(h_proj);
+    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+    auto H_proj = V2_pT_etaGap->ProjectionY(
+        TString::Format("V2Jpsi_etaGap_pTbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(H_proj);
+    H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
+  }
+  for (int i = 1; i <= v2_pT_etaGap->GetNbinsY(); ++i) {
+    auto h_proj = v2_pT_etaGap->ProjectionX(
+        TString::Format("v2Jpsi_pT_etaGapbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(h_proj);
+    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+    auto H_proj = V2_pT_etaGap->ProjectionX(
+        TString::Format("V2Jpsi_pT_etaGapbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(H_proj);
+    H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
+  }
+
+  TCanvas *c_v2_pT_etaGap =
+      new TCanvas("c_v2_pT_etaGap", "c_v2_pT_etaGap", 1200, 1200);
+  c_v2_pT_etaGap->Divide(2, 2);
+
+  for (int i = 1; i <= 4; ++i) {
+    c_v2_pT_etaGap->cd(i);
+    auto h = (TH1D *)file_output->Get(
+        TString::Format("v2Jpsi_pT_etaGapbin%d", i * 2));
+    double etaGap = (-1. + (i * 2 - 1)) * bin_width_etaGap;
+    h->SetTitle(TString::Format("v_{2}^{J/#psi} at #Delta#eta = %.2f", etaGap));
+    h->Draw();
+  }
+
+  TCanvas *c_V2_pT_etaGap =
+      new TCanvas("c_V2_pT_etaGap", "c_V2_pT_etaGap", 1200, 1200);
+  c_V2_pT_etaGap->Divide(2, 2);
+  for (int i = 1; i <= 4; ++i) {
+    c_V2_pT_etaGap->cd(i);
+    auto h = (TH1D *)file_output->Get(
+        TString::Format("V2Jpsi_pT_etaGapbin%d", i * 2));
+    double etaGap = (-1. + (i * 2 - 1)) * bin_width_etaGap;
+    h->SetTitle(TString::Format("V_{2}^{J/#psi} at #Delta#eta = %.2f", etaGap));
+    h->Draw();
+  }
+
+  // file_output->ls();
 
   gPublisherCanvas->finalize();
   file_output->Write();
-  file_output->Close();
+  // file_output->Close();
 }
