@@ -11,7 +11,7 @@ void MultREF(
     TString path_output = "output.root", int runNumber = 0,
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
+        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_"
    /*  TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
