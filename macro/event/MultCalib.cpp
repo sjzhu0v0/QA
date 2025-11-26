@@ -11,13 +11,16 @@ void MultCalib(
     int runNumber = 0,
     TString path_calib =
         "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_") {
+        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
+    TString name_tree_event = "O2reducedevent",
+    TString name_tree_event_ext = "O2reextended") {
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
 
-  TTree *tree_event = MRootIO::OpenChain(path_input.Data(), "O2reducedevent");
-  TTree *tree_event_ext = MRootIO::OpenChain(path_input.Data(), "O2reextended");
+  TChain *tree_event = MRootIO::OpenChain(path_input, name_tree_event.Data());
+  TChain *tree_event_ext =
+      MRootIO::OpenChain(path_input, name_tree_event_ext.Data());
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
@@ -108,6 +111,8 @@ int main(int argc, char **argv) {
       "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
       "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
   int runNumber = 0;
+  TString name_tree_event = "O2reducedevent";
+  TString name_tree_event_ext = "O2reextended";
 
   if (argc > 1) {
     path_input = argv[1];
@@ -121,7 +126,14 @@ int main(int argc, char **argv) {
   if (argc > 4) {
     path_calib = argv[4];
   }
+  if (argc > 5) {
+    name_tree_event = argv[5];
+  }
+  if (argc > 6) {
+    name_tree_event_ext = argv[6];
+  }
 
-  MultCalib(path_input, path_output, runNumber, path_calib);
+  MultCalib(path_input, path_output, runNumber, path_calib, name_tree_event,
+            name_tree_event_ext);
   return 0;
 }
