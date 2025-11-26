@@ -17,7 +17,7 @@ void JpsiQA(
     TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge") {
-  ROOT::EnableImplicitMT(1);
+  ROOT::DisableImplicitMT();
   TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile *fOutput = new TFile(path_output, "RECREATE");
 
@@ -110,7 +110,7 @@ void JpsiQA(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_NumContribCalibBinned(
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
-      {0,7,12,17,22,29,37,46,57,73,300});
+      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
@@ -134,7 +134,8 @@ void JpsiQA(
                  var_NumContribCalibBinned});
   obj2push_thnd(rdf_PartTrigger4Jpsi,
                 {var_fPosZ, var_MassJpsiCandidate, var_PtJpsiCandidateFine,
-                 var_NumContribCalibBinned}, "", "ptFine");
+                 var_NumContribCalibBinned},
+                "", "ptFine");
 
   RunGraphs(gRResultHandles);
 
