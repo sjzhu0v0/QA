@@ -32,7 +32,7 @@ void MultREFRaw(
   StrVar4Hist var_fNumContrib("fNumContrib", "#it{N}_{vtx contrib} ", "", 300,
                               {0, 300});
   StrVar4Hist var_NumContribCalib(
-      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
+      "NumContribCalib", "#it{N}_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,

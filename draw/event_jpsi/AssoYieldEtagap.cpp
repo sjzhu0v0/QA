@@ -11,13 +11,39 @@
 #include <stdexcept>
 #include <utility>
 
+std::pair<double, double> EvalError(TF1 *f, const TFitResultPtr &r, double x) {
+  if (!f || !r.Get()) {
+    return {0.0, 0.0};
+  }
+
+  // 1. 函数值
+  double value = f->Eval(x);
+
+  // 2. 协方差矩阵
+  TMatrixDSym cov = r->GetCovarianceMatrix();
+  int npar = f->GetNpar();
+
+  // 3. 计算对参数的偏导数 ∂f/∂p_i
+  std::vector<double> grad(npar);
+  f->GradientPar(x, grad.data()); // ✔ TF1*（非 const）才能调用
+
+  // 4. 误差传播
+  double err2 = 0;
+  for (int i = 0; i < npar; i++) {
+    for (int j = 0; j < npar; j++) {
+      err2 += grad[i] * cov(i, j) * grad[j];
+    }
+  }
+
+  return {value, std::sqrt(std::max(err2, 0.0))};
+}
+
 std::pair<double, double>
 compute_V2_and_error(const TFitResultPtr &result_sub,
-                     const TFitResultPtr &result_low,
+                     const TFitResultPtr &result_low, TF1 *f_low,
                      int idx_a0_sub = 0, // result_sub 中 a0 的参数索引
-                     int idx_a2_sub = 2, // result_sub 中 a2 的参数索引
-                     int idx_a0_low = 0) // result_low 中 a0 的参数索引
-{
+                     int idx_a2_sub = 2  // result_sub 中 a2 的参数索引
+) {
   if (!result_sub.Get() || !result_low.Get()) {
     throw std::runtime_error("compute_v2_and_error: empty TFitResultPtr.");
   }
@@ -27,8 +53,7 @@ compute_V2_and_error(const TFitResultPtr &result_sub,
   const double a2s = result_sub->Parameter(idx_a2_sub);
   const double sa2s = result_sub->ParError(idx_a2_sub);
 
-  const double a0l = result_low->Parameter(idx_a0_low);
-  const double sa0l = result_low->ParError(idx_a0_low);
+  auto [a0l, sa0l] = EvalError(f_low, result_low, M_PI / 2.0);
 
   const TMatrixDSym cov_sub = result_sub->GetCovarianceMatrix();
   const double cov_a2s_a0s =
@@ -243,7 +268,8 @@ void AssoYieldEtagap(
       auto result_sub = h_sub->Fit(f_sub, "S Q N R");
       auto result_low = h_low->Fit(f_low, "S Q N R");
       auto result_high = h_high->Fit(f_high, "S Q N R");
-      auto [val_V2, err_V2] = compute_V2_and_error(result_sub, result_low);
+      auto [val_V2, err_V2] =
+          compute_V2_and_error(result_sub, result_low, f_low);
       V2_pT_etaGap->SetBinContent(iPt_v2_pT_etaGap, iEtagpa, val_V2);
       V2_pT_etaGap->SetBinError(iPt_v2_pT_etaGap, iEtagpa, err_V2);
       double val_v2REF = v2REF_etaGap->GetBinContent(iEtagpa);
