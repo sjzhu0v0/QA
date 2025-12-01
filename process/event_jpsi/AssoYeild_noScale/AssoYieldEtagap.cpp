@@ -247,13 +247,11 @@ void AssoYieldEtagap(
     }
   }
 
-  for (auto _ : indexAnyPtV2Jpsi)
-    for (auto __ : indexHistDeltaEtaUS)
-      for (auto ___ : indexHistDeltaPhiUS) {
-        assoYield_sub_PtV2.currentObject().fHisto->Write();
-        assoYield_low_PtV2.currentObject().fHisto->Write();
-        assoYield_high_PtV2.currentObject().fHisto->Write();
-      }
+  for (auto _ : indexAnyPtV2Jpsi) {
+    assoYield_sub_PtV2.currentObject().fHisto->Write();
+    assoYield_low_PtV2.currentObject().fHisto->Write();
+    assoYield_high_PtV2.currentObject().fHisto->Write();
+  }
 
   file_output->Close();
 }
