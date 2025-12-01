@@ -319,6 +319,19 @@ void AssoYieldEtagap(
     h->SetTitle(TString::Format("v_{2}^{J/#psi} at #Delta#eta = %.2f", etaGap));
     h->Draw();
   }
+  c_v2_pT_etaGap->SaveAs("/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                         "v2Jpsi_etaGap.pdf");
+
+  TCanvas *c_v2_pT_etaGap1p2 =
+      new TCanvas("c_v2_pT_etaGap1p2", "c_v2_pT_etaGap1p2", 600, 600);
+  c_v2_pT_etaGap1p2->cd();
+  auto h_v2_etaGap1p2 = (TH1D *)file_output->Get("v2Jpsi_pT_etaGapbin8");
+  // h_v2_etaGap1p2->GetYaxis()->SetRangeUser();
+  h_v2_etaGap1p2->SetTitle("v_{2}^{J/#psi} at #Delta#eta = 1.2");
+  h_v2_etaGap1p2->Draw();
+  c_v2_pT_etaGap1p2->SaveAs(
+      "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+      "v2Jpsi_etaGap1p2.pdf");
 
   TCanvas *c_V2_pT_etaGap =
       new TCanvas("c_V2_pT_etaGap", "c_V2_pT_etaGap", 1200, 1200);
