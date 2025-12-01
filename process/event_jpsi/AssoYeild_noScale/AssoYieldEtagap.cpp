@@ -131,12 +131,23 @@ void AssoYieldEtagap(
   MHist1D assoYield_low_int(indexHistDeltaPhiUS, "AssoYield_low_int");
   MHist1D assoYield_high_int(indexHistDeltaPhiUS, "AssoYield_high_int");
 
+  MHist2D assoYeild_sub_int2(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+                             "AssoYield_sub_int2");
+  MHist2D assoYeild_low_int2(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+                             "AssoYield_low_int2");
+  MHist2D assoYeild_high_int2(indexHistDeltaEtaUS, indexHistDeltaPhiUS,
+                              "AssoYield_high_int2");
+
   auto assoYield_sub_EtaGap =
       MakeMVec(assoYield_sub_int, indexHistEtaGap, indexAnyPtV2Jpsi);
   auto assoYield_low_EtaGap =
       MakeMVec(assoYield_low_int, indexHistEtaGap, indexAnyPtV2Jpsi);
   auto assoYield_high_EtaGap =
       MakeMVec(assoYield_high_int, indexHistEtaGap, indexAnyPtV2Jpsi);
+
+  auto assoYield_sub_PtV2 = MakeMVec(assoYeild_sub_int2, indexAnyPtV2Jpsi);
+  auto assoYield_low_PtV2 = MakeMVec(assoYeild_low_int2, indexAnyPtV2Jpsi);
+  auto assoYield_high_PtV2 = MakeMVec(assoYeild_high_int2, indexAnyPtV2Jpsi);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
 
@@ -176,6 +187,23 @@ void AssoYieldEtagap(
           up_edge_deltaPhiToPi * M_PI);
     }
   }
+
+  for (auto iPtV2 : indexAnyPtV2Jpsi)
+    for (auto iDeltaEta : indexHistDeltaEtaUS)
+      for (auto iDeltaPhi : indexHistDeltaPhiUS) {
+        auto assoYield_sub_temp = assoYield_sub.MH1DGetBin(iDeltaEta, iPtV2);
+        auto assoYield_low_temp = assoYield_low.MH1DGetBin(iDeltaEta, iPtV2);
+        auto assoYield_high_temp = assoYield_high.MH1DGetBin(iDeltaEta, iPtV2);
+        assoYield_sub_PtV2.currentObject().SetBinInfo(
+            assoYield_sub_temp->GetBinContent(iDeltaPhi),
+            assoYield_sub_temp->GetBinError(iDeltaPhi));
+        assoYield_low_PtV2.currentObject().SetBinInfo(
+            assoYield_low_temp->GetBinContent(iDeltaPhi),
+            assoYield_low_temp->GetBinError(iDeltaPhi));
+        assoYield_high_PtV2.currentObject().SetBinInfo(
+            assoYield_high_temp->GetBinContent(iDeltaPhi),
+            assoYield_high_temp->GetBinError(iDeltaPhi));
+      }
 
 #define ModulationMultClass(mult_class)                                        \
   MHist2D a0_##mult_class(indexHistEtaGap, indexHistPtV2Jpsi,                  \
@@ -218,6 +246,15 @@ void AssoYieldEtagap(
       assoYield_high_EtaGap.currentObject().fHisto->Write();
     }
   }
+
+  for (auto _ : indexAnyPtV2Jpsi)
+    for (auto __ : indexHistDeltaEtaUS)
+      for (auto ___ : indexHistDeltaPhiUS) {
+        assoYield_sub_PtV2.currentObject().fHisto->Write();
+        assoYield_low_PtV2.currentObject().fHisto->Write();
+        assoYield_high_PtV2.currentObject().fHisto->Write();
+      }
+
   file_output->Close();
 }
 
