@@ -19,11 +19,6 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
   cout << "Input file: " << path_input_flowVecd << endl;
   cout << "Input file: " << path_input_mult << endl;
   cout << "Output file: " << path_output << endl;
-  YAML::Node config = YAML::LoadFile("config.yaml");
-  const double low_edge_deltaPhiToPi =
-      config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
-  const double up_edge_deltaPhiToPi =
-      config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
 
   tree_flowVecd->AddFriend(tree_mult);
 
