@@ -262,10 +262,10 @@ void Efficiency(TString path_input, TString path_output) {
       GetTH3DM(var_vz, var_pt, var_eta, "reco", "reco"), var_vz.fName.Data(),
       var_pt.fName.Data(), var_eta.fName.Data()));
 
-  gRResultHandles.push_back(rdf_mc_selected.Histo1D(
+  gRResultHandles.push_back(rdf_mc_selected_Eta.Histo1D(
       GetTH1DM(var_mult, "mc_mult", "mc_mult, |#eta|<0.9"),
       var_mult.fName.Data()));
-  gRResultHandles.push_back(rdf_reco_selected.Histo1D(
+  gRResultHandles.push_back(rdf_reco_selected_Eta.Histo1D(
       GetTH1DM(var_mult, "reco_mult", "reco_mult, |#eta|<0.9 "),
       var_mult.fName.Data()));
 
