@@ -191,8 +191,8 @@ void Efficiency(TString path_input, TString path_output) {
   TFile *file_input = new TFile(path_input, "READ");
   TFile *file_output = new TFile(path_output, "RECREATE");
 
-  TChain *file_mc = MRootIO::OpenChain(path_input.Data(), "O2mctrackinfo");
-  TChain *file_reco = MRootIO::OpenChain(path_input.Data(), "O2mctrktruth");
+  TChain *file_mc = MRootIO::OpenChain(path_input.Data(), "O2mctrktruth");
+  TChain *file_reco = MRootIO::OpenChain(path_input.Data(), "O2mctrackinfo");
 
   ROOT::RDataFrame rdf_mc(*file_mc);
   ROOT::RDataFrame rdf_reco(*file_reco);
