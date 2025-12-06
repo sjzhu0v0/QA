@@ -255,12 +255,28 @@ void Efficiency(TString path_input, TString path_output) {
         rdf2push.HistoND(get<0>(tuple_thnd), get<1>(tuple_thnd)));             \
   } while (0)
 
-  gRResultHandles.push_back(rdf_mc_selected.Histo3D(
+  gRResultHandles.push_back(rdf_mc_selected_kine.Histo3D(
       GetTH3DM(var_vz, var_pt, var_eta, "mc", "mc"), var_vz.fName.Data(),
       var_pt.fName.Data(), var_eta.fName.Data()));
-  gRResultHandles.push_back(rdf_reco_selected.Histo3D(
+  gRResultHandles.push_back(rdf_reco_selected_kine.Histo3D(
       GetTH3DM(var_vz, var_pt, var_eta, "reco", "reco"), var_vz.fName.Data(),
       var_pt.fName.Data(), var_eta.fName.Data()));
+
+  gRResultHandles.push_back(rdf_reco_selected_kine.Histo2D(
+      GetTH2DM(var_vz, var_mult, "reco", "reco"), var_vz.fName.Data(),
+      var_pt.fName.Data(), var_eta.fName.Data()));
+  gRResultHandles.push_back(rdf_mc_selected_kine.Histo2D(
+      GetTH2DM(var_vz, var_mult, "mc", "mc"), var_vz.fName.Data(),
+      var_pt.fName.Data(), var_eta.fName.Data()));
+  gRResultHandles.push_back(rdf_reco_selected_kine.Histo2D(
+      GetTH2DM(var_pt, var_mult, "reco", "reco"), var_pt.fName.Data(),
+      var_mult.fName.Data()));
+  gRResultHandles.push_back(
+      rdf_mc_selected_kine.Histo2D(GetTH2DM(var_pt, var_mult, "mc", "mc"),
+                                   var_pt.fName.Data(), var_mult.fName.Data()));
+  gRResultHandles.push_back(rdf_reco_selected_kine.Histo2D(
+      GetTH2DM(var_eta, var_mult, "reco", "reco"), var_eta.fName.Data(),
+      var_mult.fName.Data()));
 
   gRResultHandles.push_back(rdf_mc_selected_kine.Histo1D(
       GetTH1DM(var_mult, "mc_mult", "mc_mult, |#eta|<0.9"),
