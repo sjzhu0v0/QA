@@ -241,7 +241,7 @@ void Efficiency(TString path_input, TString path_output) {
       rdf_reco_selected.Filter("abs(fEta)<0.9", "abs(eta)<0.9");
 
   StrVar4Hist var_mult("fNumContrib", "N_{vtx contrib}", "", 10,
-                       {0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 248, 300});
+                       {0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300});
   StrVar4Hist var_vz("fPosZ", "V_{z}", "cm", 20, {-10, 10});
   StrVar4Hist var_pt(
       "fPt", "P_{T}", "GeV/c", 14,
