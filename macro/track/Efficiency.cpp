@@ -235,10 +235,10 @@ void Efficiency(TString path_input, TString path_output) {
           .Filter("isntTimeFrameBorder", "no Time Frame border")
           .Filter("isntSameBunchPileup", "no Time Frame border");
 
-  auto rdf_mc_selected_Eta =
-      rdf_mc_selected.Filter("abs(fEta)<0.9", "abs(eta)<0.9");
-  auto rdf_reco_selected_Eta =
-      rdf_reco_selected.Filter("abs(fEta)<0.9", "abs(eta)<0.9");
+  auto rdf_mc_selected_kine =
+      rdf_mc_selected.Filter("abs(fEta)<0.9 && fPt < 5", "abs(eta)<0.9 || ");
+  auto rdf_reco_selected_kine =
+      rdf_reco_selected.Filter("abs(fEta)<0.9 && fPt < 5", "abs(eta)<0.9");
 
   StrVar4Hist var_mult("fNumContrib", "N_{vtx contrib}", "", 10,
                        {0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300});
@@ -262,11 +262,11 @@ void Efficiency(TString path_input, TString path_output) {
       GetTH3DM(var_vz, var_pt, var_eta, "reco", "reco"), var_vz.fName.Data(),
       var_pt.fName.Data(), var_eta.fName.Data()));
 
-  gRResultHandles.push_back(rdf_mc_selected_Eta.Histo1D(
+  gRResultHandles.push_back(rdf_mc_selected_kine.Histo1D(
       GetTH1DM(var_mult, "mc_mult", "mc_mult, |#eta|<0.9"),
       var_mult.fName.Data()));
-  gRResultHandles.push_back(rdf_reco_selected_Eta.Histo1D(
-      GetTH1DM(var_mult, "reco_mult", "reco_mult, |#eta|<0.9 "),
+  gRResultHandles.push_back(rdf_reco_selected_kine.Histo1D(
+      GetTH1DM(var_mult, "reco_mult", "reco_mult, |#eta|<0.9"),
       var_mult.fName.Data()));
 
   RunGraphs(gRResultHandles);
