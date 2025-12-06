@@ -370,20 +370,25 @@ void Grouping_24pass1_DiElectron(double min_threshold_distance = 0.003,
     latex->SetTextSize(0.04);
     latex->DrawLatexNDC(
         0.3, 0.85,
-        Form("Proportion of main cluster: %.1 f%%", fraction_main * 100));
+        Form("Proportion of main cluster: %.1f%%", fraction_main * 100));
     vec_fraction_main.push_back(fraction_main);
     vec_threshold_distance.push_back(threshold_distance);
-    cout << "Threshold distance: " << threshold_distance
+    cout << "integral of statistics: " << h_statistic->Integral()
+         << ", maximum: " << h_statistic->GetMaximum()
+         << ", Threshold distance: " << threshold_distance
          << ", Proportion of main cluster: " << fraction_main << endl;
-    if (abs(threshold_distance - 0.0066) <
+    if (abs(threshold_distance - 0.0049) <
         (max_threshold_distance - min_threshold_distance) / (double)n_bins) {
       // print the first cluster
       cout << "First cluster: ";
-      for (size_t i = 0; i < vec_groups[0].size(); ++i) {
-        cout << MALICE_RUN::map_run24[vec_groups[0][i]];
-        if (i != vec_groups[0].size() - 1)
+      for (size_t i = 0;
+           i < vec_groups[h_statistic->GetMaximumBin() - 1].size(); ++i) {
+        cout << MALICE_RUN::map_run24[vec_groups[h_statistic->GetMaximumBin() -
+                                                 1][i]];
+        if (i != vec_groups[h_statistic->GetMaximumBin() - 1].size() - 1)
           cout << ", ";
       }
+      cout << endl;
     }
   }
   TGraph *g_fraction_main =
@@ -394,6 +399,7 @@ void Grouping_24pass1_DiElectron(double min_threshold_distance = 0.003,
                             "distance;Distance threshold;"
                             "Proportion of main cluster");
   gPublisherCanvas->DrawClone(g_fraction_main);
+  gPad->SetGrid();
   g_fraction_main->SaveAs(
       "/home/szhu/work/alice/analysis/QA/plot/event/grouping/"
       "proportion_main_vs_threshold_distance_fine.root");
