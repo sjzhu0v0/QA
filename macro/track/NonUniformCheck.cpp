@@ -65,7 +65,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
       "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
   StrVar4Hist var_pt("fPTREF", "p_{T}", "GeV/c", 29, {0.2, 6});
   StrVar4Hist var_eta("fEtaREF", "#eta", "", 36, {-0.9, 0.9});
-  StrVar4Hist var_phi("fPhiREF", "#phi", "rad", 36, {0, 2 * M_PI});
+  StrVar4Hist var_phi("fPhiREF", "#phi", "rad", 500, {0, 2 * M_PI});
 
 #define obj2push_thnd(rdf2push, ...)                                           \
   do {                                                                         \
