@@ -235,7 +235,7 @@ def draw_efficiency_histograms_and_compare(input_file_path1, input_file_path2, t
 # Main function to execute the drawing and saving of efficiency histograms
 if __name__ == "__main__":
     # Define input file paths and tags
-    input_file_path1 = "/lustre/alice/users/szhu/work/ppJpsiFlow/REF_minbias/output/NonUniform/check_af_cluster2.root"
+    input_file_path1 = "/lustre/alice/users/szhu/work/ppJpsiFlow/REF_minbias/output/Efficiency/merge/af_cluster3.root"
     input_file_path2 = "/lustre/alice/users/szhu/work/ppJpsiFlow/REF_minbias/output/NonUniform/check_an_cluster2.root"
     tag1 = "LHC24af"
     tag2 = "LHC24an"
