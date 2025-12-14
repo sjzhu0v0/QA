@@ -42,12 +42,20 @@ def draw_efficiency_histograms_and_compare(f1, f2, tag1, tag2):
     hVz_reco1 = proj(file1, "fPosZ_fNumContrib_reco")
     hVz_mc2   = proj(file2, "fPosZ_fNumContrib_mc")
     hVz_reco2 = proj(file2, "fPosZ_fNumContrib_reco")
-
+    
+    printf("Creating TEfficiency objects...")
+    printf(f"  {tag1}...")
+    printf(f"   effPt1")
     effPt1  = TEfficiency(hPt_reco1,  hPt_mc1)
+    printf(f"   effPt2")
     effPt2  = TEfficiency(hPt_reco2,  hPt_mc2)
+    printf(f"   effEta1")
     effEta1 = TEfficiency(hEta_reco1, hEta_mc1)
+    printf(f"   effEta2")
     effEta2 = TEfficiency(hEta_reco2, hEta_mc2)
+    printf(f"   effVz1")
     effVz1  = TEfficiency(hVz_reco1,  hVz_mc1)
+    printf(f"   effVz2")
     effVz2  = TEfficiency(hVz_reco2,  hVz_mc2)
 
     style_eff(effPt1,  ROOT.kRed)
