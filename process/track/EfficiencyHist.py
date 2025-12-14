@@ -56,10 +56,10 @@ def draw_efficiency_histograms_and_compare(input_file_path1, input_file_path2, t
     input_file2 = TFile.Open(input_file_path2, "READ")
 
     # Retrieve the histograms from the input files: fPt_fNumContrib_mc and fPt_fNumContrib_reco
-    hPtNumContrib_mc1 = TH2D.Cast(input_file1.Get("fPt_fNumContrib_mc"))
-    hPtNumContrib_reco1 = TH2D.Cast(input_file1.Get("fPt_fNumContrib_reco"))
-    hPtNumContrib_mc2 = TH2D.Cast(input_file2.Get("fPt_fNumContrib_mc"))
-    hPtNumContrib_reco2 = TH2D.Cast(input_file2.Get("fPt_fNumContrib_reco"))
+    hPtNumContrib_mc1 = TH2.Cast(input_file1.Get("fPt_fNumContrib_mc"))
+    hPtNumContrib_reco1 = TH2.Cast(input_file1.Get("fPt_fNumContrib_reco"))
+    hPtNumContrib_mc2 = TH2.Cast(input_file2.Get("fPt_fNumContrib_mc"))
+    hPtNumContrib_reco2 = TH2.Cast(input_file2.Get("fPt_fNumContrib_reco"))
 
     # integrate over fNumContrib to get fPt histograms
     hPt_mc1 = hPtNumContrib_mc1.ProjectionX("hPt_mc1")
@@ -68,20 +68,20 @@ def draw_efficiency_histograms_and_compare(input_file_path1, input_file_path2, t
     hPt_reco2 = hPtNumContrib_reco2.ProjectionX("hPt_reco2")
 
     # Retrieve Eta histograms
-    hEtaNumContrib_mc1 = TH2D.Cast(input_file1.Get("fEta_fNumContrib_mc"))
-    hEtaNumContrib_reco1 = TH2D.Cast(input_file1.Get("fEta_fNumContrib_reco"))
-    hEtaNumContrib_mc2 = TH2D.Cast(input_file2.Get("fEta_fNumContrib_mc"))
-    hEtaNumContrib_reco2 = TH2D.Cast(input_file2.Get("fEta_fNumContrib_reco"))
+    hEtaNumContrib_mc1 = TH2.Cast(input_file1.Get("fEta_fNumContrib_mc"))
+    hEtaNumContrib_reco1 = TH2.Cast(input_file1.Get("fEta_fNumContrib_reco"))
+    hEtaNumContrib_mc2 = TH2.Cast(input_file2.Get("fEta_fNumContrib_mc"))
+    hEtaNumContrib_reco2 = TH2.Cast(input_file2.Get("fEta_fNumContrib_reco"))
     hEta_mc1 = hEtaNumContrib_mc1.ProjectionX("hEta_mc1")
     hEta_reco1 = hEtaNumContrib_reco1.ProjectionX("hEta_reco1")
     hEta_mc2 = hEtaNumContrib_mc2.ProjectionX("hEta_mc2")
     hEta_reco2 = hEtaNumContrib_reco2.ProjectionX("hEta_reco2")
 
     # Retrieve Vz histograms
-    hVzNumContrib_mc1 = TH2D.Cast(input_file1.Get("fPosZ_fNumContrib_mc"))
-    hVzNumContrib_reco1 = TH2D.Cast(input_file1.Get("fPosZ_fNumContrib_reco"))
-    hVzNumContrib_mc2 = TH2D.Cast(input_file2.Get("fPosZ_fNumContrib_mc"))
-    hVzNumContrib_reco2 = TH2D.Cast(input_file2.Get("fPosZ_fNumContrib_reco"))
+    hVzNumContrib_mc1 = TH2.Cast(input_file1.Get("fPosZ_fNumContrib_mc"))
+    hVzNumContrib_reco1 = TH2.Cast(input_file1.Get("fPosZ_fNumContrib_reco"))
+    hVzNumContrib_mc2 = TH2.Cast(input_file2.Get("fPosZ_fNumContrib_mc"))
+    hVzNumContrib_reco2 = TH2.Cast(input_file2.Get("fPosZ_fNumContrib_reco"))
     hVz_mc1 = hVzNumContrib_mc1.ProjectionX("hVz_mc1")
     hVz_reco1 = hVzNumContrib_reco1.ProjectionX("hVz_reco1")
     hVz_mc2 = hVzNumContrib_mc2.ProjectionX("hVz_mc2")
