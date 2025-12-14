@@ -68,5 +68,9 @@ fi
 GIT_SEQUENCE_EDITOR="sed -i.bak '/$SED_PATTERN/s/^pick /drop /'" \
 git rebase -i "$BASE_COMMIT"
 
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+
+
 echo "✅ 删除完成"
 
