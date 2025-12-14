@@ -57,13 +57,9 @@ def draw_efficiency_histograms_and_compare(input_file_path1, input_file_path2, t
 
     # Retrieve the histograms from the input files: fPt_fNumContrib_mc and fPt_fNumContrib_reco
     hPtNumContrib_mc1 = input_file1.Get("fPt_fNumContrib_mc")
-    hPtNumContrib_mc1 = ROOT.TH2D.Cast(hPtNumContrib_mc1)
     hPtNumContrib_reco1 = input_file1.Get("fPt_fNumContrib_reco")
-    hPtNumContrib_reco1 = ROOT.TH2D.Cast(hPtNumContrib_reco1)
     hPtNumContrib_mc2 = input_file2.Get("fPt_fNumContrib_mc")
-    hPtNumContrib_mc2 = ROOT.TH2D.Cast(hPtNumContrib_mc2)
     hPtNumContrib_reco2 = input_file2.Get("fPt_fNumContrib_reco")
-    hPtNumContrib_reco2 = ROOT.TH2D.Cast(hPtNumContrib_reco2)
 
     # integrate over fNumContrib to get fPt histograms
     hPt_mc1 = hPtNumContrib_mc1.ProjectionX("hPt_mc1")
