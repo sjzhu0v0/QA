@@ -264,10 +264,10 @@ void Efficiency(TString path_input, TString path_output) {
 
   gRResultHandles.push_back(rdf_reco_selected_kine.Histo2D(
       GetTH2DM(var_vz, var_mult, "reco", "reco"), var_vz.fName.Data(),
-      var_mult.fName.Data());
+      var_mult.fName.Data()));
   gRResultHandles.push_back(rdf_mc_selected_kine.Histo2D(
       GetTH2DM(var_vz, var_mult, "mc", "mc"), var_vz.fName.Data(),
-      var_mult.fName.Data());
+      var_mult.fName.Data()));
 
   gRResultHandles.push_back(rdf_reco_selected_kine.Histo2D(
       GetTH2DM(var_pt, var_mult, "reco", "reco"), var_pt.fName.Data(),
