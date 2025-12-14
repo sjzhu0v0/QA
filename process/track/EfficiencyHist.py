@@ -3,7 +3,7 @@
 # Write a macro with ROOT to create and save efficiency histograms
 # import necessary libraries
 import ROOT
-from ROOT import TFile, TH1D, TH2D, TCanvas, TLegend, TStyle, TLine, TEfficiency
+from ROOT import TFile, TH1D, TH2, TCanvas, TLegend, TStyle, TLine, TEfficiency
 
 def StyleHistCommon(hist_mb):
     hist_mb.GetXaxis().SetLabelSize(0.03)
