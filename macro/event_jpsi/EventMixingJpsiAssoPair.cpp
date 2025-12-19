@@ -315,18 +315,18 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   bool isInteractive = is_interactive();
   while (rPairs.Next()) {
     ++iEntryPairs;
-    if (isInteractive)
-      if (iEntryPairs % 100 == 0 || iEntryPairs == nEntriesPairs) {
-        double frac = double(iEntryPairs) / nEntriesPairs;
-        double elapsed = timer.RealTime();
-        timer.Continue();
-        double eta = (frac > 0) ? elapsed * (1.0 / frac - 1.0) : 0;
+    // if (isInteractive)
+    //   if (iEntryPairs % 100 == 0 || iEntryPairs == nEntriesPairs) {
+    //     double frac = double(iEntryPairs) / nEntriesPairs;
+    //     double elapsed = timer.RealTime();
+    //     timer.Continue();
+    //     double eta = (frac > 0) ? elapsed * (1.0 / frac - 1.0) : 0;
 
-        std::cout << "\r[EventMixing] " << std::setw(6) << std::fixed
-                  << std::setprecision(2) << frac * 100 << "%  "
-                  << "ETA: " << std::setw(6) << std::setprecision(1) << eta
-                  << " s" << std::flush;
-      }
+    //     std::cout << "\r[EventMixing] " << std::setw(6) << std::fixed
+    //               << std::setprecision(2) << frac * 100 << "%  "
+    //               << "ETA: " << std::setw(6) << std::setprecision(1) << eta
+    //               << " s" << std::flush;
+    //   }
 
     for (const auto &abPair_single : *abPair) {
       const ULong64_t entryA = abPair_single.first;
