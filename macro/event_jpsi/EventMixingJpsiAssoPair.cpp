@@ -5,9 +5,12 @@
 #include "MHead.h"
 #include "MHist.h"
 #include "MRootIO.h"
+#include "TTreeReaderArray.h"
 #include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
-#include "TTreeReaderArray.h"
+#include <TStopwatch.h>
+#include <iomanip>
+#include <iostream>
 
 template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
   return std::vector<T>(arr.begin(), arr.end());
@@ -303,7 +306,28 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   out.Branch("ref_nsig_pi", &o_ref_nsig_pi);
   out.Branch("ref_nsig_pr", &o_ref_nsig_pr);
   long long nWritten = 0;
-  while (rPairs.Next())
+
+  Long64_t nEntriesPairs = tree_index->GetEntries();
+  Long64_t iEntryPairs = 0;
+  TStopwatch timer;
+  timer.Start();
+
+  bool isInteractive = is_interactive();
+  while (rPairs.Next()) {
+    ++iEntryPairs;
+    if (isInteractive)
+      if (iEntryPairs % 100 == 0 || iEntryPairs == nEntriesPairs) {
+        double frac = double(iEntryPairs) / nEntriesPairs;
+        double elapsed = timer.RealTime();
+        timer.Continue();
+        double eta = (frac > 0) ? elapsed * (1.0 / frac - 1.0) : 0;
+
+        std::cout << "\r[EventMixing] " << std::setw(6) << std::fixed
+                  << std::setprecision(2) << frac * 100 << "%  "
+                  << "ETA: " << std::setw(6) << std::setprecision(1) << eta
+                  << " s" << std::flush;
+      }
+
     for (const auto &abPair_single : *abPair) {
       const ULong64_t entryA = abPair_single.first;
       const ULong64_t entryB = abPair_single.second;
@@ -416,6 +440,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         }
       }
     }
+  }
   out.Write();
   fout.Close();
 }
