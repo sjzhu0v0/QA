@@ -9,18 +9,16 @@
 #include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
 #include <TStopwatch.h>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <iostream>
-#include <fstream>
 
 long getRSS() {
-    std::ifstream statm("/proc/self/statm");
-    long size, resident;
-    statm >> size >> resident;
-    return resident * sysconf(_SC_PAGESIZE) / 1024 / 1024;
+  std::ifstream statm("/proc/self/statm");
+  long size, resident;
+  statm >> size >> resident;
+  return resident * sysconf(_SC_PAGESIZE) / 1024 / 1024;
 }
-
 
 template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
   return std::vector<T>(arr.begin(), arr.end());
@@ -322,17 +320,16 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   long long nEntries = rPairs.GetEntries();
   cout << "nEtries" << nEntries << endl;
   cout << "aaaa nentry" << rPairs.GetEntries() << endl;
-  
-    long long iEntry = -1;
-  // for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
+
+  long long iEntry = -1;
   while (rPairs.Next()) {
-        iEntry++;
+    iEntry++;
     if (isInteractive)
       // print progress bar
       if (iEntry % (100) == 0 && iEntry > 0) {
-          printf(
-              "\rProcessing entry %lld / %lld  (RSS = %ld MB), vector size: %d ", iEntry,
-              nEntries, getRSS(), abPair->size());
+        printf(
+            "\rProcessing entry %lld / %lld  (RSS = %ld MB), vector size: %d ",
+            iEntry, nEntries, getRSS(), abPair->size());
         /*float progress = (float)iEntry / nEntries;
         int barWidth = 70;
         std::cout << "[";
@@ -349,18 +346,15 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         // std::cout.flush();
       }
     rPairs.SetEntry(iEntry);
-    //abPair->clear();
 
-
-    for (int i = 0; i < 2; ++i) {
-    // for (const auto &abPair_single : *abPair) {
-      /*ULong64_t entryA = abPair_single.first;
+    for (const auto &abPair_single : *abPair) {
+      ULong64_t entryA = abPair_single.first;
       ULong64_t entryB = abPair_single.second;
-      int nPairs = fPT.GetSize()*fPTREF.GetSize();
+      int nPairs = fPT.GetSize() * fPTREF.GetSize();
       if (nPairs == 0) {
         continue;
       }
-       rEvt.SetEntry(entryA);
+      rEvt.SetEntry(entryA);
       o_NumContribCalib = *NumContribCalib;
       o_fMultTPC = *fMultTPC;
       o_fMultTracklets = *fMultTracklets;
@@ -371,7 +365,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fPosZ = *fPosZ;
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
-      auto A_jpsi_pt = makeVec(fPT); 
+      auto A_jpsi_pt = makeVec(fPT);
       auto A_jpsi_eta = makeVec(fEta);
       auto A_jpsi_phi = makeVec(fPhi);
       auto A_jpsi_mass = makeVec(fMass);
@@ -414,10 +408,10 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       auto B_ref_sig = makeVec(fTPCSignal_ref);
       auto B_ref_nel = makeVec(fTPCNSigmaEl_ref);
       auto B_ref_npi = makeVec(fTPCNSigmaPi_ref);
-      auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);*/
+      auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);
 
       // long long filled = 0;
-     /* for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
+      for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
         for (size_t ib = 0; ib < B_ref_pt.size(); ++ib) {
           o_jpsi_pt = A_jpsi_pt[ia];
           o_jpsi_eta = A_jpsi_eta[ia];
@@ -461,47 +455,47 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
           o_ref_nsig_pr = B_ref_npr[ib];
           out.Fill();
         }
-      }*/
-     /* A_jpsi_pt.clear();
-        A_jpsi_eta.clear();
-        A_jpsi_phi.clear();
-        A_jpsi_mass.clear();
-        A_jpsi_sign.clear();
-        A_e1_pt.clear();
-        A_e1_eta.clear();
-        A_e1_phi.clear();
-        A_e1_sign.clear();
-        A_e1_its.clear();
-        A_e1_cr.clear();
-        A_e1_found.clear();
-        A_e1_chi2.clear();
-        A_e1_sig.clear();
-        A_e1_nel.clear();
-        A_e1_npi.clear();
-        A_e1_npr.clear();
-        A_e2_pt.clear();
-        A_e2_eta.clear();
-        A_e2_phi.clear();
-        A_e2_sign.clear();
-        A_e2_its.clear();
-        A_e2_cr.clear();
-        A_e2_found.clear();
-        A_e2_chi2.clear();
-        A_e2_sig.clear();
-        A_e2_nel.clear();
-        A_e2_npi.clear();
-        A_e2_npr.clear();
-        B_ref_pt.clear();
-        B_ref_eta.clear();
-        B_ref_phi.clear();
-        B_ref_its.clear();
-        B_ref_cr.clear();
-        B_ref_found.clear();
-        B_ref_chi2.clear();
-        B_ref_sig.clear();
-        B_ref_nel.clear();
-        B_ref_npi.clear();
-        B_ref_npr.clear();*/
+      }
+      /* A_jpsi_pt.clear();
+         A_jpsi_eta.clear();
+         A_jpsi_phi.clear();
+         A_jpsi_mass.clear();
+         A_jpsi_sign.clear();
+         A_e1_pt.clear();
+         A_e1_eta.clear();
+         A_e1_phi.clear();
+         A_e1_sign.clear();
+         A_e1_its.clear();
+         A_e1_cr.clear();
+         A_e1_found.clear();
+         A_e1_chi2.clear();
+         A_e1_sig.clear();
+         A_e1_nel.clear();
+         A_e1_npi.clear();
+         A_e1_npr.clear();
+         A_e2_pt.clear();
+         A_e2_eta.clear();
+         A_e2_phi.clear();
+         A_e2_sign.clear();
+         A_e2_its.clear();
+         A_e2_cr.clear();
+         A_e2_found.clear();
+         A_e2_chi2.clear();
+         A_e2_sig.clear();
+         A_e2_nel.clear();
+         A_e2_npi.clear();
+         A_e2_npr.clear();
+         B_ref_pt.clear();
+         B_ref_eta.clear();
+         B_ref_phi.clear();
+         B_ref_its.clear();
+         B_ref_cr.clear();
+         B_ref_found.clear();
+         B_ref_chi2.clear();
+         B_ref_sig.clear();
+         B_ref_nel.clear();
+         B_ref_npi.clear();
+         B_ref_npr.clear();*/
     }
   }
   out.Write();
