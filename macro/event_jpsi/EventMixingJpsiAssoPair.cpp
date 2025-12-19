@@ -243,7 +243,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderArray<float> fTPCNSigmaPr_ref(rEvt, "fTPCNSigmaPr");
 
   TFile fout(path_output_tree, "RECREATE");
-  TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs (Snapshot-like)");
+  TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs");
   out.SetAutoFlush(10000);   // 每 1e4 行写一次
   out.SetAutoSave(30000000); // 30MB 保存一次
 
@@ -454,7 +454,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
           out.Fill();
         }
       }
-      A_jpsi_pt.clear();
+     /* A_jpsi_pt.clear();
         A_jpsi_eta.clear();
         A_jpsi_phi.clear();
         A_jpsi_mass.clear();
@@ -493,7 +493,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         B_ref_sig.clear();
         B_ref_nel.clear();
         B_ref_npi.clear();
-        B_ref_npr.clear();
+        B_ref_npr.clear();*/
     }
   }
   out.Write();
