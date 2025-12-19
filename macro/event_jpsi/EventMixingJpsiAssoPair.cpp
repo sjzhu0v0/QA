@@ -13,6 +13,7 @@
 #include <iostream>
 #include "TSystem.h"
 #include <iostream>
+#include <fstream>
 
 
 template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
@@ -317,9 +318,12 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
     if (isInteractive)
       // print progress bar
       if (iEntry % (nEntries / 10000) == 0) {
-        gSystem->GetProcInfo(&info);
-        std::cout << "Resident Memory (MB): " << info.fMemResident / 1024 << std::endl;
-
+          std::ifstream statm("/proc/self/statm");
+    long size, resident;
+    statm >> size >> resident;
+    return resident * sysconf(_SC_PAGESIZE) / 1024 / 1024;
+    printf("Used Memory: %ld MB\r", GetUsedMemoryMB());
+    fflush(stdout);
         /*float progress = (float)iEntry / nEntries;
         int barWidth = 70;
         std::cout << "[";
