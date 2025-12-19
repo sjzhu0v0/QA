@@ -332,7 +332,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
     for (const auto &abPair_single : *abPair) {
       const ULong64_t entryA = abPair_single.first;
       const ULong64_t entryB = abPair_single.second;
-      long long nPairs = fPT.GetSize()*fPTREF.GetSize();
+      int nPairs = fPT.GetSize()*fPTREF.GetSize();
       if (nPairs == 0) {
         continue;
       }
