@@ -309,11 +309,15 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   bool isInteractive = is_interactive();
   long long nEntries = rPairs.GetEntries();
+  ProcInfo_t info;
   for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
     if (isInteractive)
       // print progress bar
-      if (iEntry % (nEntries / 100) == 0) {
-        float progress = (float)iEntry / nEntries;
+      if (iEntry % (nEntries / 10000) == 0) {
+        gSystem->GetProcInfo(&info);
+        std::cout << "Virtual Memory (MB): " << info.fMemVirtual / 1024 << std::endl;
+        std::cout << "Resident Memory (MB): " << info.fMemResident / 1024 << std::endl;
+        /*float progress = (float)iEntry / nEntries;
         int barWidth = 70;
         std::cout << "[";
         int pos = barWidth * progress;
@@ -324,9 +328,9 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
             std::cout << ">";
           else
             std::cout << " ";
-        }
-        std::cout << "] " << int(progress * 100.0) << " %\r";
-        std::cout.flush();
+        }*/
+        // std::cout << "] " << int(progress * 100.0) << " %\r";
+        // std::cout.flush();
       }
     rPairs.SetEntry(iEntry);
     for (const auto &abPair_single : *abPair) {
@@ -347,50 +351,50 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fPosZ = *fPosZ;
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
-      const auto A_jpsi_pt = makeVec(fPT); 
-      const auto A_jpsi_eta = makeVec(fEta);
-      const auto A_jpsi_phi = makeVec(fPhi);
-      const auto A_jpsi_mass = makeVec(fMass);
-      const auto A_jpsi_sign = makeVec(fSign);
+      auto A_jpsi_pt = makeVec(fPT); 
+      auto A_jpsi_eta = makeVec(fEta);
+      auto A_jpsi_phi = makeVec(fPhi);
+      auto A_jpsi_mass = makeVec(fMass);
+      auto A_jpsi_sign = makeVec(fSign);
 
-      const auto A_e1_pt = makeVec(fPt1);
-      const auto A_e1_eta = makeVec(fEta1);
-      const auto A_e1_phi = makeVec(fPhi1);
-      const auto A_e1_sign = makeVec(fSign1);
-      const auto A_e1_its = makeVec(fITSChi2NCl1);
-      const auto A_e1_cr = makeVec(fTPCNClsCR1);
-      const auto A_e1_found = makeVec(fTPCNClsFound1);
-      const auto A_e1_chi2 = makeVec(fTPCChi2NCl1);
-      const auto A_e1_sig = makeVec(fTPCSignal1);
-      const auto A_e1_nel = makeVec(fTPCNSigmaEl1);
-      const auto A_e1_npi = makeVec(fTPCNSigmaPi1);
-      const auto A_e1_npr = makeVec(fTPCNSigmaPr1);
+      auto A_e1_pt = makeVec(fPt1);
+      auto A_e1_eta = makeVec(fEta1);
+      auto A_e1_phi = makeVec(fPhi1);
+      auto A_e1_sign = makeVec(fSign1);
+      auto A_e1_its = makeVec(fITSChi2NCl1);
+      auto A_e1_cr = makeVec(fTPCNClsCR1);
+      auto A_e1_found = makeVec(fTPCNClsFound1);
+      auto A_e1_chi2 = makeVec(fTPCChi2NCl1);
+      auto A_e1_sig = makeVec(fTPCSignal1);
+      auto A_e1_nel = makeVec(fTPCNSigmaEl1);
+      auto A_e1_npi = makeVec(fTPCNSigmaPi1);
+      auto A_e1_npr = makeVec(fTPCNSigmaPr1);
 
-      const auto A_e2_pt = makeVec(fPt2);
-      const auto A_e2_eta = makeVec(fEta2);
-      const auto A_e2_phi = makeVec(fPhi2);
-      const auto A_e2_sign = makeVec(fSign2);
-      const auto A_e2_its = makeVec(fITSChi2NCl2);
-      const auto A_e2_cr = makeVec(fTPCNClsCR2);
-      const auto A_e2_found = makeVec(fTPCNClsFound2);
-      const auto A_e2_chi2 = makeVec(fTPCChi2NCl2);
-      const auto A_e2_sig = makeVec(fTPCSignal2);
-      const auto A_e2_nel = makeVec(fTPCNSigmaEl2);
-      const auto A_e2_npi = makeVec(fTPCNSigmaPi2);
-      const auto A_e2_npr = makeVec(fTPCNSigmaPr2);
+      auto A_e2_pt = makeVec(fPt2);
+      auto A_e2_eta = makeVec(fEta2);
+      auto A_e2_phi = makeVec(fPhi2);
+      auto A_e2_sign = makeVec(fSign2);
+      auto A_e2_its = makeVec(fITSChi2NCl2);
+      auto A_e2_cr = makeVec(fTPCNClsCR2);
+      auto A_e2_found = makeVec(fTPCNClsFound2);
+      auto A_e2_chi2 = makeVec(fTPCChi2NCl2);
+      auto A_e2_sig = makeVec(fTPCSignal2);
+      auto A_e2_nel = makeVec(fTPCNSigmaEl2);
+      auto A_e2_npi = makeVec(fTPCNSigmaPi2);
+      auto A_e2_npr = makeVec(fTPCNSigmaPr2);
 
       rEvt.SetEntry(entryB);
-      const auto B_ref_pt = makeVec(fPTREF);
-      const auto B_ref_eta = makeVec(fEtaREF);
-      const auto B_ref_phi = makeVec(fPhiREF);
-      const auto B_ref_its = makeVec(fITSChi2NCl_ref);
-      const auto B_ref_cr = makeVec(fTPCNClsCR_ref);
-      const auto B_ref_found = makeVec(fTPCNClsFound_ref);
-      const auto B_ref_chi2 = makeVec(fTPCChi2NCl_ref);
-      const auto B_ref_sig = makeVec(fTPCSignal_ref);
-      const auto B_ref_nel = makeVec(fTPCNSigmaEl_ref);
-      const auto B_ref_npi = makeVec(fTPCNSigmaPi_ref);
-      const auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);
+      auto B_ref_pt = makeVec(fPTREF);
+      auto B_ref_eta = makeVec(fEtaREF);
+      auto B_ref_phi = makeVec(fPhiREF);
+      auto B_ref_its = makeVec(fITSChi2NCl_ref);
+      auto B_ref_cr = makeVec(fTPCNClsCR_ref);
+      auto B_ref_found = makeVec(fTPCNClsFound_ref);
+      auto B_ref_chi2 = makeVec(fTPCChi2NCl_ref);
+      auto B_ref_sig = makeVec(fTPCSignal_ref);
+      auto B_ref_nel = makeVec(fTPCNSigmaEl_ref);
+      auto B_ref_npi = makeVec(fTPCNSigmaPi_ref);
+      auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);
 
       long long filled = 0;
       for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
