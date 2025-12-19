@@ -323,10 +323,10 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
     if (isInteractive)
       // print progress bar
-      if (iEntry % (100) == 0) {
+      if (iEntry % (100) == 0 && iEntry > 0) {
           printf(
-              "\rProcessing entry %lld / %lld  (RSS = %ld MB) ", iEntry,
-              nEntries, getRSS());
+              "\rProcessing entry %lld / %lld  (RSS = %ld MB), vector size: %d ", iEntry,
+              nEntries, getRSS(), abPair->size());
         /*float progress = (float)iEntry / nEntries;
         int barWidth = 70;
         std::cout << "[";
