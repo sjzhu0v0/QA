@@ -171,8 +171,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   TTreeReader rEvt(tree_flowVecd);
   TTreeReader rPairs(tree_index);
-  TTreeReaderValue<std::pair<ULong64_t, ULong64_t>> abPair(rPairs,
-                                                           "MixedEvent");
+  TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(
+      rPairs, "MixedEvent");
   // event-level（从事件A拷贝到输出；你 Snapshot 输出里有哪些就读哪些）
   TTreeReaderValue<int> NumContribCalib(rEvt, "NumContribCalib");
   TTreeReaderValue<float> fMultTPC(rEvt, "fMultTPC");
@@ -324,135 +324,136 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   // ----------- 主循环：对每个 (A,B) 做笛卡尔积配对并输出 -----------
   long long nWritten = 0;
-  while (rPairs.Next()) {
-    const ULong64_t entryA = abPair->first;
-    const ULong64_t entryB = abPair->second;
+  while (rPairs.Next())
+    for (const auto &abPair_single : *abPair) {
+      const ULong64_t entryA = abPair_single.first;
+      const ULong64_t entryB = abPair_single.second;
 
-    // 读 A（J/psi + e1/e2 + event-level）
-    rEvt.SetEntry(entryA);
+      // 读 A（J/psi + e1/e2 + event-level）
+      rEvt.SetEntry(entryA);
 
-    o_NumContribCalib = *NumContribCalib;
-    o_fMultTPC = *fMultTPC;
-    o_fMultTracklets = *fMultTracklets;
-    o_fMultNTracksPV = *fMultNTracksPV;
-    o_fMultFT0C = *fMultFT0C;
-    o_fPosX = *fPosX;
-    o_fPosY = *fPosY;
-    o_fPosZ = *fPosZ;
-    o_fSelection = *fSelection;
-    o_fHadronicRate = *fHadronicRate;
+      o_NumContribCalib = *NumContribCalib;
+      o_fMultTPC = *fMultTPC;
+      o_fMultTracklets = *fMultTracklets;
+      o_fMultNTracksPV = *fMultNTracksPV;
+      o_fMultFT0C = *fMultFT0C;
+      o_fPosX = *fPosX;
+      o_fPosY = *fPosY;
+      o_fPosZ = *fPosZ;
+      o_fSelection = *fSelection;
+      o_fHadronicRate = *fHadronicRate;
 
-    const auto &A_jpsi_pt = *fPT;
-    const auto &A_jpsi_eta = *fEta;
-    const auto &A_jpsi_phi = *fPhi;
-    const auto &A_jpsi_mass = *fMass;
-    const auto &A_jpsi_sign = *fSign;
+      const auto &A_jpsi_pt = *fPT;
+      const auto &A_jpsi_eta = *fEta;
+      const auto &A_jpsi_phi = *fPhi;
+      const auto &A_jpsi_mass = *fMass;
+      const auto &A_jpsi_sign = *fSign;
 
-    const auto &A_e1_pt = *fPt1;
-    const auto &A_e1_eta = *fEta1;
-    const auto &A_e1_phi = *fPhi1;
-    const auto &A_e1_sign = *fSign1;
-    const auto &A_e1_its = *fITSChi2NCl1;
-    const auto &A_e1_cr = *fTPCNClsCR1;
-    const auto &A_e1_found = *fTPCNClsFound1;
-    const auto &A_e1_chi2 = *fTPCChi2NCl1;
-    const auto &A_e1_sig = *fTPCSignal1;
-    const auto &A_e1_nel = *fTPCNSigmaEl1;
-    const auto &A_e1_npi = *fTPCNSigmaPi1;
-    const auto &A_e1_npr = *fTPCNSigmaPr1;
+      const auto &A_e1_pt = *fPt1;
+      const auto &A_e1_eta = *fEta1;
+      const auto &A_e1_phi = *fPhi1;
+      const auto &A_e1_sign = *fSign1;
+      const auto &A_e1_its = *fITSChi2NCl1;
+      const auto &A_e1_cr = *fTPCNClsCR1;
+      const auto &A_e1_found = *fTPCNClsFound1;
+      const auto &A_e1_chi2 = *fTPCChi2NCl1;
+      const auto &A_e1_sig = *fTPCSignal1;
+      const auto &A_e1_nel = *fTPCNSigmaEl1;
+      const auto &A_e1_npi = *fTPCNSigmaPi1;
+      const auto &A_e1_npr = *fTPCNSigmaPr1;
 
-    const auto &A_e2_pt = *fPt2;
-    const auto &A_e2_eta = *fEta2;
-    const auto &A_e2_phi = *fPhi2;
-    const auto &A_e2_sign = *fSign2;
-    const auto &A_e2_its = *fITSChi2NCl2;
-    const auto &A_e2_cr = *fTPCNClsCR2;
-    const auto &A_e2_found = *fTPCNClsFound2;
-    const auto &A_e2_chi2 = *fTPCChi2NCl2;
-    const auto &A_e2_sig = *fTPCSignal2;
-    const auto &A_e2_nel = *fTPCNSigmaEl2;
-    const auto &A_e2_npi = *fTPCNSigmaPi2;
-    const auto &A_e2_npr = *fTPCNSigmaPr2;
+      const auto &A_e2_pt = *fPt2;
+      const auto &A_e2_eta = *fEta2;
+      const auto &A_e2_phi = *fPhi2;
+      const auto &A_e2_sign = *fSign2;
+      const auto &A_e2_its = *fITSChi2NCl2;
+      const auto &A_e2_cr = *fTPCNClsCR2;
+      const auto &A_e2_found = *fTPCNClsFound2;
+      const auto &A_e2_chi2 = *fTPCChi2NCl2;
+      const auto &A_e2_sig = *fTPCSignal2;
+      const auto &A_e2_nel = *fTPCNSigmaEl2;
+      const auto &A_e2_npi = *fTPCNSigmaPi2;
+      const auto &A_e2_npr = *fTPCNSigmaPr2;
 
-    // 读 B（ref tracks）
-    rEvt.SetEntry(entryB);
+      // 读 B（ref tracks）
+      rEvt.SetEntry(entryB);
 
-    const auto &B_ref_pt = *fPTREF;
-    const auto &B_ref_eta = *fEtaREF;
-    const auto &B_ref_phi = *fPhiREF;
-    const auto &B_ref_its = *fITSChi2NCl_ref;
-    const auto &B_ref_cr = *fTPCNClsCR_ref;
-    const auto &B_ref_found = *fTPCNClsFound_ref;
-    const auto &B_ref_chi2 = *fTPCChi2NCl_ref;
-    const auto &B_ref_sig = *fTPCSignal_ref;
-    const auto &B_ref_nel = *fTPCNSigmaEl_ref;
-    const auto &B_ref_npi = *fTPCNSigmaPi_ref;
-    const auto &B_ref_npr = *fTPCNSigmaPr_ref;
+      const auto &B_ref_pt = *fPTREF;
+      const auto &B_ref_eta = *fEtaREF;
+      const auto &B_ref_phi = *fPhiREF;
+      const auto &B_ref_its = *fITSChi2NCl_ref;
+      const auto &B_ref_cr = *fTPCNClsCR_ref;
+      const auto &B_ref_found = *fTPCNClsFound_ref;
+      const auto &B_ref_chi2 = *fTPCChi2NCl_ref;
+      const auto &B_ref_sig = *fTPCSignal_ref;
+      const auto &B_ref_nel = *fTPCNSigmaEl_ref;
+      const auto &B_ref_npi = *fTPCNSigmaPi_ref;
+      const auto &B_ref_npr = *fTPCNSigmaPr_ref;
 
-    const long long nA = (long long)A_jpsi_pt.size();
-    const long long nB = (long long)B_ref_pt.size();
-    long long nPairs = nA * nB;
-    if (nPairs == 0) {
-      continue;
-    }
+      const long long nA = (long long)A_jpsi_pt.size();
+      const long long nB = (long long)B_ref_pt.size();
+      long long nPairs = nA * nB;
+      if (nPairs == 0) {
+        continue;
+      }
 
-    // 笛卡尔积：把 A 的每个 jpsi 与 B 的每个 ref 组成一对
-    long long filled = 0;
-    for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
-      for (size_t ib = 0; ib < B_ref_pt.size(); ++ib) {
+      // 笛卡尔积：把 A 的每个 jpsi 与 B 的每个 ref 组成一对
+      long long filled = 0;
+      for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
+        for (size_t ib = 0; ib < B_ref_pt.size(); ++ib) {
 
-        // jpsi (A)
-        o_jpsi_pt = A_jpsi_pt[ia];
-        o_jpsi_eta = A_jpsi_eta[ia];
-        o_jpsi_phi = A_jpsi_phi[ia];
-        o_jpsi_mass = A_jpsi_mass[ia];
-        o_jpsi_sign = A_jpsi_sign[ia];
+          // jpsi (A)
+          o_jpsi_pt = A_jpsi_pt[ia];
+          o_jpsi_eta = A_jpsi_eta[ia];
+          o_jpsi_phi = A_jpsi_phi[ia];
+          o_jpsi_mass = A_jpsi_mass[ia];
+          o_jpsi_sign = A_jpsi_sign[ia];
 
-        // e1
-        o_e1_pt = A_e1_pt[ia];
-        o_e1_eta = A_e1_eta[ia];
-        o_e1_phi = A_e1_phi[ia];
-        o_e1_sign = A_e1_sign[ia];
-        o_e1_ITSChi2NCl = A_e1_its[ia];
-        o_e1_TPCNClsCR = A_e1_cr[ia];
-        o_e1_TPCNClsFound = A_e1_found[ia];
-        o_e1_TPCChi2NCl = A_e1_chi2[ia];
-        o_e1_TPCSignal = A_e1_sig[ia];
-        o_e1_nsig_el = A_e1_nel[ia];
-        o_e1_nsig_pi = A_e1_npi[ia];
-        o_e1_nsig_pr = A_e1_npr[ia];
+          // e1
+          o_e1_pt = A_e1_pt[ia];
+          o_e1_eta = A_e1_eta[ia];
+          o_e1_phi = A_e1_phi[ia];
+          o_e1_sign = A_e1_sign[ia];
+          o_e1_ITSChi2NCl = A_e1_its[ia];
+          o_e1_TPCNClsCR = A_e1_cr[ia];
+          o_e1_TPCNClsFound = A_e1_found[ia];
+          o_e1_TPCChi2NCl = A_e1_chi2[ia];
+          o_e1_TPCSignal = A_e1_sig[ia];
+          o_e1_nsig_el = A_e1_nel[ia];
+          o_e1_nsig_pi = A_e1_npi[ia];
+          o_e1_nsig_pr = A_e1_npr[ia];
 
-        // e2
-        o_e2_pt = A_e2_pt[ia];
-        o_e2_eta = A_e2_eta[ia];
-        o_e2_phi = A_e2_phi[ia];
-        o_e2_sign = A_e2_sign[ia];
-        o_e2_ITSChi2NCl = A_e2_its[ia];
-        o_e2_TPCNClsCR = A_e2_cr[ia];
-        o_e2_TPCNClsFound = A_e2_found[ia];
-        o_e2_TPCChi2NCl = A_e2_chi2[ia];
-        o_e2_TPCSignal = A_e2_sig[ia];
-        o_e2_nsig_el = A_e2_nel[ia];
-        o_e2_nsig_pi = A_e2_npi[ia];
-        o_e2_nsig_pr = A_e2_npr[ia];
+          // e2
+          o_e2_pt = A_e2_pt[ia];
+          o_e2_eta = A_e2_eta[ia];
+          o_e2_phi = A_e2_phi[ia];
+          o_e2_sign = A_e2_sign[ia];
+          o_e2_ITSChi2NCl = A_e2_its[ia];
+          o_e2_TPCNClsCR = A_e2_cr[ia];
+          o_e2_TPCNClsFound = A_e2_found[ia];
+          o_e2_TPCChi2NCl = A_e2_chi2[ia];
+          o_e2_TPCSignal = A_e2_sig[ia];
+          o_e2_nsig_el = A_e2_nel[ia];
+          o_e2_nsig_pi = A_e2_npi[ia];
+          o_e2_nsig_pr = A_e2_npr[ia];
 
-        // ref (B)
-        o_ref_pt = B_ref_pt[ib];
-        o_ref_eta = B_ref_eta[ib];
-        o_ref_phi = B_ref_phi[ib];
-        o_ref_ITSChi2NCl = B_ref_its[ib];
-        o_ref_TPCNClsCR = B_ref_cr[ib];
-        o_ref_TPCNClsFound = B_ref_found[ib];
-        o_ref_TPCChi2NCl = B_ref_chi2[ib];
-        o_ref_TPCSignal = B_ref_sig[ib];
-        o_ref_nsig_el = B_ref_nel[ib];
-        o_ref_nsig_pi = B_ref_npi[ib];
-        o_ref_nsig_pr = B_ref_npr[ib];
+          // ref (B)
+          o_ref_pt = B_ref_pt[ib];
+          o_ref_eta = B_ref_eta[ib];
+          o_ref_phi = B_ref_phi[ib];
+          o_ref_ITSChi2NCl = B_ref_its[ib];
+          o_ref_TPCNClsCR = B_ref_cr[ib];
+          o_ref_TPCNClsFound = B_ref_found[ib];
+          o_ref_TPCChi2NCl = B_ref_chi2[ib];
+          o_ref_TPCSignal = B_ref_sig[ib];
+          o_ref_nsig_el = B_ref_nel[ib];
+          o_ref_nsig_pi = B_ref_npi[ib];
+          o_ref_nsig_pr = B_ref_npr[ib];
 
-        out.Fill(); // 🔥 每一个 (jpsi_i, ref_j) 一条 entry
+          out.Fill(); // 🔥 每一个 (jpsi_i, ref_j) 一条 entry
+        }
       }
     }
-  }
   out.Write();
   fout.Close();
 }

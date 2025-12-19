@@ -7,4 +7,5 @@
 #pragma link C++ class std::vector<EventData>+; 
 #pragma link C++ class std::vector<EventDataREF>+; 
 #pragma link C++ class std::pair<ULong64_t, ULong64_t>+; 
+#pragma link C++ class vector<std::pair<ULong64_t, ULong64_t>>+; 
 #endif
