@@ -85,7 +85,7 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
 
   auto df_idx = rdf_pair_PartTriggerWithJpsiWithEvent
                     .Define("jpsi_idx",
-                            [](const auto &v) {
+                            [](const std::vector<std::pair<int, int>> &v) {
                               RVec<int> o;
                               for (auto &p : v)
                                 o.push_back(p.first);
@@ -93,7 +93,7 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                             },
                             {"pair_indices"})
                     .Define("ref_idx",
-                            [](const auto &v) {
+                            [](const std::vector<std::pair<int, int>> &v) {
                               RVec<int> o;
                               for (auto &p : v)
                                 o.push_back(p.second);
@@ -310,21 +310,23 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                             },
                             {"fTPCNSigmaPr", "ref_idx"});
   df_all.Snapshot("jpsi_ref_pairs", path_output,
-                  {
-                   "NumContribCalib", "fMultTPC", "fMultTracklets",
-                   "fMultNTracksPV", "fMultFT0C", "fPosX", "fPosY", "fPosZ",
-                   "fSelection", "fHadronicRate",
-                   "jpsi_pt", "jpsi_eta", "jpsi_phi", "jpsi_mass", "jpsi_sign",
-                   "e1_pt", "e1_eta", "e1_phi", "e1_sign", "e1_ITSChi2NCl",
-                   "e1_TPCNClsCR", "e1_TPCNClsFound", "e1_TPCChi2NCl",
-                   "e1_TPCSignal", "e1_nsig_el", "e1_nsig_pi", "e1_nsig_pr",
-                   "e2_pt", "e2_eta", "e2_phi", "e2_sign", "e2_ITSChi2NCl",
-                   "e2_TPCNClsCR", "e2_TPCNClsFound", "e2_TPCChi2NCl",
-                   "e2_TPCSignal", "e2_nsig_el", "e2_nsig_pi", "e2_nsig_pr",
-                   "ref_pt", "ref_eta", "ref_phi", "ref_ITSChi2NCl",
-                   "ref_TPCNClsCR", "ref_TPCNClsFound", "ref_TPCChi2NCl",
-                   "ref_TPCSignal", "ref_nsig_el", "ref_nsig_pi",
-                   "ref_nsig_pr"});
+                  {"NumContribCalib", "fMultTPC",      "fMultTracklets",
+                   "fMultNTracksPV",  "fMultFT0C",     "fPosX",
+                   "fPosY",           "fPosZ",         "fSelection",
+                   "fHadronicRate",   "jpsi_pt",       "jpsi_eta",
+                   "jpsi_phi",        "jpsi_mass",     "jpsi_sign",
+                   "e1_pt",           "e1_eta",        "e1_phi",
+                   "e1_sign",         "e1_ITSChi2NCl", "e1_TPCNClsCR",
+                   "e1_TPCNClsFound", "e1_TPCChi2NCl", "e1_TPCSignal",
+                   "e1_nsig_el",      "e1_nsig_pi",    "e1_nsig_pr",
+                   "e2_pt",           "e2_eta",        "e2_phi",
+                   "e2_sign",         "e2_ITSChi2NCl", "e2_TPCNClsCR",
+                   "e2_TPCNClsFound", "e2_TPCChi2NCl", "e2_TPCSignal",
+                   "e2_nsig_el",      "e2_nsig_pi",    "e2_nsig_pr",
+                   "ref_pt",          "ref_eta",       "ref_phi",
+                   "ref_ITSChi2NCl",  "ref_TPCNClsCR", "ref_TPCNClsFound",
+                   "ref_TPCChi2NCl",  "ref_TPCSignal", "ref_nsig_el",
+                   "ref_nsig_pi",     "ref_nsig_pr"});
 }
 
 int main(int argc, char **argv) {
