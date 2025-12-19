@@ -343,7 +343,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         // std::cout.flush();
       }
     rPairs.SetEntry(iEntry);
-    abPair->clear();
+    //abPair->clear();
 
 
     for (int i = 0; i < 2; ++i) {
