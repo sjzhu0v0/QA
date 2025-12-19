@@ -308,7 +308,10 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   long long nWritten = 0;
 
   bool isInteractive = is_interactive();
-  while (rPairs.Next())
+  // while (rPairs.Next())
+  long long nEntries = abPair->size();
+  for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
+    rPairs.SetEntry(iEntry);
     for (const auto &abPair_single : *abPair) {
       const ULong64_t entryA = abPair_single.first;
       const ULong64_t entryB = abPair_single.second;
@@ -421,6 +424,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         }
       }
     }
+  }
   out.Write();
   fout.Close();
 }
