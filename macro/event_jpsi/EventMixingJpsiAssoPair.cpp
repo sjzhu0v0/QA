@@ -346,14 +346,14 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       }
     rPairs.SetEntry(iEntry);
     for (const auto &abPair_single : *abPair) {
-      const ULong64_t entryA = abPair_single.first;
-      const ULong64_t entryB = abPair_single.second;
+      ULong64_t entryA = abPair_single.first;
+      ULong64_t entryB = abPair_single.second;
       int nPairs = fPT.GetSize()*fPTREF.GetSize();
       if (nPairs == 0) {
         continue;
       }
       rEvt.SetEntry(entryA);
-      o_NumContribCalib = *NumContribCalib;
+      /*o_NumContribCalib = *NumContribCalib;
       o_fMultTPC = *fMultTPC;
       o_fMultTracklets = *fMultTracklets;
       o_fMultNTracksPV = *fMultNTracksPV;
@@ -363,7 +363,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fPosZ = *fPosZ;
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
-      /* auto A_jpsi_pt = makeVec(fPT); 
+      auto A_jpsi_pt = makeVec(fPT); 
       auto A_jpsi_eta = makeVec(fEta);
       auto A_jpsi_phi = makeVec(fPhi);
       auto A_jpsi_mass = makeVec(fMass);
