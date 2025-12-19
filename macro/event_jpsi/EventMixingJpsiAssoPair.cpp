@@ -23,11 +23,7 @@ long getRSS() {
 
 
 template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
-    std::vector<T> vec;
-    vec.reserve(arr.GetSize());
-    for (size_t i = 0; i < arr.GetSize(); ++i)
-        vec.push_back(arr[i]);
-    return vec;
+  return std::vector<T>(arr.begin(), arr.end());
 }
 
 vector<pair<ULong64_t, ULong64_t>> MixEvent(unsigned int, const int id,
@@ -413,7 +409,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);
 
       long long filled = 0;
-      for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
+     /* for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
         for (size_t ib = 0; ib < B_ref_pt.size(); ++ib) {
           o_jpsi_pt = A_jpsi_pt[ia];
           o_jpsi_eta = A_jpsi_eta[ia];
@@ -457,7 +453,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
           o_ref_nsig_pr = B_ref_npr[ib];
           out.Fill();
         }
-      }
+      }*/
      /* A_jpsi_pt.clear();
         A_jpsi_eta.clear();
         A_jpsi_phi.clear();
