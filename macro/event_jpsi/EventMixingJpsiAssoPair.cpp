@@ -451,7 +451,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
           o_ref_nsig_el = B_ref_nel[ib];
           o_ref_nsig_pi = B_ref_npi[ib];
           o_ref_nsig_pr = B_ref_npr[ib];
-          out.Fill();
+          // out.Fill();
         }
       }
      /* A_jpsi_pt.clear();
