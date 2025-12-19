@@ -311,7 +311,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   while (rPairs.Next())
 
     for (const auto &abPair_single : *abPair) {
-      cout << "\rProcessing entry A " << setw(10) << nWritten++ << flush;
       const ULong64_t entryA = abPair_single.first;
       const ULong64_t entryB = abPair_single.second;
       rEvt.SetEntry(entryA);
