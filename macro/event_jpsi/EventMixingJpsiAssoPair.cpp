@@ -319,7 +319,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   bool isInteractive = is_interactive();
   long long nEntries = rPairs.GetEntries();
-  ProcInfo_t info;
   for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
     if (isInteractive)
       // print progress bar
