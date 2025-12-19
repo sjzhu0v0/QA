@@ -158,52 +158,38 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
     ROOT::RDF::Experimental::AddProgressBar(
         rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 }
-void EventMixingJpsiAssoPair(
-    TString path_input_flowVecd = "../input1.root",
-    TString path_input_mult     = "../input2.root",
-    TString path_input_index    = "input3.root",
-    TString path_output_tree    = "output_mix.root")
-{
-  // ------------------ input ------------------
+void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
+                             TString path_input_mult = "../input2.root",
+                             TString path_input_index = "input3.root",
+                             TString path_output_tree = "output_mix.root") {
   TChain *tree_flowVecd =
       MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
-  TChain *tree_mult =
-      MRootIO::OpenChain(path_input_mult, "MultCalib");
-  TChain *tree_index =
-      MRootIO::OpenChain(path_input_index, "EventMixing");
-
+  TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
+  TChain *tree_index = MRootIO::OpenChain(path_input_index, "EventMixing");
   tree_flowVecd->AddFriend(tree_mult);
-
   TTreeReader rEvt(tree_flowVecd);
   TTreeReader rPairs(tree_index);
-
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(
       rPairs, "MixedEvent");
-
-  // ------------------ event-level ------------------
-  TTreeReaderValue<Int_t>    fMultTPC(rEvt, "fMultTPC");
-  TTreeReaderValue<Int_t>    fMultTracklets(rEvt, "fMultTracklets");
-  TTreeReaderValue<Int_t>    fMultNTracksPV(rEvt, "fMultNTracksPV");
-  TTreeReaderValue<Float_t>  fMultFT0C(rEvt, "fMultFT0C");
-  TTreeReaderValue<Short_t>  fNumContrib(rEvt, "fNumContrib");
-  TTreeReaderValue<Float_t>  fPosX(rEvt, "fPosX");
-  TTreeReaderValue<Float_t>  fPosY(rEvt, "fPosY");
-  TTreeReaderValue<Float_t>  fPosZ(rEvt, "fPosZ");
-  TTreeReaderValue<Long64_t> fSelection(rEvt, "fSelection");
-  TTreeReaderValue<Float_t>  fHadronicRate(rEvt, "fHadronicRate");
-
-  // ------------------ jpsi ------------------
+  TTreeReaderValue<double> NumContribCalib(rEvt, "NumContribCalib");
+  TTreeReaderValue<int> fMultTPC(rEvt, "fMultTPC");
+  TTreeReaderValue<int> fMultTracklets(rEvt, "fMultTracklets");
+  TTreeReaderValue<int> fMultNTracksPV(rEvt, "fMultNTracksPV");
+  TTreeReaderValue<float> fMultFT0C(rEvt, "fMultFT0C");
+  TTreeReaderValue<float> fPosX(rEvt, "fPosX");
+  TTreeReaderValue<float> fPosY(rEvt, "fPosY");
+  TTreeReaderValue<float> fPosZ(rEvt, "fPosZ");
+  TTreeReaderValue<ULong64_t> fSelection(rEvt, "fSelection");
+  TTreeReaderValue<float> fHadronicRate(rEvt, "fHadronicRate");
   TTreeReaderValue<std::vector<float>> fPT(rEvt, "fPT");
   TTreeReaderValue<std::vector<float>> fEta(rEvt, "fEta");
   TTreeReaderValue<std::vector<float>> fPhi(rEvt, "fPhi");
   TTreeReaderValue<std::vector<float>> fMass(rEvt, "fMass");
   TTreeReaderValue<std::vector<float>> fSign(rEvt, "fSign");
-
-  // ------------------ electron 1 ------------------
   TTreeReaderValue<std::vector<float>> fPt1(rEvt, "fPt1");
   TTreeReaderValue<std::vector<float>> fEta1(rEvt, "fEta1");
   TTreeReaderValue<std::vector<float>> fPhi1(rEvt, "fPhi1");
-  TTreeReaderValue<std::vector<int>>   fSign1(rEvt, "fSign1");
+  TTreeReaderValue<std::vector<int>> fSign1(rEvt, "fSign1");
   TTreeReaderValue<std::vector<float>> fITSChi2NCl1(rEvt, "fITSChi2NCl1");
   TTreeReaderValue<std::vector<float>> fTPCNClsCR1(rEvt, "fTPCNClsCR1");
   TTreeReaderValue<std::vector<float>> fTPCNClsFound1(rEvt, "fTPCNClsFound1");
@@ -212,12 +198,10 @@ void EventMixingJpsiAssoPair(
   TTreeReaderValue<std::vector<float>> fTPCNSigmaEl1(rEvt, "fTPCNSigmaEl1");
   TTreeReaderValue<std::vector<float>> fTPCNSigmaPi1(rEvt, "fTPCNSigmaPi1");
   TTreeReaderValue<std::vector<float>> fTPCNSigmaPr1(rEvt, "fTPCNSigmaPr1");
-
-  // ------------------ electron 2 ------------------
   TTreeReaderValue<std::vector<float>> fPt2(rEvt, "fPt2");
   TTreeReaderValue<std::vector<float>> fEta2(rEvt, "fEta2");
   TTreeReaderValue<std::vector<float>> fPhi2(rEvt, "fPhi2");
-  TTreeReaderValue<std::vector<int>>   fSign2(rEvt, "fSign2");
+  TTreeReaderValue<std::vector<int>> fSign2(rEvt, "fSign2");
   TTreeReaderValue<std::vector<float>> fITSChi2NCl2(rEvt, "fITSChi2NCl2");
   TTreeReaderValue<std::vector<float>> fTPCNClsCR2(rEvt, "fTPCNClsCR2");
   TTreeReaderValue<std::vector<float>> fTPCNClsFound2(rEvt, "fTPCNClsFound2");
@@ -226,8 +210,6 @@ void EventMixingJpsiAssoPair(
   TTreeReaderValue<std::vector<float>> fTPCNSigmaEl2(rEvt, "fTPCNSigmaEl2");
   TTreeReaderValue<std::vector<float>> fTPCNSigmaPi2(rEvt, "fTPCNSigmaPi2");
   TTreeReaderValue<std::vector<float>> fTPCNSigmaPr2(rEvt, "fTPCNSigmaPr2");
-
-  // ------------------ ref tracks ------------------
   TTreeReaderValue<std::vector<float>> fPTREF(rEvt, "fPTREF");
   TTreeReaderValue<std::vector<float>> fEtaREF(rEvt, "fEtaREF");
   TTreeReaderValue<std::vector<float>> fPhiREF(rEvt, "fPhiREF");
@@ -239,74 +221,192 @@ void EventMixingJpsiAssoPair(
   TTreeReaderValue<std::vector<float>> fTPCNSigmaEl_ref(rEvt, "fTPCNSigmaEl");
   TTreeReaderValue<std::vector<float>> fTPCNSigmaPi_ref(rEvt, "fTPCNSigmaPi");
   TTreeReaderValue<std::vector<float>> fTPCNSigmaPr_ref(rEvt, "fTPCNSigmaPr");
-
-  // ------------------ output ------------------
   TFile fout(path_output_tree, "RECREATE");
-  TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B)");
-
-  Int_t    o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV;
-  Float_t  o_fMultFT0C;
-  Short_t  o_fNumContrib;
-  Float_t  o_fPosX, o_fPosY, o_fPosZ;
-  Long64_t o_fSelection;
-  Float_t  o_fHadronicRate;
-
-  Float_t o_jpsi_pt, o_jpsi_eta, o_jpsi_phi, o_jpsi_mass, o_jpsi_sign;
-
-  Float_t o_e1_pt, o_e1_eta, o_e1_phi;
-  Int_t   o_e1_sign;
-  Float_t o_e1_ITSChi2NCl, o_e1_TPCNClsCR, o_e1_TPCNClsFound;
-  Float_t o_e1_TPCChi2NCl, o_e1_TPCSignal;
-  Float_t o_e1_nsig_el, o_e1_nsig_pi, o_e1_nsig_pr;
-
-  Float_t o_e2_pt, o_e2_eta, o_e2_phi;
-  Int_t   o_e2_sign;
-  Float_t o_e2_ITSChi2NCl, o_e2_TPCNClsCR, o_e2_TPCNClsFound;
-  Float_t o_e2_TPCChi2NCl, o_e2_TPCSignal;
-  Float_t o_e2_nsig_el, o_e2_nsig_pi, o_e2_nsig_pr;
-
-  Float_t o_ref_pt, o_ref_eta, o_ref_phi;
-  Float_t o_ref_ITSChi2NCl, o_ref_TPCNClsCR, o_ref_TPCNClsFound;
-  Float_t o_ref_TPCChi2NCl, o_ref_TPCSignal;
-  Float_t o_ref_nsig_el, o_ref_nsig_pi, o_ref_nsig_pr;
-
-  // Branch definitions（略：与你原来完全一致，只是类型已修正）
-  // 👉 如果你需要，我可以把 Branch 部分也完整贴出来
-
-  // ------------------ event mixing loop ------------------
-  while (rPairs.Next()) {
-    for (const auto &p : *abPair) {
-
-      rEvt.SetEntry(p.first);
-
-      o_fMultTPC        = *fMultTPC;
-      o_fMultTracklets  = *fMultTracklets;
-      o_fMultNTracksPV  = *fMultNTracksPV;
-      o_fMultFT0C       = *fMultFT0C;
-      o_fNumContrib     = *fNumContrib;
-      o_fPosX           = *fPosX;
-      o_fPosY           = *fPosY;
-      o_fPosZ           = *fPosZ;
-      o_fSelection      = *fSelection;
-      o_fHadronicRate   = *fHadronicRate;
-
+  TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs (Snapshot-like)");
+  double o_NumContribCalib;
+  int o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV;
+  float o_fMultFT0C;
+  float o_fPosX, o_fPosY, o_fPosZ;
+  int o_fSelection;
+  float o_fHadronicRate;
+  float o_jpsi_pt, o_jpsi_eta, o_jpsi_phi, o_jpsi_mass, o_jpsi_sign;
+  float o_e1_pt, o_e1_eta, o_e1_phi;
+  int o_e1_sign;
+  float o_e1_ITSChi2NCl, o_e1_TPCNClsCR, o_e1_TPCNClsFound;
+  float o_e1_TPCChi2NCl, o_e1_TPCSignal;
+  float o_e1_nsig_el, o_e1_nsig_pi, o_e1_nsig_pr;
+  float o_e2_pt, o_e2_eta, o_e2_phi;
+  int o_e2_sign;
+  float o_e2_ITSChi2NCl, o_e2_TPCNClsCR, o_e2_TPCNClsFound;
+  float o_e2_TPCChi2NCl, o_e2_TPCSignal;
+  float o_e2_nsig_el, o_e2_nsig_pi, o_e2_nsig_pr;
+  float o_ref_pt, o_ref_eta, o_ref_phi;
+  float o_ref_ITSChi2NCl, o_ref_TPCNClsCR, o_ref_TPCNClsFound;
+  float o_ref_TPCChi2NCl, o_ref_TPCSignal;
+  float o_ref_nsig_el, o_ref_nsig_pi, o_ref_nsig_pr;
+  out.Branch("NumContribCalib", &o_NumContribCalib);
+  out.Branch("fMultTPC", &o_fMultTPC);
+  out.Branch("fMultTracklets", &o_fMultTracklets);
+  out.Branch("fMultNTracksPV", &o_fMultNTracksPV);
+  out.Branch("fMultFT0C", &o_fMultFT0C);
+  out.Branch("fPosX", &o_fPosX);
+  out.Branch("fPosY", &o_fPosY);
+  out.Branch("fPosZ", &o_fPosZ);
+  out.Branch("fSelection", &o_fSelection);
+  out.Branch("fHadronicRate", &o_fHadronicRate);
+  out.Branch("jpsi_pt", &o_jpsi_pt);
+  out.Branch("jpsi_eta", &o_jpsi_eta);
+  out.Branch("jpsi_phi", &o_jpsi_phi);
+  out.Branch("jpsi_mass", &o_jpsi_mass);
+  out.Branch("jpsi_sign", &o_jpsi_sign);
+  out.Branch("e1_pt", &o_e1_pt);
+  out.Branch("e1_eta", &o_e1_eta);
+  out.Branch("e1_phi", &o_e1_phi);
+  out.Branch("e1_sign", &o_e1_sign);
+  out.Branch("e1_ITSChi2NCl", &o_e1_ITSChi2NCl);
+  out.Branch("e1_TPCNClsCR", &o_e1_TPCNClsCR);
+  out.Branch("e1_TPCNClsFound", &o_e1_TPCNClsFound);
+  out.Branch("e1_TPCChi2NCl", &o_e1_TPCChi2NCl);
+  out.Branch("e1_TPCSignal", &o_e1_TPCSignal);
+  out.Branch("e1_nsig_el", &o_e1_nsig_el);
+  out.Branch("e1_nsig_pi", &o_e1_nsig_pi);
+  out.Branch("e1_nsig_pr", &o_e1_nsig_pr);
+  out.Branch("e2_pt", &o_e2_pt);
+  out.Branch("e2_eta", &o_e2_eta);
+  out.Branch("e2_phi", &o_e2_phi);
+  out.Branch("e2_sign", &o_e2_sign);
+  out.Branch("e2_ITSChi2NCl", &o_e2_ITSChi2NCl);
+  out.Branch("e2_TPCNClsCR", &o_e2_TPCNClsCR);
+  out.Branch("e2_TPCNClsFound", &o_e2_TPCNClsFound);
+  out.Branch("e2_TPCChi2NCl", &o_e2_TPCChi2NCl);
+  out.Branch("e2_TPCSignal", &o_e2_TPCSignal);
+  out.Branch("e2_nsig_el", &o_e2_nsig_el);
+  out.Branch("e2_nsig_pi", &o_e2_nsig_pi);
+  out.Branch("e2_nsig_pr", &o_e2_nsig_pr);
+  out.Branch("ref_pt", &o_ref_pt);
+  out.Branch("ref_eta", &o_ref_eta);
+  out.Branch("ref_phi", &o_ref_phi);
+  out.Branch("ref_ITSChi2NCl", &o_ref_ITSChi2NCl);
+  out.Branch("ref_TPCNClsCR", &o_ref_TPCNClsCR);
+  out.Branch("ref_TPCNClsFound", &o_ref_TPCNClsFound);
+  out.Branch("ref_TPCChi2NCl", &o_ref_TPCChi2NCl);
+  out.Branch("ref_TPCSignal", &o_ref_TPCSignal);
+  out.Branch("ref_nsig_el", &o_ref_nsig_el);
+  out.Branch("ref_nsig_pi", &o_ref_nsig_pi);
+  out.Branch("ref_nsig_pr", &o_ref_nsig_pr);
+  long long nWritten = 0;
+  while (rPairs.Next())
+    for (const auto &abPair_single : *abPair) {
+      const ULong64_t entryA = abPair_single.first;
+      const ULong64_t entryB = abPair_single.second;
+      rEvt.SetEntry(entryA);
+      o_NumContribCalib = *NumContribCalib;
+      o_fMultTPC = *fMultTPC;
+      o_fMultTracklets = *fMultTracklets;
+      o_fMultNTracksPV = *fMultNTracksPV;
+      o_fMultFT0C = *fMultFT0C;
+      o_fPosX = *fPosX;
+      o_fPosY = *fPosY;
+      o_fPosZ = *fPosZ;
+      o_fSelection = *fSelection;
+      o_fHadronicRate = *fHadronicRate;
       const auto &A_jpsi_pt = *fPT;
-      const auto &A_e1_pt   = *fPt1;
-      const auto &A_e2_pt   = *fPt2;
-
-      rEvt.SetEntry(p.second);
-      const auto &B_ref_pt  = *fPTREF;
-
-      for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia)
-        for (size_t ib = 0; ib < B_ref_pt.size(); ++ib)
+      const auto &A_jpsi_eta = *fEta;
+      const auto &A_jpsi_phi = *fPhi;
+      const auto &A_jpsi_mass = *fMass;
+      const auto &A_jpsi_sign = *fSign;
+      const auto &A_e1_pt = *fPt1;
+      const auto &A_e1_eta = *fEta1;
+      const auto &A_e1_phi = *fPhi1;
+      const auto &A_e1_sign = *fSign1;
+      const auto &A_e1_its = *fITSChi2NCl1;
+      const auto &A_e1_cr = *fTPCNClsCR1;
+      const auto &A_e1_found = *fTPCNClsFound1;
+      const auto &A_e1_chi2 = *fTPCChi2NCl1;
+      const auto &A_e1_sig = *fTPCSignal1;
+      const auto &A_e1_nel = *fTPCNSigmaEl1;
+      const auto &A_e1_npi = *fTPCNSigmaPi1;
+      const auto &A_e1_npr = *fTPCNSigmaPr1;
+      const auto &A_e2_pt = *fPt2;
+      const auto &A_e2_eta = *fEta2;
+      const auto &A_e2_phi = *fPhi2;
+      const auto &A_e2_sign = *fSign2;
+      const auto &A_e2_its = *fITSChi2NCl2;
+      const auto &A_e2_cr = *fTPCNClsCR2;
+      const auto &A_e2_found = *fTPCNClsFound2;
+      const auto &A_e2_chi2 = *fTPCChi2NCl2;
+      const auto &A_e2_sig = *fTPCSignal2;
+      const auto &A_e2_nel = *fTPCNSigmaEl2;
+      const auto &A_e2_npi = *fTPCNSigmaPi2;
+      const auto &A_e2_npr = *fTPCNSigmaPr2;
+      rEvt.SetEntry(entryB);
+      const auto &B_ref_pt = *fPTREF;
+      const auto &B_ref_eta = *fEtaREF;
+      const auto &B_ref_phi = *fPhiREF;
+      const auto &B_ref_its = *fITSChi2NCl_ref;
+      const auto &B_ref_cr = *fTPCNClsCR_ref;
+      const auto &B_ref_found = *fTPCNClsFound_ref;
+      const auto &B_ref_chi2 = *fTPCChi2NCl_ref;
+      const auto &B_ref_sig = *fTPCSignal_ref;
+      const auto &B_ref_nel = *fTPCNSigmaEl_ref;
+      const auto &B_ref_npi = *fTPCNSigmaPi_ref;
+      const auto &B_ref_npr = *fTPCNSigmaPr_ref;
+      const long long nA = (long long)A_jpsi_pt.size();
+      const long long nB = (long long)B_ref_pt.size();
+      long long nPairs = nA * nB;
+      if (nPairs == 0) {
+        continue;
+      }
+      long long filled = 0;
+      for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
+        for (size_t ib = 0; ib < B_ref_pt.size(); ++ib) {
+          o_jpsi_pt = A_jpsi_pt[ia];
+          o_jpsi_eta = A_jpsi_eta[ia];
+          o_jpsi_phi = A_jpsi_phi[ia];
+          o_jpsi_mass = A_jpsi_mass[ia];
+          o_jpsi_sign = A_jpsi_sign[ia];
+          o_e1_pt = A_e1_pt[ia];
+          o_e1_eta = A_e1_eta[ia];
+          o_e1_phi = A_e1_phi[ia];
+          o_e1_sign = A_e1_sign[ia];
+          o_e1_ITSChi2NCl = A_e1_its[ia];
+          o_e1_TPCNClsCR = A_e1_cr[ia];
+          o_e1_TPCNClsFound = A_e1_found[ia];
+          o_e1_TPCChi2NCl = A_e1_chi2[ia];
+          o_e1_TPCSignal = A_e1_sig[ia];
+          o_e1_nsig_el = A_e1_nel[ia];
+          o_e1_nsig_pi = A_e1_npi[ia];
+          o_e1_nsig_pr = A_e1_npr[ia];
+          o_e2_pt = A_e2_pt[ia];
+          o_e2_eta = A_e2_eta[ia];
+          o_e2_phi = A_e2_phi[ia];
+          o_e2_sign = A_e2_sign[ia];
+          o_e2_ITSChi2NCl = A_e2_its[ia];
+          o_e2_TPCNClsCR = A_e2_cr[ia];
+          o_e2_TPCNClsFound = A_e2_found[ia];
+          o_e2_TPCChi2NCl = A_e2_chi2[ia];
+          o_e2_TPCSignal = A_e2_sig[ia];
+          o_e2_nsig_el = A_e2_nel[ia];
+          o_e2_nsig_pi = A_e2_npi[ia];
+          o_e2_nsig_pr = A_e2_npr[ia];
+          o_ref_pt = B_ref_pt[ib];
+          o_ref_eta = B_ref_eta[ib];
+          o_ref_phi = B_ref_phi[ib];
+          o_ref_ITSChi2NCl = B_ref_its[ib];
+          o_ref_TPCNClsCR = B_ref_cr[ib];
+          o_ref_TPCNClsFound = B_ref_found[ib];
+          o_ref_TPCChi2NCl = B_ref_chi2[ib];
+          o_ref_TPCSignal = B_ref_sig[ib];
+          o_ref_nsig_el = B_ref_nel[ib];
+          o_ref_nsig_pi = B_ref_npi[ib];
+          o_ref_nsig_pr = B_ref_npr[ib];
           out.Fill();
+        }
+      }
     }
-  }
-
   out.Write();
   fout.Close();
 }
-
 
 int main(int argc, char **argv) {
   TString path_input_flowVecd = "../input.root";
