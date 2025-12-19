@@ -309,6 +309,8 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                               return Take(v, i);
                             },
                             {"fTPCNSigmaPr", "ref_idx"});
+  if (is_interactive())
+    ROOT::RDF::Experimental::AddProgressBar(df_all);
   df_all.Snapshot("jpsi_ref_pairs", path_output,
                   {"NumContribCalib", "fMultTPC",      "fMultTracklets",
                    "fMultNTracksPV",  "fMultFT0C",     "fPosX",
