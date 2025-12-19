@@ -318,8 +318,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   bool isInteractive = is_interactive();
   long long nEntries = rPairs.GetEntries();
-  cout << "nEtries" << nEntries << endl;
-  cout << "aaaa nentry" << rPairs.GetEntries() << endl;
 
   long long iEntry = -1;
   while (rPairs.Next()) {
@@ -327,10 +325,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
     if (isInteractive)
       // print progress bar
       if (iEntry % (100) == 0 && iEntry > 0) {
-        printf(
-            "\rProcessing entry %lld / %lld  (RSS = %ld MB), vector size: %d ",
-            iEntry, nEntries, getRSS(), abPair->size());
-        /*float progress = (float)iEntry / nEntries;
+        float progress = (float)iEntry / nEntries;
         int barWidth = 70;
         std::cout << "[";
         int pos = barWidth * progress;
@@ -341,9 +336,9 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
             std::cout << ">";
           else
             std::cout << " ";
-        }*/
-        // std::cout << "] " << int(progress * 100.0) << " %\r";
-        // std::cout.flush();
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
       }
     rPairs.SetEntry(iEntry);
 
