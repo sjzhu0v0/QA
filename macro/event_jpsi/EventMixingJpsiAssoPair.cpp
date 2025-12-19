@@ -344,7 +344,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         // std::cout << "] " << int(progress * 100.0) << " %\r";
         // std::cout.flush();
       }
-    rPairs.SetEntry(iEntry);
+   // rPairs.SetEntry(iEntry);
     for (const auto &abPair_single : *abPair) {
       ULong64_t entryA = abPair_single.first;
       ULong64_t entryB = abPair_single.second;
