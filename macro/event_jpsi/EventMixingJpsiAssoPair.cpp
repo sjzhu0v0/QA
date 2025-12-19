@@ -244,8 +244,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   TFile fout(path_output_tree, "RECREATE");
   TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs");
-  out.SetAutoFlush(10000);   // 每 1e4 行写一次
-  out.SetAutoSave(30000000); // 30MB 保存一次
 
   double o_NumContribCalib;
   int o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV;
@@ -344,7 +342,10 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         // std::cout << "] " << int(progress * 100.0) << " %\r";
         // std::cout.flush();
       }
-   // rPairs.SetEntry(iEntry);
+    rPairs.SetEntry(iEntry);
+    abPair->clear();
+
+
     for (int i = 0; i < 2; ++i) {
     // for (const auto &abPair_single : *abPair) {
       /*ULong64_t entryA = abPair_single.first;
