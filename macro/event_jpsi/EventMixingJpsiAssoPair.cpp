@@ -174,7 +174,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(
       rPairs, "MixedEvent");
   // event-level（从事件A拷贝到输出；你 Snapshot 输出里有哪些就读哪些）
-  TTreeReaderValue<int> NumContribCalib(rEvt, "NumContribCalib");
+  TTreeReaderValue<double> NumContribCalib(rEvt, "NumContribCalib");
   TTreeReaderValue<float> fMultTPC(rEvt, "fMultTPC");
   TTreeReaderValue<float> fMultTracklets(rEvt, "fMultTracklets");
   TTreeReaderValue<float> fMultNTracksPV(rEvt, "fMultNTracksPV");
@@ -238,7 +238,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   // 输出的 event-level（这里用 A 的 event-level；如果你想同时存 B
   // 的，额外加分支）
   // event-level（来自 A）
-  int o_NumContribCalib;
+  double o_NumContribCalib;
   float o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV, o_fMultFT0C;
   float o_fPosX, o_fPosY, o_fPosZ;
   int o_fSelection;
