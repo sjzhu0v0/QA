@@ -323,14 +323,35 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   bool isInteractive = is_interactive();
   long long nEntries = rPairs.GetEntries();
   for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
+    if (isInteractive)
+      // print progress bar
+      if (iEntry % (100) == 0) {
+          printf(
+              "\rProcessing entry %lld / %lld  (RSS = %ld MB) ", iEntry,
+              nEntries, getRSS());
+        /*float progress = (float)iEntry / nEntries;
+        int barWidth = 70;
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+          if (i < pos)
+            std::cout << "=";
+          else if (i == pos)
+            std::cout << ">";
+          else
+            std::cout << " ";
+        }*/
+        // std::cout << "] " << int(progress * 100.0) << " %\r";
+        // std::cout.flush();
+      }
     rPairs.SetEntry(iEntry);
     for (const auto &abPair_single : *abPair) {
-      // ULong64_t entryA = abPair_single.first;
-      // ULong64_t entryB = abPair_single.second;
-      // int nPairs = fPT.GetSize()*fPTREF.GetSize();
-      // if (nPairs == 0) {
-      //  continue;
-      // }
+      ULong64_t entryA = abPair_single.first;
+      ULong64_t entryB = abPair_single.second;
+      int nPairs = fPT.GetSize()*fPTREF.GetSize();
+      if (nPairs == 0) {
+        continue;
+      }
       // rEvt.SetEntry(entryA);
       /*o_NumContribCalib = *NumContribCalib;
       o_fMultTPC = *fMultTPC;
@@ -387,7 +408,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       auto B_ref_npi = makeVec(fTPCNSigmaPi_ref);
       auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);*/
 
-       // long long filled = 0;
+      // long long filled = 0;
      /* for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
         for (size_t ib = 0; ib < B_ref_pt.size(); ++ib) {
           o_jpsi_pt = A_jpsi_pt[ia];
