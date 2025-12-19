@@ -345,15 +345,16 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         // std::cout.flush();
       }
    // rPairs.SetEntry(iEntry);
-    for (const auto &abPair_single : *abPair) {
-      ULong64_t entryA = abPair_single.first;
+    for (int i = 0; i < 2; ++i) {
+    // for (const auto &abPair_single : *abPair) {
+      /*ULong64_t entryA = abPair_single.first;
       ULong64_t entryB = abPair_single.second;
       int nPairs = fPT.GetSize()*fPTREF.GetSize();
       if (nPairs == 0) {
         continue;
       }
-      // rEvt.SetEntry(entryA);
-      /*o_NumContribCalib = *NumContribCalib;
+       rEvt.SetEntry(entryA);
+      o_NumContribCalib = *NumContribCalib;
       o_fMultTPC = *fMultTPC;
       o_fMultTracklets = *fMultTracklets;
       o_fMultNTracksPV = *fMultNTracksPV;
