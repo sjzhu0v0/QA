@@ -308,9 +308,26 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   long long nWritten = 0;
 
   bool isInteractive = is_interactive();
-  // while (rPairs.Next())
   long long nEntries = rPairs.GetEntries();
-  for (long long iEntry = 0; iEntry < 10; ++iEntry) {
+  for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
+    if (isInteractive)
+      // print progress bar
+      if (iEntry % (nEntries / 100) == 0) {
+        float progress = (float)iEntry / nEntries;
+        int barWidth = 70;
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+          if (i < pos)
+            std::cout << "=";
+          else if (i == pos)
+            std::cout << ">";
+          else
+            std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
+      }
     rPairs.SetEntry(iEntry);
     for (const auto &abPair_single : *abPair) {
       const ULong64_t entryA = abPair_single.first;
