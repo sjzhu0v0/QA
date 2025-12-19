@@ -310,7 +310,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   bool isInteractive = is_interactive();
   // while (rPairs.Next())
   long long nEntries = rPairs.GetEntries();
-  for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
+  for (long long iEntry = 0; iEntry < 10; ++iEntry) {
     rPairs.SetEntry(iEntry);
     for (const auto &abPair_single : *abPair) {
       const ULong64_t entryA = abPair_single.first;
