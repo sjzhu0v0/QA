@@ -320,6 +320,9 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   bool isInteractive = is_interactive();
   long long nEntries = rPairs.GetEntries();
+  cout << "nEtries" << nEntries << endl;
+  cout << "aaaa nentry" << rPairs.GetEntries() << endl;
+  
     long long iEntry = -1;
   // for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
   while (rPairs.Next()) {
