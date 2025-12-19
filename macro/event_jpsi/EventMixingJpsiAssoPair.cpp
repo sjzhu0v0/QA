@@ -363,7 +363,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fPosZ = *fPosZ;
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
-      auto A_jpsi_pt = makeVec(fPT); 
+      /* auto A_jpsi_pt = makeVec(fPT); 
       auto A_jpsi_eta = makeVec(fEta);
       auto A_jpsi_phi = makeVec(fPhi);
       auto A_jpsi_mass = makeVec(fMass);
@@ -406,7 +406,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       auto B_ref_sig = makeVec(fTPCSignal_ref);
       auto B_ref_nel = makeVec(fTPCNSigmaEl_ref);
       auto B_ref_npi = makeVec(fTPCNSigmaPi_ref);
-      auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);
+      auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);*/
 
       long long filled = 0;
      /* for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
