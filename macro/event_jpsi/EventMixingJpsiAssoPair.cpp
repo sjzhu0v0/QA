@@ -7,6 +7,7 @@
 #include "MRootIO.h"
 #include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
+#include "TTreeReaderArray.h"
 
 template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
   return std::vector<T>(arr.begin(), arr.end());
