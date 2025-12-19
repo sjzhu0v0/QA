@@ -322,7 +322,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   for (long long iEntry = 0; iEntry < nEntries; ++iEntry) {
     if (isInteractive)
       // print progress bar
-      if (iEntry % (nEntries / 10000) == 0) {
+      if (iEntry % (100) == 0) {
           printf(
               "\rProcessing entry %lld / %lld  (RSS = %ld MB) ", iEntry,
               nEntries, getRSS());
