@@ -292,7 +292,7 @@ void Grouping_24pass1_DiElectron(double min_threshold_distance = 0.003,
 
     TH1D *distance_inCluster =
         new TH1D(Form("distance_inCluster_%d", GenerateUID()),
-                 Form("Dissimilarity threshold <= %.4f", threshold_distance),
+                 Form("Dissimilarity threshold = %.4f", threshold_distance),
                  200, 0, 0.02);
     distance_inCluster->GetXaxis()->SetTitle("Dissimilarity");
     distance_inCluster->GetYaxis()->SetTitle("N_{run pairs}");
@@ -312,7 +312,7 @@ void Grouping_24pass1_DiElectron(double min_threshold_distance = 0.003,
     // gPad->SetLogy();
     TH1D *distance_outCluster =
         new TH1D(Form("distance_outCluster_%d", GenerateUID()),
-                 Form("Dissimilarity threshold <= %.4f", threshold_distance),
+                 Form("Dissimilarity threshold = %.4f", threshold_distance),
                  200, 0, 0.02);
     distance_outCluster->GetXaxis()->SetTitle("Dissimilarity");
     distance_outCluster->GetYaxis()->SetTitle("N_{run pairs}");
