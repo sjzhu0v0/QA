@@ -318,8 +318,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       // print progress bar
       if (iEntry % (nEntries / 10000) == 0) {
         gSystem->GetProcInfo(&info);
-        std::cout << "Virtual Memory (MB): " << info.fMemVirtual / 1024 << std::endl;
         std::cout << "Resident Memory (MB): " << info.fMemResident / 1024 << std::endl;
+
         /*float progress = (float)iEntry / nEntries;
         int barWidth = 70;
         std::cout << "[";
