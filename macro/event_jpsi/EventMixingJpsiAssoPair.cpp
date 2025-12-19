@@ -244,6 +244,9 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   TFile fout(path_output_tree, "RECREATE");
   TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs (Snapshot-like)");
+  out.SetAutoFlush(10000);   // 每 1e4 行写一次
+  out.SetAutoSave(30000000); // 30MB 保存一次
+
   double o_NumContribCalib;
   int o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV;
   float o_fMultFT0C;
@@ -452,45 +455,45 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         }
       }
       A_jpsi_pt.clear();
-A_jpsi_eta.clear();
-A_jpsi_phi.clear();
-A_jpsi_mass.clear();
-A_jpsi_sign.clear();
-A_e1_pt.clear();
-A_e1_eta.clear();
-A_e1_phi.clear();
-A_e1_sign.clear();
-A_e1_its.clear();
-A_e1_cr.clear();
-A_e1_found.clear();
-A_e1_chi2.clear();
-A_e1_sig.clear();
-A_e1_nel.clear();
-A_e1_npi.clear();
-A_e1_npr.clear();
-A_e2_pt.clear();
-A_e2_eta.clear();
-A_e2_phi.clear();
-A_e2_sign.clear();
-A_e2_its.clear();
-A_e2_cr.clear();
-A_e2_found.clear();
-A_e2_chi2.clear();
-A_e2_sig.clear();
-A_e2_nel.clear();
-A_e2_npi.clear();
-A_e2_npr.clear();
-B_ref_pt.clear();
-B_ref_eta.clear();
-B_ref_phi.clear();
-B_ref_its.clear();
-B_ref_cr.clear();
-B_ref_found.clear();
-B_ref_chi2.clear();
-B_ref_sig.clear();
-B_ref_nel.clear();
-B_ref_npi.clear();
-B_ref_npr.clear();
+        A_jpsi_eta.clear();
+        A_jpsi_phi.clear();
+        A_jpsi_mass.clear();
+        A_jpsi_sign.clear();
+        A_e1_pt.clear();
+        A_e1_eta.clear();
+        A_e1_phi.clear();
+        A_e1_sign.clear();
+        A_e1_its.clear();
+        A_e1_cr.clear();
+        A_e1_found.clear();
+        A_e1_chi2.clear();
+        A_e1_sig.clear();
+        A_e1_nel.clear();
+        A_e1_npi.clear();
+        A_e1_npr.clear();
+        A_e2_pt.clear();
+        A_e2_eta.clear();
+        A_e2_phi.clear();
+        A_e2_sign.clear();
+        A_e2_its.clear();
+        A_e2_cr.clear();
+        A_e2_found.clear();
+        A_e2_chi2.clear();
+        A_e2_sig.clear();
+        A_e2_nel.clear();
+        A_e2_npi.clear();
+        A_e2_npr.clear();
+        B_ref_pt.clear();
+        B_ref_eta.clear();
+        B_ref_phi.clear();
+        B_ref_its.clear();
+        B_ref_cr.clear();
+        B_ref_found.clear();
+        B_ref_chi2.clear();
+        B_ref_sig.clear();
+        B_ref_nel.clear();
+        B_ref_npi.clear();
+        B_ref_npr.clear();
     }
   }
   out.Write();
