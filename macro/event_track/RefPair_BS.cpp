@@ -87,7 +87,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
                              },
                              {"fPTREF_size"});
 
-  auto df_idx = df_PartTriggerWithJpsiWithEvent
+  auto df_idx = rdf_PartTriggerWithJpsiWithEvent
                     .Define("ref1_idx",
                             [](const std::vector<std::pair<int, int>> &v) {
                               RVec<int> o;
@@ -220,7 +220,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
 
   if (is_interactive())
     ROOT::RDF::Experimental::AddProgressBar(rdf);
-  df_all.Snapshot("jpsi_ref_pairs", path_otput,
+  df_all.Snapshot("jpsi_ref_pairs", path_output,
                   {
                       "randTag", "NumContribCalib", "fMultTPC", "fMultTracklets", "fMultNTracksPV",
                       "fMultFT0C", "fPosX", "fPosY", "fPosZ",
