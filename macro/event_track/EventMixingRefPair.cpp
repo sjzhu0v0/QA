@@ -7,8 +7,14 @@
 #include "MRootIO.h"
 #include "opt/EventData.h"
 #include <ROOT/RDataFrame.hxx>
+#include "TTreeReaderArray.h"
 
-void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
+
+
+template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
+  return std::vector<T>(arr.begin(), arr.end());
+}
+void EventMixingRef(TString path_input_flowVecd = "../input1.root",
                              TString path_input_mult = "../input2.root",
                              TString path_input_index = "input3.root",
                              TString path_output_tree = "output_mix.root") {
