@@ -13,13 +13,6 @@
 #include <iomanip>
 #include <iostream>
 
-long getRSS() {
-  std::ifstream statm("/proc/self/statm");
-  long size, resident;
-  statm >> size >> resident;
-  return resident * sysconf(_SC_PAGESIZE) / 1024 / 1024;
-}
-
 template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
   return std::vector<T>(arr.begin(), arr.end());
 }
@@ -174,6 +167,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
     ROOT::RDF::Experimental::AddProgressBar(
         rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 }
+
 void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
                              TString path_input_mult = "../input2.root",
                              TString path_input_index = "input3.root",
@@ -321,25 +315,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   long long iEntry = -1;
   while (rPairs.Next()) {
-    iEntry++;
-    if (isInteractive)
-      // print progress bar
-      if (iEntry % (100) == 0 && iEntry > 0) {
-        float progress = (float)iEntry / nEntries;
-        int barWidth = 70;
-        std::cout << "[";
-        int pos = barWidth * progress;
-        for (int i = 0; i < barWidth; ++i) {
-          if (i < pos)
-            std::cout << "=";
-          else if (i == pos)
-            std::cout << ">";
-          else
-            std::cout << " ";
-        }
-        std::cout << "] " << int(progress * 100.0) << " %\r";
-        std::cout.flush();
-      }
     rPairs.SetEntry(iEntry);
 
     for (const auto &abPair_single : *abPair) {
@@ -451,46 +426,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
           out.Fill();
         }
       }
-      /* A_jpsi_pt.clear();
-         A_jpsi_eta.clear();
-         A_jpsi_phi.clear();
-         A_jpsi_mass.clear();
-         A_jpsi_sign.clear();
-         A_e1_pt.clear();
-         A_e1_eta.clear();
-         A_e1_phi.clear();
-         A_e1_sign.clear();
-         A_e1_its.clear();
-         A_e1_cr.clear();
-         A_e1_found.clear();
-         A_e1_chi2.clear();
-         A_e1_sig.clear();
-         A_e1_nel.clear();
-         A_e1_npi.clear();
-         A_e1_npr.clear();
-         A_e2_pt.clear();
-         A_e2_eta.clear();
-         A_e2_phi.clear();
-         A_e2_sign.clear();
-         A_e2_its.clear();
-         A_e2_cr.clear();
-         A_e2_found.clear();
-         A_e2_chi2.clear();
-         A_e2_sig.clear();
-         A_e2_nel.clear();
-         A_e2_npi.clear();
-         A_e2_npr.clear();
-         B_ref_pt.clear();
-         B_ref_eta.clear();
-         B_ref_phi.clear();
-         B_ref_its.clear();
-         B_ref_cr.clear();
-         B_ref_found.clear();
-         B_ref_chi2.clear();
-         B_ref_sig.clear();
-         B_ref_nel.clear();
-         B_ref_npi.clear();
-         B_ref_npr.clear();*/
     }
   }
   out.Write();
