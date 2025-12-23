@@ -17,6 +17,13 @@ template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T>& arr) {
   return std::vector<T>(arr.begin(), arr.end());
 }
 
+template <typename T> const T* makePtr(const TTreeReaderArray<T>& arr, size_t* size = nullptr) {
+  if (size) {
+    *size = arr.GetSize();
+  }
+  return arr.GetSize() > 0 ? &arr[0] : nullptr;
+}
+
 vector<pair<ULong64_t, ULong64_t>> MixEvent(unsigned int, const int id, const ULong64_t& event_id) {
   return MixVec<pair<ULong64_t, ULong64_t>, ULong64_t>(
       id, event_id, [](const ULong64_t& a, const ULong64_t& b) { return make_pair(a, b); }, 100);
@@ -313,50 +320,50 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fPosZ = *fPosZ;
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
-      auto A_jpsi_pt = makeVec(fPT);
-      auto A_jpsi_eta = makeVec(fEta);
-      auto A_jpsi_phi = makeVec(fPhi);
-      auto A_jpsi_mass = makeVec(fMass);
-      auto A_jpsi_sign = makeVec(fSign);
+      auto A_jpsi_pt = makePtr(fPT);
+      auto A_jpsi_eta = makePtr(fEta);
+      auto A_jpsi_phi = makePtr(fPhi);
+      auto A_jpsi_mass = makePtr(fMass);
+      auto A_jpsi_sign = makePtr(fSign);
 
-      auto A_e1_pt = makeVec(fPt1);
-      auto A_e1_eta = makeVec(fEta1);
-      auto A_e1_phi = makeVec(fPhi1);
-      auto A_e1_sign = makeVec(fSign1);
-      auto A_e1_its = makeVec(fITSChi2NCl1);
-      auto A_e1_cr = makeVec(fTPCNClsCR1);
-      auto A_e1_found = makeVec(fTPCNClsFound1);
-      auto A_e1_chi2 = makeVec(fTPCChi2NCl1);
-      auto A_e1_sig = makeVec(fTPCSignal1);
-      auto A_e1_nel = makeVec(fTPCNSigmaEl1);
-      auto A_e1_npi = makeVec(fTPCNSigmaPi1);
-      auto A_e1_npr = makeVec(fTPCNSigmaPr1);
+      auto A_e1_pt = makePtr(fPt1);
+      auto A_e1_eta = makePtr(fEta1);
+      auto A_e1_phi = makePtr(fPhi1);
+      auto A_e1_sign = makePtr(fSign1);
+      auto A_e1_its = makePtr(fITSChi2NCl1);
+      auto A_e1_cr = makePtr(fTPCNClsCR1);
+      auto A_e1_found = makePtr(fTPCNClsFound1);
+      auto A_e1_chi2 = makePtr(fTPCChi2NCl1);
+      auto A_e1_sig = makePtr(fTPCSignal1);
+      auto A_e1_nel = makePtr(fTPCNSigmaEl1);
+      auto A_e1_npi = makePtr(fTPCNSigmaPi1);
+      auto A_e1_npr = makePtr(fTPCNSigmaPr1);
 
-      auto A_e2_pt = makeVec(fPt2);
-      auto A_e2_eta = makeVec(fEta2);
-      auto A_e2_phi = makeVec(fPhi2);
-      auto A_e2_sign = makeVec(fSign2);
-      auto A_e2_its = makeVec(fITSChi2NCl2);
-      auto A_e2_cr = makeVec(fTPCNClsCR2);
-      auto A_e2_found = makeVec(fTPCNClsFound2);
-      auto A_e2_chi2 = makeVec(fTPCChi2NCl2);
-      auto A_e2_sig = makeVec(fTPCSignal2);
-      auto A_e2_nel = makeVec(fTPCNSigmaEl2);
-      auto A_e2_npi = makeVec(fTPCNSigmaPi2);
-      auto A_e2_npr = makeVec(fTPCNSigmaPr2);
+      auto A_e2_pt = makePtr(fPt2);
+      auto A_e2_eta = makePtr(fEta2);
+      auto A_e2_phi = makePtr(fPhi2);
+      auto A_e2_sign = makePtr(fSign2);
+      auto A_e2_its = makePtr(fITSChi2NCl2);
+      auto A_e2_cr = makePtr(fTPCNClsCR2);
+      auto A_e2_found = makePtr(fTPCNClsFound2);
+      auto A_e2_chi2 = makePtr(fTPCChi2NCl2);
+      auto A_e2_sig = makePtr(fTPCSignal2);
+      auto A_e2_nel = makePtr(fTPCNSigmaEl2);
+      auto A_e2_npi = makePtr(fTPCNSigmaPi2);
+      auto A_e2_npr = makePtr(fTPCNSigmaPr2);
 
       rEvt.SetEntry(entryB);
-      auto B_ref_pt = makeVec(fPTREF);
-      auto B_ref_eta = makeVec(fEtaREF);
-      auto B_ref_phi = makeVec(fPhiREF);
-      auto B_ref_its = makeVec(fITSChi2NCl_ref);
-      auto B_ref_cr = makeVec(fTPCNClsCR_ref);
-      auto B_ref_found = makeVec(fTPCNClsFound_ref);
-      auto B_ref_chi2 = makeVec(fTPCChi2NCl_ref);
-      auto B_ref_sig = makeVec(fTPCSignal_ref);
-      auto B_ref_nel = makeVec(fTPCNSigmaEl_ref);
-      auto B_ref_npi = makeVec(fTPCNSigmaPi_ref);
-      auto B_ref_npr = makeVec(fTPCNSigmaPr_ref);
+      auto B_ref_pt = makePtr(fPTREF);
+      auto B_ref_eta = makePtr(fEtaREF);
+      auto B_ref_phi = makePtr(fPhiREF);
+      auto B_ref_its = makePtr(fITSChi2NCl_ref);
+      auto B_ref_cr = makePtr(fTPCNClsCR_ref);
+      auto B_ref_found = makePtr(fTPCNClsFound_ref);
+      auto B_ref_chi2 = makePtr(fTPCChi2NCl_ref);
+      auto B_ref_sig = makePtr(fTPCSignal_ref);
+      auto B_ref_nel = makePtr(fTPCNSigmaEl_ref);
+      auto B_ref_npi = makePtr(fTPCNSigmaPi_ref);
+      auto B_ref_npr = makePtr(fTPCNSigmaPr_ref);
 
       // long long filled = 0;
       for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
