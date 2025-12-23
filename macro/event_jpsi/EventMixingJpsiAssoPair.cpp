@@ -442,8 +442,10 @@ int main(int argc, char** argv) {
   }
 
   gROOT->SetBatch(kTRUE); // Disable interactive graphic
-  if (false)
-    EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output, path_output_mix);
+  cout << "Starting Event Mixing J/psi-Associated Pair Analysis..." << endl;
+  EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output, path_output_mix);
+  cout << "Event Mixing Index Generation Completed." << endl;
   EventMixingJpsiAssoPair(path_input_flowVecd, path_input_mult, path_output_mix, path_output_tree);
+  cout << "Event Mixing J/psi-Associated Pair Analysis Completed." << endl;
   return 0;
 }
