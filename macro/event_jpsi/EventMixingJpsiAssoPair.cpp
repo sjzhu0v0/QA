@@ -13,16 +13,13 @@
 #include <iomanip>
 #include <iostream>
 
-template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T> &arr) {
+template <typename T> std::vector<T> makeVec(const TTreeReaderArray<T>& arr) {
   return std::vector<T>(arr.begin(), arr.end());
 }
 
-vector<pair<ULong64_t, ULong64_t>> MixEvent(unsigned int, const int id,
-                                            const ULong64_t &event_id) {
+vector<pair<ULong64_t, ULong64_t>> MixEvent(unsigned int, const int id, const ULong64_t& event_id) {
   return MixVec<pair<ULong64_t, ULong64_t>, ULong64_t>(
-      id, event_id,
-      [](const ULong64_t &a, const ULong64_t &b) { return make_pair(a, b); },
-      100);
+      id, event_id, [](const ULong64_t& a, const ULong64_t& b) { return make_pair(a, b); }, 100);
 }
 
 void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
@@ -37,29 +34,23 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
   StrVar4Hist var_fPosY("fPosY", "#it{V}_{Y}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZMix("fPosZ", "#it{V}_{Z}", "cm", 10, {-10, 10});
-  StrVar4Hist var_fNumContrib("fNumContrib", "#it{N}_{vtx contrib} ", "", 300,
-                              {0, 300});
-  StrVar4Hist var_NumContribCalib(
-      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 300, {0, 300});
-  StrVar4Hist var_NumContribCalibBinned(
-      "NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
-      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
+  StrVar4Hist var_fNumContrib("fNumContrib", "#it{N}_{vtx contrib} ", "", 300, {0, 300});
+  StrVar4Hist var_NumContribCalib("NumContribCalib", "N_{vtx contrib} Calibrated", "", 300,
+                                  {0, 300});
+  StrVar4Hist var_NumContribCalibBinned("NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
+                                        {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
-  StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130,
-                            {-1000., 12000.});
-  StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150,
-                                {0, 150});
-  StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100,
-                                    {1.8, 5.4});
+  StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130, {-1000., 12000.});
+  StrVar4Hist var_MultNTracksPV("fMultNTracksPV", "#it{N}_{Tracks PV}", "", 150, {0, 150});
+  StrVar4Hist var_MassJpsiCandidate("fMass", "M_{ee}", "GeV^{2}/c^{4}", 100, {1.8, 5.4});
   StrVar4Hist var_PtJpsiCandidate("fPT", "p_{T}", "GeV/c", 10, {0., 5.});
 
   const vector<double> bins_mix_numContrib = var_NumContribCalibBinned.fBins;
   const vector<double> bins_mix_posZ = var_fPosZMix.fBins;
 
-  TChain *tree_flowVecd =
-      MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
-  TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
+  TChain* tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
+  TChain* tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
 
   tree_flowVecd->AddFriend(tree_mult);
 
@@ -74,12 +65,9 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
       rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"})
           .Define("isntSPDPileup", MALICE::IsntSPDPileup, {"fSelection"})
           .Define("isntTPCPileup", MALICE::IsntTPCPileup, {"fSelection"})
-          .Define("isntSameBunchPileup", MALICE::IsntSameBunchPileup_NoSlot,
-                  {"fSelection"})
-          .Define("isntITSROFrameBorder", MALICE::IsntITSROFrameBorder,
-                  {"fSelection"})
-          .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder,
-                  {"fSelection"})
+          .Define("isntSameBunchPileup", MALICE::IsntSameBunchPileup_NoSlot, {"fSelection"})
+          .Define("isntITSROFrameBorder", MALICE::IsntITSROFrameBorder, {"fSelection"})
+          .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder, {"fSelection"})
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
           .Alias("fMultREF", "fPTREF_size")
           .Define("RunNumber", [] { return float(0.5); })
@@ -91,27 +79,22 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
       rdf_witTrigger.Filter("isntTimeFrameBorder", "no Time Frame border");
-  auto rdf_isTriggerTVX =
-      rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX");
-  auto rdf_PartTrigger =
-      rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
-          .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
-          .Filter("isntTimeFrameBorder", "no Time Frame border")
-          .Filter("isntSameBunchPileup", "no Time Frame border")
+  auto rdf_isTriggerTVX = rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX");
+  auto rdf_PartTrigger = rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
+                             .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
+                             .Filter("isntTimeFrameBorder", "no Time Frame border")
+                             .Filter("isntSameBunchPileup", "no Time Frame border")
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
-  auto rdf_PartTriggerWithJpsi =
-      rdf_PartTrigger.Filter("fEta_size>=1", "has Jpsi");
+  auto rdf_PartTriggerWithJpsi = rdf_PartTrigger.Filter("fEta_size>=1", "has Jpsi");
 
   auto rdf_PartTriggerWithJpsiWithEvent =
       rdf_PartTriggerWithJpsi
           .Define("EventData", CreateEventData,
-                  {"fMultTPC", "fMultTracklets", "fMultNTracksPV", "fMultFT0C",
-                   "fNumContrib", "NumContribCalib", "fPosX", "fPosY", "fPosZ",
-                   "fSelection", "fHadronicRate", "fPT", "fEta", "fPhi",
-                   "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
-          .Define("isEventGood",
-                  [](const EventData &event) { return event.isGood(); },
+                  {"fMultTPC", "fMultTracklets", "fMultNTracksPV", "fMultFT0C", "fNumContrib",
+                   "NumContribCalib", "fPosX", "fPosY", "fPosZ", "fSelection", "fHadronicRate",
+                   "fPT", "fEta", "fPhi", "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
+          .Define("isEventGood", [](const EventData& event) { return event.isGood(); },
                   {"EventData"})
           .Filter("isEventGood", "Event is good");
 
@@ -137,8 +120,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
                   [bins_mix_posZ](float posZ) {
                     int index = -1;
                     for (int i = 0; i < bins_mix_posZ.size() - 1; i++) {
-                      if (posZ >= bins_mix_posZ[i] &&
-                          posZ < bins_mix_posZ[i + 1]) {
+                      if (posZ >= bins_mix_posZ[i] && posZ < bins_mix_posZ[i + 1]) {
                         index = i;
                         break;
                       }
@@ -154,8 +136,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
                     if (indexNumContrib < 0 || indexPosZ < 0) {
                       return -1; // Invalid index
                     }
-                    return int(indexPosZ +
-                               indexNumContrib * bins_mix_posZ.size());
+                    return int(indexPosZ + indexNumContrib * bins_mix_posZ.size());
                   },
                   {"IndexMixing_NumContribCalib", "IndexMixing_PosZ"})
           .DefineSlot("MixedEvent", MixEvent, {"IndexMixing", "rdfentry_"});
@@ -164,23 +145,20 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
       "EventMixing", path_output_tree,
       {"MixedEvent", "IndexMixing_NumContribCalib", "IndexMixing_PosZ"});
   if (is_interactive())
-    ROOT::RDF::Experimental::AddProgressBar(
-        rdf_PartTriggerWithJpsiWithEventWithEventMixing);
+    ROOT::RDF::Experimental::AddProgressBar(rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 }
 
 void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
                              TString path_input_mult = "../input2.root",
                              TString path_input_index = "input3.root",
                              TString path_output_tree = "output_mix.root") {
-  TChain *tree_flowVecd =
-      MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
-  TChain *tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
-  TChain *tree_index = MRootIO::OpenChain(path_input_index, "EventMixing");
+  TChain* tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
+  TChain* tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
+  TChain* tree_index = MRootIO::OpenChain(path_input_index, "EventMixing");
   tree_flowVecd->AddFriend(tree_mult);
   TTreeReader rEvt(tree_flowVecd);
   TTreeReader rPairs(tree_index);
-  TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(
-      rPairs, "MixedEvent");
+  TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(rPairs, "MixedEvent");
   TTreeReaderValue<double> NumContribCalib(rEvt, "NumContribCalib");
   TTreeReaderValue<int> fMultTPC(rEvt, "fMultTPC");
   TTreeReaderValue<int> fMultTracklets(rEvt, "fMultTracklets");
@@ -317,7 +295,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   while (rPairs.Next()) {
     rPairs.SetEntry(iEntry);
 
-    for (const auto &abPair_single : *abPair) {
+    for (const auto& abPair_single : *abPair) {
       ULong64_t entryA = abPair_single.first;
       ULong64_t entryB = abPair_single.second;
       int nPairs = fPT.GetSize() * fPTREF.GetSize();
@@ -432,7 +410,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   fout.Close();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   TString path_input_flowVecd = "../input.root";
   TString path_input_mult = "../input2.root";
   TString path_output = "output.root";
@@ -453,9 +431,7 @@ int main(int argc, char **argv) {
   }
 
   gROOT->SetBatch(kTRUE); // Disable interactive graphics
-  EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output,
-                      path_output_mix);
-  EventMixingJpsiAssoPair(path_input_flowVecd, path_input_mult, path_output_mix,
-                          path_output_tree);
+  EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output, path_output_mix);
+  EventMixingJpsiAssoPair(path_input_flowVecd, path_input_mult, path_output_mix, path_output_tree);
   return 0;
 }
