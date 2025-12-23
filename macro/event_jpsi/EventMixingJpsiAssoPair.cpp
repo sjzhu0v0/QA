@@ -321,7 +321,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
 
-      int size1, size2;
+      size_t size1, size2;
 
       auto A_jpsi_pt = makePtr(fPT, &size1);
       auto A_jpsi_eta = makePtr(fEta);
