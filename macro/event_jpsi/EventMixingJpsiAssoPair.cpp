@@ -433,8 +433,9 @@ int main(int argc, char** argv) {
     path_output_tree = argv[5];
   }
 
-  gROOT->SetBatch(kTRUE); // Disable interactive graphics
-  EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output, path_output_mix);
+  gROOT->SetBatch(kTRUE); // Disable interactive graphic
+  if (false)
+    EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output, path_output_mix);
   EventMixingJpsiAssoPair(path_input_flowVecd, path_input_mult, path_output_mix, path_output_tree);
   return 0;
 }
