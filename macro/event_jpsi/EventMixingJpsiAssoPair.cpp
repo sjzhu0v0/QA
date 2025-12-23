@@ -320,7 +320,10 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fPosZ = *fPosZ;
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
-      auto A_jpsi_pt = makePtr(fPT);
+
+      int size1, size2;
+
+      auto A_jpsi_pt = makePtr(fPT, &size1);
       auto A_jpsi_eta = makePtr(fEta);
       auto A_jpsi_phi = makePtr(fPhi);
       auto A_jpsi_mass = makePtr(fMass);
@@ -353,7 +356,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       auto A_e2_npr = makePtr(fTPCNSigmaPr2);
 
       rEvt.SetEntry(entryB);
-      auto B_ref_pt = makePtr(fPTREF);
+      auto B_ref_pt = makePtr(fPTREF, &size2);
       auto B_ref_eta = makePtr(fEtaREF);
       auto B_ref_phi = makePtr(fPhiREF);
       auto B_ref_its = makePtr(fITSChi2NCl_ref);
@@ -366,8 +369,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       auto B_ref_npr = makePtr(fTPCNSigmaPr_ref);
 
       // long long filled = 0;
-      for (size_t ia = 0; ia < A_jpsi_pt.size(); ++ia) {
-        for (size_t ib = 0; ib < B_ref_pt.size(); ++ib) {
+      for (size_t ia = 0; ia < size1; ++ia) {
+        for (size_t ib = 0; ib < size2; ++ib) {
           o_jpsi_pt = A_jpsi_pt[ia];
           o_jpsi_eta = A_jpsi_eta[ia];
           o_jpsi_phi = A_jpsi_phi[ia];
