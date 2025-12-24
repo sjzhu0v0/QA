@@ -160,9 +160,12 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
                              TString path_input_index = "input3.root",
                              TString path_output_tree = "output_mix.root") {
   TChain* tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
+  TChain* tree_flowVecd2 = MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
   TChain* tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
+  TChain* tree_mult2 = MRootIO::OpenChain(path_input_mult, "MultCalib");
   TChain* tree_index = MRootIO::OpenChain(path_input_index, "EventMixing");
   tree_flowVecd->AddFriend(tree_mult);
+  tree_flowVecd2->AddFriend(tree_mult2);
 
   TTreeReader rPairs(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(rPairs, "MixedEvent");
@@ -207,7 +210,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderArray<float> fTPCNSigmaEl2(rEvt, "fTPCNSigmaEl2");
   TTreeReaderArray<float> fTPCNSigmaPi2(rEvt, "fTPCNSigmaPi2");
   TTreeReaderArray<float> fTPCNSigmaPr2(rEvt, "fTPCNSigmaPr2");
-  TTreeReader rEvt2(tree_flowVecd);
+  TTreeReader rEvt2(tree_flowVecd2);
   TTreeReaderArray<float> fPTREF(rEvt2, "fPTREF");
   TTreeReaderArray<float> fEtaREF(rEvt2, "fEtaREF");
   TTreeReaderArray<float> fPhiREF(rEvt2, "fPhiREF");
