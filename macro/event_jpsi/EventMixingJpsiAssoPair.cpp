@@ -276,11 +276,11 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderArray<float> fTPCNSigmaPr_ref(rEvt2, "fTPCNSigmaPr");
 
   TFile fout(path_output_tree, "RECREATE");
+  fout.SetCompressionAlgorithm(ROOT::kLZ4); // use LZ4 compression
+  fout.SetCompressionLevel(1);              // set compression level to 1 (fastest)
   TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs");
-  out.SetAutoSave(0);                      // disable autosave
-  out.SetAutoFlush(50000);                 // flush every 50000 bytes
-  out.SetCompressionAlgorithm(ROOT::kLZ4); // use LZ4 compression
-  out.SetCompressionLevel(1);              // set compression level to 1 (fastest)
+  out.SetAutoSave(0);      // disable autosave
+  out.SetAutoFlush(50000); // flush every 50000 bytes
 
   double o_NumContribCalib;
   int o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV;
