@@ -163,9 +163,11 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TChain* tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
   TChain* tree_index = MRootIO::OpenChain(path_input_index, "EventMixing");
   tree_flowVecd->AddFriend(tree_mult);
-  TTreeReader rEvt(tree_flowVecd);
+
   TTreeReader rPairs(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(rPairs, "MixedEvent");
+
+  TTreeReader rEvt(tree_flowVecd);
   TTreeReaderValue<double> NumContribCalib(rEvt, "NumContribCalib");
   TTreeReaderValue<int> fMultTPC(rEvt, "fMultTPC");
   TTreeReaderValue<int> fMultTracklets(rEvt, "fMultTracklets");
@@ -206,18 +208,19 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderArray<float> fTPCNSigmaEl2(rEvt, "fTPCNSigmaEl2");
   TTreeReaderArray<float> fTPCNSigmaPi2(rEvt, "fTPCNSigmaPi2");
   TTreeReaderArray<float> fTPCNSigmaPr2(rEvt, "fTPCNSigmaPr2");
-  TTreeReaderValue<int> fPTREF_size(rEvt, "fPTREF_size");
-  TTreeReaderArray<float> fPTREF(rEvt, "fPTREF");
-  TTreeReaderArray<float> fEtaREF(rEvt, "fEtaREF");
-  TTreeReaderArray<float> fPhiREF(rEvt, "fPhiREF");
-  TTreeReaderArray<float> fITSChi2NCl_ref(rEvt, "fITSChi2NCl");
-  TTreeReaderArray<float> fTPCNClsCR_ref(rEvt, "fTPCNClsCR");
-  TTreeReaderArray<float> fTPCNClsFound_ref(rEvt, "fTPCNClsFound");
-  TTreeReaderArray<float> fTPCChi2NCl_ref(rEvt, "fTPCChi2NCl");
-  TTreeReaderArray<float> fTPCSignal_ref(rEvt, "fTPCSignal");
-  TTreeReaderArray<float> fTPCNSigmaEl_ref(rEvt, "fTPCNSigmaEl");
-  TTreeReaderArray<float> fTPCNSigmaPi_ref(rEvt, "fTPCNSigmaPi");
-  TTreeReaderArray<float> fTPCNSigmaPr_ref(rEvt, "fTPCNSigmaPr");
+  TTreeReader rEvt2(tree_flowVecd);
+  TTreeReaderValue<int> fPTREF_size(rEvt2, "fPTREF_size");
+  TTreeReaderArray<float> fPTREF(rEvt2, "fPTREF");
+  TTreeReaderArray<float> fEtaREF(rEvt2, "fEtaREF");
+  TTreeReaderArray<float> fPhiREF(rEvt2, "fPhiREF");
+  TTreeReaderArray<float> fITSChi2NCl_ref(rEvt2, "fITSChi2NCl");
+  TTreeReaderArray<float> fTPCNClsCR_ref(rEvt2, "fTPCNClsCR");
+  TTreeReaderArray<float> fTPCNClsFound_ref(rEvt2, "fTPCNClsFound");
+  TTreeReaderArray<float> fTPCChi2NCl_ref(rEvt2, "fTPCChi2NCl");
+  TTreeReaderArray<float> fTPCSignal_ref(rEvt2, "fTPCSignal");
+  TTreeReaderArray<float> fTPCNSigmaEl_ref(rEvt2, "fTPCNSigmaEl");
+  TTreeReaderArray<float> fTPCNSigmaPi_ref(rEvt2, "fTPCNSigmaPi");
+  TTreeReaderArray<float> fTPCNSigmaPr_ref(rEvt2, "fTPCNSigmaPr");
 
   TFile fout(path_output_tree, "RECREATE");
   TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs");
@@ -304,6 +307,10 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       ULong64_t entryA = abPair_single.first;
       ULong64_t entryB = abPair_single.second;
       rEvt.SetEntry(entryA);
+      rEvt2.SetEntry(entryB);
+      int nPairs = fPT.GetSize() * fPTREF_size;
+      if (nPairs == 0)
+        continue;
       o_NumContribCalib = *NumContribCalib;
       o_fMultTPC = *fMultTPC;
       o_fMultTracklets = *fMultTracklets;
@@ -315,100 +322,51 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
 
-      size_t size1, size2;
+      for (int iJpsi = 0; iJpsi < fEta_size->GetSize(); iJpsi++) {
+        o_jpsi_pt = fPT[iJpsi];
+        o_jpsi_eta = fEta[iJpsi];
+        o_jpsi_phi = fPhi[iJpsi];
+        o_jpsi_mass = fMass[iJpsi];
+        o_jpsi_sign = fSign[iJpsi];
+        o_e1_pt = fPt1[iJpsi];
+        o_e1_eta = fEta1[iJpsi];
+        o_e1_phi = fPhi1[iJpsi];
+        o_e1_sign = fSign1[iJpsi];
+        o_e1_ITSChi2NCl = fITSChi2NCl1[iJpsi];
+        o_e1_TPCNClsCR = fTPCNClsCR1[iJpsi];
+        o_e1_TPCNClsFound = fTPCNClsFound1[iJpsi];
+        o_e1_TPCChi2NCl = fTPCChi2NCl1[iJpsi];
+        o_e1_TPCSignal = fTPCSignal1[iJpsi];
+        o_e1_nsig_el = fTPCNSigmaEl1[iJpsi];
+        o_e1_nsig_pi = fTPCNSigmaPi1[iJpsi];
+        o_e1_nsig_pr = fTPCNSigmaPr1[iJpsi];
+        o_e2_pt = fPt2[iJpsi];
+        o_e2_eta = fEta2[iJpsi];
+        o_e2_phi = fPhi2[iJpsi];
+        o_e2_sign = fSign2[iJpsi];
+        o_e2_ITSChi2NCl = fITSChi2NCl2[iJpsi];
+        o_e2_TPCNClsCR = fTPCNClsCR2[iJpsi];
+        o_e2_TPCNClsFound = fTPCNClsFound2[iJpsi];
+        o_e2_TPCChi2NCl = fTPCChi2NCl2[iJpsi];
+        o_e2_TPCSignal = fTPCSignal2[iJpsi];
+        o_e2_nsig_el = fTPCNSigmaEl2[iJpsi];
+        o_e2_nsig_pi = fTPCNSigmaPi2[iJpsi];
+        o_e2_nsig_pr = fTPCNSigmaPr2[iJpsi];
 
-      auto& A_jpsi_pt = makePtr(fPT, &size1);
-      auto& A_jpsi_eta = makePtr(fEta);
-      auto& A_jpsi_phi = makePtr(fPhi);
-      auto& A_jpsi_mass = makePtr(fMass);
-      auto& A_jpsi_sign = makePtr(fSign);
+        for (int iRef = 0; iRef < *fPTREF_size; iRef++) {
+          o_ref_pt = fPTREF[iRef];
+          o_ref_eta = fEtaREF[iRef];
+          o_ref_phi = fPhiREF[iRef];
+          o_ref_ITSChi2NCl = fITSChi2NCl_ref[iRef];
+          o_ref_TPCNClsCR = fTPCNClsCR_ref[iRef];
+          o_ref_TPCNClsFound = fTPCNClsFound_ref[iRef];
+          o_ref_TPCChi2NCl = fTPCChi2NCl_ref[iRef];
+          o_ref_TPCSignal = fTPCSignal_ref[iRef];
+          o_ref_nsig_el = fTPCNSigmaEl_ref[iRef];
+          o_ref_nsig_pi = fTPCNSigmaPi_ref[iRef];
+          o_ref_nsig_pr = fTPCNSigmaPr_ref[iRef];
 
-      auto& A_e1_pt = makePtr(fPt1);
-      auto& A_e1_eta = makePtr(fEta1);
-      auto& A_e1_phi = makePtr(fPhi1);
-      auto& A_e1_sign = makePtr(fSign1);
-      auto& A_e1_its = makePtr(fITSChi2NCl1);
-      auto& A_e1_cr = makePtr(fTPCNClsCR1);
-      auto& A_e1_found = makePtr(fTPCNClsFound1);
-      auto& A_e1_chi2 = makePtr(fTPCChi2NCl1);
-      auto& A_e1_sig = makePtr(fTPCSignal1);
-      auto& A_e1_nel = makePtr(fTPCNSigmaEl1);
-      auto& A_e1_npi = makePtr(fTPCNSigmaPi1);
-      auto& A_e1_npr = makePtr(fTPCNSigmaPr1);
-
-      auto& A_e2_pt = makePtr(fPt2);
-      auto& A_e2_eta = makePtr(fEta2);
-      auto& A_e2_phi = makePtr(fPhi2);
-      auto& A_e2_sign = makePtr(fSign2);
-      auto& A_e2_its = makePtr(fITSChi2NCl2);
-      auto& A_e2_cr = makePtr(fTPCNClsCR2);
-      auto& A_e2_found = makePtr(fTPCNClsFound2);
-      auto& A_e2_chi2 = makePtr(fTPCChi2NCl2);
-      auto& A_e2_sig = makePtr(fTPCSignal2);
-      auto& A_e2_nel = makePtr(fTPCNSigmaEl2);
-      auto& A_e2_npi = makePtr(fTPCNSigmaPi2);
-      auto& A_e2_npr = makePtr(fTPCNSigmaPr2);
-
-      rEvt.SetEntry(entryB);
-      auto& B_ref_pt = makePtr(fPTREF, &size2);
-      auto& B_ref_eta = makePtr(fEtaREF);
-      auto& B_ref_phi = makePtr(fPhiREF);
-      auto& B_ref_its = makePtr(fITSChi2NCl_ref);
-      auto& B_ref_cr = makePtr(fTPCNClsCR_ref);
-      auto& B_ref_found = makePtr(fTPCNClsFound_ref);
-      auto& B_ref_chi2 = makePtr(fTPCChi2NCl_ref);
-      auto& B_ref_sig = makePtr(fTPCSignal_ref);
-      auto& B_ref_nel = makePtr(fTPCNSigmaEl_ref);
-      auto& B_ref_npi = makePtr(fTPCNSigmaPi_ref);
-      auto& B_ref_npr = makePtr(fTPCNSigmaPr_ref);
-      int nPairs = size1 * size2;
-      if (nPairs == 0) {
-        continue;
-      }
-
-      // long long filled = 0;
-      for (size_t ia = 0; ia < size1; ++ia) {
-        for (size_t ib = 0; ib < size2; ++ib) {
-          o_jpsi_pt = A_jpsi_pt[ia];
-          o_jpsi_eta = A_jpsi_eta[ia];
-          o_jpsi_phi = A_jpsi_phi[ia];
-          o_jpsi_mass = A_jpsi_mass[ia];
-          o_jpsi_sign = A_jpsi_sign[ia];
-          o_e1_pt = A_e1_pt[ia];
-          o_e1_eta = A_e1_eta[ia];
-          o_e1_phi = A_e1_phi[ia];
-          o_e1_sign = A_e1_sign[ia];
-          o_e1_ITSChi2NCl = A_e1_its[ia];
-          o_e1_TPCNClsCR = A_e1_cr[ia];
-          o_e1_TPCNClsFound = A_e1_found[ia];
-          o_e1_TPCChi2NCl = A_e1_chi2[ia];
-          o_e1_TPCSignal = A_e1_sig[ia];
-          o_e1_nsig_el = A_e1_nel[ia];
-          o_e1_nsig_pi = A_e1_npi[ia];
-          o_e1_nsig_pr = A_e1_npr[ia];
-          o_e2_pt = A_e2_pt[ia];
-          o_e2_eta = A_e2_eta[ia];
-          o_e2_phi = A_e2_phi[ia];
-          o_e2_sign = A_e2_sign[ia];
-          o_e2_ITSChi2NCl = A_e2_its[ia];
-          o_e2_TPCNClsCR = A_e2_cr[ia];
-          o_e2_TPCNClsFound = A_e2_found[ia];
-          o_e2_TPCChi2NCl = A_e2_chi2[ia];
-          o_e2_TPCSignal = A_e2_sig[ia];
-          o_e2_nsig_el = A_e2_nel[ia];
-          o_e2_nsig_pi = A_e2_npi[ia];
-          o_e2_nsig_pr = A_e2_npr[ia];
-          o_ref_pt = B_ref_pt[ib];
-          o_ref_eta = B_ref_eta[ib];
-          o_ref_phi = B_ref_phi[ib];
-          o_ref_ITSChi2NCl = B_ref_its[ib];
-          o_ref_TPCNClsCR = B_ref_cr[ib];
-          o_ref_TPCNClsFound = B_ref_found[ib];
-          o_ref_TPCChi2NCl = B_ref_chi2[ib];
-          o_ref_TPCSignal = B_ref_sig[ib];
-          o_ref_nsig_el = B_ref_nel[ib];
-          o_ref_nsig_pi = B_ref_npi[ib];
-          o_ref_nsig_pr = B_ref_npr[ib];
+          // Fill the tree
           out.Fill();
         }
       }
