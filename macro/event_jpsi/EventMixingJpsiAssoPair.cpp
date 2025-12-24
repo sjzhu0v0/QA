@@ -178,7 +178,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderValue<float> fPosZ(rEvt, "fPosZ");
   TTreeReaderValue<ULong64_t> fSelection(rEvt, "fSelection");
   TTreeReaderValue<float> fHadronicRate(rEvt, "fHadronicRate");
-  TTreeReaderValue<int> fEta_size(rEvt, "fEta_size");
   TTreeReaderArray<float> fPT(rEvt, "fPT");
   TTreeReaderArray<float> fEta(rEvt, "fEta");
   TTreeReaderArray<float> fPhi(rEvt, "fPhi");
@@ -209,7 +208,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderArray<float> fTPCNSigmaPi2(rEvt, "fTPCNSigmaPi2");
   TTreeReaderArray<float> fTPCNSigmaPr2(rEvt, "fTPCNSigmaPr2");
   TTreeReader rEvt2(tree_flowVecd);
-  TTreeReaderValue<int> fPTREF_size(rEvt2, "fPTREF_size");
   TTreeReaderArray<float> fPTREF(rEvt2, "fPTREF");
   TTreeReaderArray<float> fEtaREF(rEvt2, "fEtaREF");
   TTreeReaderArray<float> fPhiREF(rEvt2, "fPhiREF");
@@ -308,7 +306,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       ULong64_t entryB = abPair_single.second;
       rEvt.SetEntry(entryA);
       rEvt2.SetEntry(entryB);
-      int nPairs = fPT.GetSize() * fPTREF_size;
+      int nPairs = fPT.GetSize() * fPTREF.GetSize();
       if (nPairs == 0)
         continue;
       o_NumContribCalib = *NumContribCalib;
