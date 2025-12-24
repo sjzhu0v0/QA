@@ -303,7 +303,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
     for (const auto& abPair_single : *abPair) {
       ULong64_t entryA = abPair_single.first;
       ULong64_t entryB = abPair_single.second;
-      cout << "entryA: " << entryA << ", entryB: " << entryB << "     " << flush;
+      cout << "entryA: " << entryA << ", entryB: " << entryB << "     " << endl;
       int nPairs = fPT.GetSize() * fPTREF.GetSize();
       if (nPairs == 0) {
         continue;
@@ -445,8 +445,7 @@ int main(int argc, char** argv) {
 
   gROOT->SetBatch(kTRUE); // Disable interactive graphic
   cout << "Starting Event Mixing J/psi-Associated Pair Analysis..." << endl;
-  if (false)
-    EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output, path_output_mix);
+  EventMixingIndexGen(path_input_flowVecd, path_input_mult, path_output, path_output_mix);
   cout << "Event Mixing Index Generation Completed." << endl;
   EventMixingJpsiAssoPair(path_input_flowVecd, path_input_mult, path_output_mix, path_output_tree);
   cout << "Event Mixing J/psi-Associated Pair Analysis Completed." << endl;
