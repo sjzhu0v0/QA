@@ -320,7 +320,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       o_fSelection = *fSelection;
       o_fHadronicRate = *fHadronicRate;
 
-      for (int iJpsi = 0; iJpsi < fEta_size->GetSize(); iJpsi++) {
+      for (int iJpsi = 0; iJpsi < fEta.GetSize(); iJpsi++) {
         o_jpsi_pt = fPT[iJpsi];
         o_jpsi_eta = fEta[iJpsi];
         o_jpsi_phi = fPhi[iJpsi];
@@ -351,7 +351,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
         o_e2_nsig_pi = fTPCNSigmaPi2[iJpsi];
         o_e2_nsig_pr = fTPCNSigmaPr2[iJpsi];
 
-        for (int iRef = 0; iRef < *fPTREF_size; iRef++) {
+        for (int iRef = 0; iRef < fPTREF.GetSize(); iRef++) {
           o_ref_pt = fPTREF[iRef];
           o_ref_eta = fEtaREF[iRef];
           o_ref_phi = fPhiREF[iRef];
