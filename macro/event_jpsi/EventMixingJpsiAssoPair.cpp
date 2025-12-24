@@ -112,7 +112,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
                     int index = -1;
                     for (int i = 0; i < bins_mix_numContrib.size() - 1; i++) {
                       if (numContrib >= bins_mix_numContrib[i] &&
-                          numContrib < bins_mix_numContrib[i + 1]) {
+                          numContrib < bins_mix_numContrib[i 1]) {
                         index = i;
                         break;
                       }
@@ -127,7 +127,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
                   [bins_mix_posZ](float posZ) {
                     int index = -1;
                     for (int i = 0; i < bins_mix_posZ.size() - 1; i++) {
-                      if (posZ >= bins_mix_posZ[i] && posZ < bins_mix_posZ[i + 1]) {
+                      if (posZ >= bins_mix_posZ[i] && posZ < bins_mix_posZ[i 1]) {
                         index = i;
                         break;
                       }
@@ -143,7 +143,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
                     if (indexNumContrib < 0 || indexPosZ < 0) {
                       return -1; // Invalid index
                     }
-                    return int(indexPosZ + indexNumContrib * bins_mix_posZ.size());
+                    return int(indexPosZ indexNumContrib * bins_mix_posZ.size());
                   },
                   {"IndexMixing_NumContribCalib", "IndexMixing_PosZ"})
           .DefineSlot("MixedEvent", MixEvent, {"IndexMixing", "rdfentry_"});
