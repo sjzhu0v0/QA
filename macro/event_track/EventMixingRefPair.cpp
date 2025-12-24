@@ -64,8 +64,8 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   TTreeReader rEvt2(tree_flowVecd2);
   TTreeReader rPairs(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(rPairs, "MixedEvent");
-  TTreeReaderValue<double> NumContribCalib(rEvt, "NumContribCalib") TTreeReaderValue<int> fMultTPC(
-      rEvt, "fMultTPC");
+  TTreeReaderValue<double> NumContribCalib(rEvt, "NumContribCalib");
+  TTreeReaderValue<int> fMultTPC(rEvt, "fMultTPC");
   TTreeReaderValue<int> fMultTracklets(rEvt, "fMultTracklets");
   TTreeReaderValue<int> fMultNTracksPV(rEvt, "fMultNTracksPV");
   TTreeReaderValue<float> fMultFT0C(rEvt, "fMultFT0C");
