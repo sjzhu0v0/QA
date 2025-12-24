@@ -167,6 +167,58 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   tree_flowVecd->AddFriend(tree_mult);
   tree_flowVecd2->AddFriend(tree_mult2);
 
+  tree_flowVecd->SetBranchStatus("*", 0);
+  tree_flowVecd2->SetBranchStatus("*", 0);
+
+  tree_flowVecd->SetBranchStatus("fMultTPC", 1);
+  tree_flowVecd->SetBranchStatus("fMultTracklets", 1);
+  tree_flowVecd->SetBranchStatus("fMultNTracksPV", 1);
+  tree_flowVecd->SetBranchStatus("fMultFT0C", 1);
+  tree_flowVecd->SetBranchStatus("fPosX", 1);
+  tree_flowVecd->SetBranchStatus("fPosY", 1);
+  tree_flowVecd->SetBranchStatus("fPosZ", 1);
+  tree_flowVecd->SetBranchStatus("fSelection", 1);
+  tree_flowVecd->SetBranchStatus("fHadronicRate", 1);
+  tree_flowVecd->SetBranchStatus("fPT", 1);
+  tree_flowVecd->SetBranchStatus("fEta", 1);
+  tree_flowVecd->SetBranchStatus("fPhi", 1);
+  tree_flowVecd->SetBranchStatus("fMass", 1);
+  tree_flowVecd->SetBranchStatus("fSign", 1);
+  tree_flowVecd->SetBranchStatus("fPt1", 1);
+  tree_flowVecd->SetBranchStatus("fEta1", 1);
+  tree_flowVecd->SetBranchStatus("fPhi1", 1);
+  tree_flowVecd->SetBranchStatus("fSign1", 1);
+  tree_flowVecd->SetBranchStatus("fITSChi2NCl1", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNClsCR1", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNClsFound1", 1);
+  tree_flowVecd->SetBranchStatus("fTPCChi2NCl1", 1);
+  tree_flowVecd->SetBranchStatus("fTPCSignal1", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNSigmaEl1", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNSigmaPi1", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNSigmaPr1", 1);
+  tree_flowVecd->SetBranchStatus("fPt2", 1);
+  tree_flowVecd->SetBranchStatus("fEta2", 1);
+  tree_flowVecd->SetBranchStatus("fPhi2", 1);
+  tree_flowVecd->SetBranchStatus("fSign2", 1);
+  tree_flowVecd->SetBranchStatus("fITSChi2NCl2", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNClsCR2", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNClsFound2", 1);
+  tree_flowVecd->SetBranchStatus("fTPCChi2NCl2", 1);
+  tree_flowVecd->SetBranchStatus("fTPCSignal2", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNSigmaEl2", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNSigmaPi2", 1);
+  tree_flowVecd->SetBranchStatus("fTPCNSigmaPr2", 1);
+  tree_flowVecd2->SetBranchStatus("fPTREF", 1);
+  tree_flowVecd2->SetBranchStatus("fEtaREF", 1);
+  tree_flowVecd2->SetBranchStatus("fPhiREF", 1);
+  tree_flowVecd2->SetBranchStatus("fITSChi2NCl", 1);
+  tree_flowVecd2->SetBranchStatus("fTPCNClsCR", 1);
+  tree_flowVecd2->SetBranchStatus("fTPCNClsFound", 1);
+  tree_flowVecd2->SetBranchStatus("fTPCChi2NCl", 1);
+  tree_flowVecd2->SetBranchStatus("fTPCSignal", 1);
+  tree_flowVecd2->SetBranchStatus("fTPCNSigmaEl", 1);
+  tree_flowVecd2->SetBranchStatus("fTPCNSigmaPi", 1);
+  tree_flowVecd2->SetBranchStatus("fTPCNSigmaPr", 1);
   TTreeReader rPairs(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(rPairs, "MixedEvent");
 
@@ -225,6 +277,9 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   TFile fout(path_output_tree, "RECREATE");
   TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs");
+  out.SetAutoSave(0);                 // disable autosave
+  out.SetAutoFlush(50000);            // flush every 50000 bytes
+  out.SetBasketSize("*", 256 * 1024); // set basket size to 256 KB
 
   double o_NumContribCalib;
   int o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV;
@@ -302,12 +357,24 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   bool isInteractive = is_interactive();
   long long nEntries = rPairs.GetEntries();
 
-  long long iEntry = -1;
+  bool isntFirst = false;
+  ULong64_t lastEventA = 0;
   while (rPairs.Next()) {
     for (const auto& abPair_single : *abPair) {
-      rEvt.SetEntry(abPair_single.first);
+      if (isntFirst) {
+        if (lastEventA != abPair_single.first) {
+          rEvt.SetEntry(abPair_single.first);
+          lastEventA = abPair_single.first;
+        }
+      } else {
+        isntFirst = true;
+        rEvt.SetEntry(abPair_single.first);
+        lastEventA = abPair_single.first;
+      }
       rEvt2.SetEntry(abPair_single.second);
-      if (fPT.GetSize() * fPTREF.GetSize() == 0)
+      if (fPT.GetSize() == 0)
+        continue;
+      if (fPTREF.GetSize() == 0)
         continue;
       o_NumContribCalib = *NumContribCalib;
       o_fMultTPC = *fMultTPC;
@@ -364,7 +431,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
           o_ref_nsig_pi = fTPCNSigmaPi_ref[iRef];
           o_ref_nsig_pr = fTPCNSigmaPr_ref[iRef];
 
-          // Fill the tree
           out.Fill();
         }
       }
