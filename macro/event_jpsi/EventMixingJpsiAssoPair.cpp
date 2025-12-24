@@ -277,9 +277,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
 
   TFile fout(path_output_tree, "RECREATE");
   TTree out("jpsi_ref_pairs", "mixed jpsi(A) x ref(B) pairs");
-  out.SetAutoSave(0);                 // disable autosave
-  out.SetAutoFlush(50000);            // flush every 50000 bytes
-  out.SetBasketSize("*", 256 * 1024); // set basket size to 256 KB
+  out.SetAutoSave(0);      // disable autosave
+  out.SetAutoFlush(50000); // flush every 50000 bytes
 
   double o_NumContribCalib;
   int o_fMultTPC, o_fMultTracklets, o_fMultNTracksPV;
@@ -352,6 +351,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   out.Branch("ref_nsig_el", &o_ref_nsig_el);
   out.Branch("ref_nsig_pi", &o_ref_nsig_pi);
   out.Branch("ref_nsig_pr", &o_ref_nsig_pr);
+  out.SetBasketSize("*", 256 * 1024); // set basket size to 256 KB
   long long nWritten = 0;
 
   bool isInteractive = is_interactive();
