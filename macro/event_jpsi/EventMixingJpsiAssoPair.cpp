@@ -303,11 +303,6 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
     for (const auto& abPair_single : *abPair) {
       ULong64_t entryA = abPair_single.first;
       ULong64_t entryB = abPair_single.second;
-      cout << "entryA: " << entryA << ", entryB: " << entryB << "     " << endl;
-      int nPairs = fPT.GetSize() * fPTREF.GetSize();
-      if (nPairs == 0) {
-        continue;
-      }
       rEvt.SetEntry(entryA);
       o_NumContribCalib = *NumContribCalib;
       o_fMultTPC = *fMultTPC;
@@ -366,7 +361,10 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
       auto B_ref_nel = makePtr(fTPCNSigmaEl_ref);
       auto B_ref_npi = makePtr(fTPCNSigmaPi_ref);
       auto B_ref_npr = makePtr(fTPCNSigmaPr_ref);
-      cout << "size1: " << size1 << ", size2: " << size2 << endl;
+      int nPairs = size1 * size2;
+      if (nPairs == 0) {
+        continue;
+      }
 
       // long long filled = 0;
       for (size_t ia = 0; ia < size1; ++ia) {
