@@ -28,6 +28,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   tree_flowVecd2->SetBranchStatus("*", 0);
 
   tree_flowVecd->SetBranchStatus("fMultTPC", 1);
+  tree_flowVecd->SetBranchStatus("NumContribCalib", 1);
   tree_flowVecd->SetBranchStatus("fMultTracklets", 1);
   tree_flowVecd->SetBranchStatus("fMultNTracksPV", 1);
   tree_flowVecd->SetBranchStatus("fMultFT0C", 1);

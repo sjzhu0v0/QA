@@ -45,7 +45,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
   StrVar4Hist var_NumContribCalib("NumContribCalib", "N_{vtx contrib} Calibrated", "", 300,
                                   {0, 300});
   StrVar4Hist var_NumContribCalibBinned("NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
-                                        {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
+                                        {0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "Mult_{TPC}", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "Mult_{REF}", "", 100, {0, 100});
   StrVar4Hist var_fMultFT0C("fMultFT0C", "Mult_{FT0C}", "", 130, {-1000., 12000.});
@@ -171,6 +171,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   tree_flowVecd2->SetBranchStatus("*", 0);
 
   tree_flowVecd->SetBranchStatus("fMultTPC", 1);
+  tree_flowVecd->SetBranchStatus("NumContribCalib", 1);
   tree_flowVecd->SetBranchStatus("fMultTracklets", 1);
   tree_flowVecd->SetBranchStatus("fMultNTracksPV", 1);
   tree_flowVecd->SetBranchStatus("fMultFT0C", 1);
