@@ -21,11 +21,6 @@ void EventMixingReadingPair(TString path_input_flowVecd = "../input.root",
 
   ROOT::RDataFrame rdf(*tree_input);
 
-  auto CutTrackInfo = [](const TrackInfo& track_info, const int& index) {
-    bool ptCut = track_info.fPTREF[index] > 0.4 && track_info.fPTREF[index] < 4.0;
-    return ptCut;
-  };
-
   auto rdf_AllVar =
       rdf.Define("DeltaPhi", "jpsi_phi - ref_phi").Define("DeltaEta", "jpsi_eta - ref_eta");
   if (is_interactive())
