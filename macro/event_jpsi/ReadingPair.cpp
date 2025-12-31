@@ -17,7 +17,15 @@ void EventMixingReadingPair(TString path_input_flowVecd = "../input.root",
   const double low_edge_deltaPhiToPi = config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
   const double up_edge_deltaPhiToPi = config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
 
-  TTree* tree_input = (TTree*)file_flowVecd->Get("EventMixing");
+  TTree* tree_input = nullptr;
+  TList* list_keys = file_flowVecd->GetListOfKeys();
+  for (int i = 0; i < list_keys->GetEntries(); i++) {
+    TKey* key = (TKey*)list_keys->At(i);
+    if (strcmp(key->GetClassName(), "TTree") == 0) {
+      tree_input = (TTree*)file_flowVecd->Get(key->GetName());
+      break;
+    }
+  }
 
   ROOT::RDataFrame rdf(*tree_input);
 
