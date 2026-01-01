@@ -23,7 +23,6 @@ void EventMixingReadingPair(TString path_input_flowVecd = "../input.root",
     TKey* key = (TKey*)list_keys->At(i);
     if (strcmp(key->GetClassName(), "TTree") == 0) {
       tree_input = (TTree*)file_flowVecd->Get(key->GetName());
-      cout << "Input TTree found: " << key->GetName() << endl;
       break;
     }
   }
