@@ -1,0 +1,14 @@
+hist_binning:
+  n_bins_mass_assoYield: 45 # max is 90 corresponding to bin width 0.04
+  binning_deltaEta_assoYield:
+    n_bins: 20
+    min: -2.
+    max: 2.
+  n_bins_deltaPhi_assoYield: 30
+  n_rebin_mass_assoYield: 1
+  n_rebin_deltaEta_assoYield: 1
+  low_edge_deltaPhiToPi: -0.5
+  up_edge_deltaPhiToPi: 1.5
+
+cuts:
+  num_contrib_cut: "NumContribCalib >= 5 && jpsi_mass > 2.9 && jpsi_mass < 3.3"

@@ -121,7 +121,7 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                   {"fPhi1", "jpsi_idx"})
           .Define("e1_sign", [](const RVec<int>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fSign1", "jpsi_idx"})
-          .Define("e1_ITSChi2NCl",
+          .Define("e1ITSChi2NCl",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fITSChi2NCl1", "jpsi_idx"})
           .Define("e1_TPCNClsCR",
@@ -205,7 +205,12 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                   {"fTPCNSigmaPi", "ref_idx"})
           .Define("ref_nsig_pr",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
-                  {"fTPCNSigmaPr", "ref_idx"});
+                  {"fTPCNSigmaPr", "ref_idx"})
+          .Define("ref_dcaxy", [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  {"fDcaXY", "ref_idx"})
+          .Define("ref_dcaz", [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  {"fDcaZ", "ref_idx"});
+
   if (is_interactive())
     ROOT::RDF::Experimental::AddProgressBar(df_all);
   df_all.Snapshot("jpsi_ref_pairs", path_output,
@@ -221,7 +226,8 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                    "e2_TPCSignal",   "e2_nsig_el",       "e2_nsig_pi",      "e2_nsig_pr",
                    "ref_pt",         "ref_eta",          "ref_phi",         "ref_ITSChi2NCl",
                    "ref_TPCNClsCR",  "ref_TPCNClsFound", "ref_TPCChi2NCl",  "ref_TPCSignal",
-                   "ref_nsig_el",    "ref_nsig_pi",      "ref_nsig_pr"});
+                   "ref_nsig_el",    "ref_nsig_pi",      "ref_nsig_pr",     "ref_dcaxy",
+                   "ref_dcaz"});
 }
 
 int main(int argc, char** argv) {

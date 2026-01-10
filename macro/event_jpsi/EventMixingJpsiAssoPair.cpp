@@ -220,6 +220,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   tree_flowVecd2->SetBranchStatus("fTPCNSigmaEl", 1);
   tree_flowVecd2->SetBranchStatus("fTPCNSigmaPi", 1);
   tree_flowVecd2->SetBranchStatus("fTPCNSigmaPr", 1);
+  tree_flowVecd2->SetBranchStatus("fDcaXY", 1);
+  tree_flowVecd2->SetBranchStatus("fDcaZ", 1);
   TTreeReader rPairs(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(rPairs, "MixedEvent");
 
@@ -274,7 +276,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderArray<float> fTPCSignal_ref(rEvt2, "fTPCSignal");
   TTreeReaderArray<float> fTPCNSigmaEl_ref(rEvt2, "fTPCNSigmaEl");
   TTreeReaderArray<float> fTPCNSigmaPi_ref(rEvt2, "fTPCNSigmaPi");
-  TTreeReaderArray<float> fTPCNSigmaPr_ref(rEvt2, "fTPCNSigmaPr");
+  TTreeReaderArray<float> fDcaXY_ref(rEvt2, "fDcaXY");
+  TTreeReaderArray<float> fDcaZ_ref(rEvt2, "fDcaZ");
 
   TFile fout(path_output_tree, "RECREATE");
   fout.SetCompressionAlgorithm(ROOT::RCompressionSetting::EAlgorithm::kLZ4); // use LZ4 compression
@@ -304,6 +307,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   float o_ref_ITSChi2NCl, o_ref_TPCNClsCR, o_ref_TPCNClsFound;
   float o_ref_TPCChi2NCl, o_ref_TPCSignal;
   float o_ref_nsig_el, o_ref_nsig_pi, o_ref_nsig_pr;
+  float o_ref_dcaxy, o_ref_dcaz;
   out.Branch("NumContribCalib", &o_NumContribCalib);
   out.Branch("fMultTPC", &o_fMultTPC);
   out.Branch("fMultTracklets", &o_fMultTracklets);
@@ -354,6 +358,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   out.Branch("ref_nsig_el", &o_ref_nsig_el);
   out.Branch("ref_nsig_pi", &o_ref_nsig_pi);
   out.Branch("ref_nsig_pr", &o_ref_nsig_pr);
+  out.Branch("ref_dcaxy", &o_ref_dcaxy);
+  out.Branch("ref_dcaz", &o_ref_dcaz);
   out.SetBasketSize("*", 256 * 1024); // set basket size to 256 KB
   long long nWritten = 0;
 
@@ -433,6 +439,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
           o_ref_nsig_el = fTPCNSigmaEl_ref[iRef];
           o_ref_nsig_pi = fTPCNSigmaPi_ref[iRef];
           o_ref_nsig_pr = fTPCNSigmaPr_ref[iRef];
+          o_ref_dcaxy = fDcaXY_ref[iRef];
+          o_ref_dcaz = fDcaZ_ref[iRef];
 
           out.Fill();
         }
