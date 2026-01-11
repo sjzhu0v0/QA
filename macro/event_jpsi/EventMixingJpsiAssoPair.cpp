@@ -276,6 +276,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   TTreeReaderArray<float> fTPCSignal_ref(rEvt2, "fTPCSignal");
   TTreeReaderArray<float> fTPCNSigmaEl_ref(rEvt2, "fTPCNSigmaEl");
   TTreeReaderArray<float> fTPCNSigmaPi_ref(rEvt2, "fTPCNSigmaPi");
+  TTreeReaderArray<float> fTPCNSigmaPr_ref(rEvt2, "fTPCNSigmaPr");
   TTreeReaderArray<float> fDcaXY_ref(rEvt2, "fDcaXY");
   TTreeReaderArray<float> fDcaZ_ref(rEvt2, "fDcaZ");
 
