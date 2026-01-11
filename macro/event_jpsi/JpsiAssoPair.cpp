@@ -121,7 +121,7 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                   {"fPhi1", "jpsi_idx"})
           .Define("e1_sign", [](const RVec<int>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fSign1", "jpsi_idx"})
-          .Define("e1ITSChi2NCl",
+          .Define("e1_ITSChi2NCl",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fITSChi2NCl1", "jpsi_idx"})
           .Define("e1_TPCNClsCR",
