@@ -110,8 +110,6 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         var_DeltaEtaUS,
         var_DeltaPhiUS,
         var_fPosZ,
-        var_MassJpsiCandidate,
-        var_PtJpsiCandidate,
         var_NumContribCalibBinned
     ]
 
