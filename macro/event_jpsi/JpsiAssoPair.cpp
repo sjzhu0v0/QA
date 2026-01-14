@@ -195,7 +195,7 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fTPCChi2NCl", "ref_idx"})
           .Define("ref_itsClusterMap",
-                  [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  [](const RVec<uint8_t>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fTPCSignal", "ref_idx"})
           .Define("ref_TPCSignal",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
@@ -228,9 +228,9 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
                    "e2_ITSChi2NCl",  "e2_TPCNClsCR",     "e2_TPCNClsFound", "e2_TPCChi2NCl",
                    "e2_TPCSignal",   "e2_nsig_el",       "e2_nsig_pi",      "e2_nsig_pr",
                    "ref_pt",         "ref_eta",          "ref_phi",         "ref_ITSChi2NCl",
-                   "ref_TPCNClsCR",  "ref_TPCNClsFound", "ref_TPCChi2NCl",  "ref_TPCSignal",
-                   "ref_nsig_el",    "ref_nsig_pi",      "ref_nsig_pr",     "ref_dcaxy",
-                   "ref_dcaz"});
+                   "ref_TPCNClsCR",  "ref_TPCNClsFound", "ref_TPCChi2NCl",  "ref_itsClusterMap",
+                   "ref_TPCSignal",  "ref_nsig_el",      "ref_nsig_pi",     "ref_nsig_pr",
+                   "ref_dcaxy",      "ref_dcaz"});
 }
 
 int main(int argc, char** argv) {
