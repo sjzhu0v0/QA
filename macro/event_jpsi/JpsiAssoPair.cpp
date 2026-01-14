@@ -194,11 +194,11 @@ void JpsiAsso(TString path_input_flowVecd = "../input.root",
           .Define("ref_TPCChi2NCl",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fTPCChi2NCl", "ref_idx"})
-          .Define("ref_itsClusterMap",
-                  [](const RVec<uint8_t>& v, const RVec<int>& i) { return Take(v, i); },
-                  {"fTPCSignal", "ref_idx"})
           .Define("ref_TPCSignal",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  {"fTPCSignal", "ref_idx"})
+          .Define("ref_itsClusterMap",
+                  [](const RVec<uint8_t>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fITSClusterMap", "ref_idx"})
           .Define("ref_nsig_el",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
