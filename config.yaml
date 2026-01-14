@@ -11,4 +11,8 @@ hist_binning:
   up_edge_deltaPhiToPi: 1.5
 
 cuts:
+  # var ref: ref_pt ref_eta ref_phi ref_ITSChi2NCl ref_TPCNClsCR ref_TPCNClsFound ref_TPCChi2NCl ref_TPCSignal ref_nsig_el ref_nsig_pi ref_nsig_pr ref_dcaxy ref_dcaz 
+  # var poi: jpsi_pt jpsi_eta jpsi_phi jpsi_mass jpsi_sign e1_pt e1_eta e1_phi e1_sign e1_ITSChi2NCl e1_TPCNClsCR e1_TPCNClsFound e1_TPCChi2NCl e1_TPCSignal e1_nsig_el e1_nsig_pi e1_nsig_pr e2_pt e2_eta e2_phi e2_sign e2_ITSChi2NCl e2_TPCNClsCR e2_TPCNClsFound e2_TPCChi2NCl e2_TPCSignal e2_nsig_el e2_nsig_pi e2_nsig_pr
+  # var event: randTag NumContribCalib fMultTPC fMultTracklets fMultNTracksPV fMultFT0C fPosX fPosY fPosZ fSelection fHadronicRate 
   num_contrib_cut: "NumContribCalib >= 5 && jpsi_mass > 2.9 && jpsi_mass < 3.3"
+  default: ""
