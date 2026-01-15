@@ -377,7 +377,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   // out.Branch("ref_nsig_pr", &o_ref_nsig_pr);
   out.Branch("ref_dcaxy", &o_ref_dcaxy);
   out.Branch("ref_dcaz", &o_ref_dcaz);
-  out.SetBasketSize("*", 16 * 1024 * 1024); // set basket size to 256 KB
+  out.SetBasketSize("*", 64 * 1024 * 1024); // set basket size to 256 KB
   long long nWritten = 0;
 
   bool isInteractive = is_interactive();
