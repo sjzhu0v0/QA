@@ -181,8 +181,8 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   ULong64_t lastEventA = 0;
 
   while (rPairs.Next()) {
-    o_iMult = iMultPair.value;
-    o_iVtxZ = iVtxZPair.value;
+    o_iMult = *iMultPair;
+    o_iVtxZ = *iVtxZPair;
     for (const auto& abPair_single : *abPair) {
       if (isInteractive) {
         if (isntFirst) {
