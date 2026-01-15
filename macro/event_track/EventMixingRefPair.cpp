@@ -178,7 +178,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   // out.Branch("ref2_nsig_pr", &o_ref2_nsig_pr);
   out.Branch("ref2_dcaxy", &o_ref2_dcaxy);
   out.Branch("ref2_dcaz", &o_ref2_dcaz);
-  out.SetBasketSize("*", 64 * 1024 * 1024); // set basket size to 256 KB
+  out.SetBasketSize("*", 256 * 1024 * 1024); // set basket size to 256 M
   long long nWritten = 0;
 
   bool isInteractive = is_interactive();
