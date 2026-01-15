@@ -7,6 +7,26 @@ from array import array
 # Global list to collect histogram handles
 gRResultHandles = []
 
+import ROOT
+
+# 声明自定义函数（C++ 代码字符串）
+ROOT.gInterpreter.Declare("""
+int countSetBits_uint8(uint8_t x) {
+    int count = 0;
+    while (x) {
+        count += x & 1;
+        x >>= 1;
+    }
+    return count;
+}
+""")
+
+ROOT.gInterpreter.Declare("""
+float nDCA2Dev(float pt, float dca) {
+    double dev_dca = 0.00179344+0.000924651*pow(abs(pt),-1.4062);
+    return abs(dca)/dev_dca;
+}
+""")
 
 def RResultWrite(result_handles, output_file):
     """Write histograms, handling duplicate names by appending _0, _1, ..."""
@@ -119,7 +139,10 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     rdf_base = ROOT.RDataFrame(tree_input)
     rdf_AllVar = (
         rdf_base.Define("DeltaPhi", "jpsi_phi - ref_phi")
-                 .Define("DeltaEta", "jpsi_eta - ref_eta")
+                .Define("DeltaEta", "jpsi_eta - ref_eta")
+                .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
+                .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt,ref_dcaz)")
+                .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt,ref_dcaxy)")
     )
 
     # Read cuts
