@@ -123,6 +123,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
                     return int(index);
                   },
                   {"NumContribCalib"})
+          .Filter("IndexMixing_NumContribCalib>=0", "valid NumContribCalib index")
           .Define("IndexMixing_PosZ",
                   [bins_mix_posZ](float posZ) {
                     int index = -1;
@@ -138,6 +139,7 @@ void EventMixingIndexGen(TString path_input_flowVecd = "../input.root",
                     return int(index);
                   },
                   {"fPosZ"})
+          .Filter("IndexMixing_PosZ>=0", "valid PosZ index")
           .Define("IndexMixing",
                   [bins_mix_posZ](int indexNumContrib, int indexPosZ) {
                     if (indexNumContrib < 0 || indexPosZ < 0) {
@@ -161,11 +163,11 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
                              TString path_output_tree = "output_mix.root") {
   TChain* tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
   TChain* tree_flowVecd2 = MRootIO::OpenChain(path_input_flowVecd, "O2dqflowvecd");
-  TChain* tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
-  TChain* tree_mult2 = MRootIO::OpenChain(path_input_mult, "MultCalib");
+  // TChain* tree_mult = MRootIO::OpenChain(path_input_mult, "MultCalib");
+  // TChain* tree_mult2 = MRootIO::OpenChain(path_input_mult, "MultCalib");
   TChain* tree_index = MRootIO::OpenChain(path_input_index, "EventMixing");
-  tree_flowVecd->AddFriend(tree_mult);
-  tree_flowVecd2->AddFriend(tree_mult2);
+  // tree_flowVecd->AddFriend(tree_mult);
+  // tree_flowVecd2->AddFriend(tree_mult2);
 
   tree_flowVecd->SetBranchStatus("*", 0);
   tree_flowVecd2->SetBranchStatus("*", 0);
@@ -225,8 +227,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   tree_flowVecd2->SetBranchStatus("fDcaZ", 1);
   TTreeReader rPairs(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> abPair(rPairs, "MixedEvent");
-  TTreeReaderValue<std::vector<std::pair<int, int>>> iMultPair(rPairs, "IndexMixing_NumContribCalib");
-  TTreeReaderValue<std::vector<std::pair<int, int>>> iVtxZPair(rPairs, "IndexMixing_PosZ");
+  TTreeReaderValue<int> iMultPair(rPairs, "IndexMixing_NumContribCalib");
+  TTreeReaderValue<int> iVtxZPair(rPairs, "IndexMixing_PosZ");
 
   TTreeReader rEvt(tree_flowVecd);
   // TTreeReaderValue<double> NumContribCalib(rEvt, "NumContribCalib");
@@ -326,7 +328,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   // out.Branch("fPosZ", &o_fPosZ);
   // out.Branch("fSelection", &o_fSelection);
   // out.Branch("fHadronicRate", &o_fHadronicRate);
-  
+
   out.Branch("iMult", &o_iMult);
   out.Branch("iVtxZ", &o_iVtxZ);
   out.Branch("jpsi_pt", &o_jpsi_pt);
@@ -363,7 +365,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   out.Branch("ref_pt", &o_ref_pt);
   out.Branch("ref_eta", &o_ref_eta);
   out.Branch("ref_phi", &o_ref_phi);
-  
+
   out.Branch("ref_ITSChi2NCl", &o_ref_ITSChi2NCl);
   out.Branch("ref_TPCNClsFound", &o_ref_TPCNClsFound);
   out.Branch("ref_TPCChi2NCl", &o_ref_TPCChi2NCl);
@@ -375,7 +377,7 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   // out.Branch("ref_nsig_pr", &o_ref_nsig_pr);
   out.Branch("ref_dcaxy", &o_ref_dcaxy);
   out.Branch("ref_dcaz", &o_ref_dcaz);
-  out.SetBasketSize("*", 256 * 1024); // set basket size to 256 KB
+  out.SetBasketSize("*", 16 * 1024 * 1024); // set basket size to 256 KB
   long long nWritten = 0;
 
   bool isInteractive = is_interactive();
@@ -384,20 +386,18 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   bool isntFirst = false;
   ULong64_t lastEventA = 0;
   while (rPairs.Next()) {
+    o_iMult = iMultPair;
+    o_iVtxZ = iVtxZPair;
     for (const auto& abPair_single : *abPair) {
       if (isntFirst) {
         if (lastEventA != abPair_single.first) {
           rEvt.SetEntry(abPair_single.first);
           lastEventA = abPair_single.first;
-          o_iMult = iMultPair.first;
-          o_iVtxZ = iVtxZPair.first;
         }
       } else {
         isntFirst = true;
         rEvt.SetEntry(abPair_single.first);
         lastEventA = abPair_single.first;
-        o_iMult = iMultPair.first;
-        o_iVtxZ = iVtxZPair.first;
       }
       rEvt2.SetEntry(abPair_single.second);
       if (fPT.GetSize() == 0)
