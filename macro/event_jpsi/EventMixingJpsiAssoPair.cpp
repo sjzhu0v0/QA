@@ -386,8 +386,8 @@ void EventMixingJpsiAssoPair(TString path_input_flowVecd = "../input1.root",
   bool isntFirst = false;
   ULong64_t lastEventA = 0;
   while (rPairs.Next()) {
-    o_iMult = iMultPair;
-    o_iVtxZ = iVtxZPair;
+    o_iMult = iMultPair.value;
+    o_iVtxZ = iVtxZPair.value;
     for (const auto& abPair_single : *abPair) {
       if (isntFirst) {
         if (lastEventA != abPair_single.first) {
