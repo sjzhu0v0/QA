@@ -44,6 +44,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   // tree_flowVecd->SetBranchStatus("fTPCNClsCR", 1);
   tree_flowVecd->SetBranchStatus("fTPCNClsFound", 1);
   tree_flowVecd->SetBranchStatus("fTPCChi2NCl", 1);
+  tree_flowVecd->SetBranchStatus("fITSClusterMap", 1);
   // tree_flowVecd->SetBranchStatus("fTPCSignal", 1);
   // tree_flowVecd->SetBranchStatus("fTPCNSigmaEl", 1);
   // tree_flowVecd->SetBranchStatus("fTPCNSigmaPi", 1);
@@ -58,6 +59,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   // tree_flowVecd2->SetBranchStatus("fTPCNClsCR", 1);
   tree_flowVecd2->SetBranchStatus("fTPCNClsFound", 1);
   tree_flowVecd2->SetBranchStatus("fTPCChi2NCl", 1);
+  tree_flowVecd2->SetBranchStatus("fITSClusterMap", 1);
   // tree_flowVecd2->SetBranchStatus("fTPCSignal", 1);
   // tree_flowVecd2->SetBranchStatus("fTPCNSigmaEl", 1);
   // tree_flowVecd2->SetBranchStatus("fTPCNSigmaPi", 1);
@@ -88,6 +90,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   // TTreeReaderArray<float> fTPCNClsCR_ref(rEvt, "fTPCNClsCR");
   TTreeReaderArray<float> fTPCNClsFound_ref(rEvt, "fTPCNClsFound");
   TTreeReaderArray<float> fTPCChi2NCl_ref(rEvt, "fTPCChi2NCl");
+  TTreeReaderArray<uint8_t> fITSClusterMap_ref(rEvt, "fITSClusterMap");
   // TTreeReaderArray<float> fTPCSignal_ref(rEvt, "fTPCSignal");
   // TTreeReaderArray<float> fTPCNSigmaEl_ref(rEvt, "fTPCNSigmaEl");
   // TTreeReaderArray<float> fTPCNSigmaPi_ref(rEvt, "fTPCNSigmaPi");
@@ -102,6 +105,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   // TTreeReaderArray<float> fTPCNClsCR_ref_2(rEvt2, "fTPCNClsCR");
   TTreeReaderArray<float> fTPCNClsFound_ref_2(rEvt2, "fTPCNClsFound");
   TTreeReaderArray<float> fTPCChi2NCl_ref_2(rEvt2, "fTPCChi2NCl");
+  TTreeReaderArray<uint8_t> fITSClusterMap_ref_2(rEvt2, "fITSClusterMap");
   // TTreeReaderArray<float> fTPCSignal_ref_2(rEvt2, "fTPCSignal");
   // TTreeReaderArray<float> fTPCNSigmaEl_ref_2(rEvt2, "fTPCNSigmaEl");
   // TTreeReaderArray<float> fTPCNSigmaPi_ref_2(rEvt2, "fTPCNSigmaPi");
@@ -123,6 +127,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   int o_fSelection;
   float o_fHadronicRate;
   unsigned char o_iMult, o_iVtxZ;
+  uint8_t o_ref1_ITSClusterMap, o_ref2_ITSClusterMap;
   out.Branch("iMult", &o_iMult);
   out.Branch("iVtxZ", &o_iVtxZ);
   // out.Branch("fMultTPC", &o_fMultTPC);
@@ -147,6 +152,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   // out.Branch("ref1_TPCNClsCR", &o_ref1_TPCNClsCR);
   out.Branch("ref1_TPCNClsFound", &o_ref1_TPCNClsFound);
   out.Branch("ref1_TPCChi2NCl", &o_ref1_TPCChi2NCl);
+  out.Branch("ref1_ITSClusterMap", &o_ref1_ITSClusterMap);
   // out.Branch("ref1_TPCSignal", &o_ref1_TPCSignal);
   // out.Branch("ref1_nsig_el", &o_ref1_nsig_el);
   // out.Branch("ref1_nsig_pi", &o_ref1_nsig_pi);
@@ -165,6 +171,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   // out.Branch("ref2_TPCNClsCR", &o_ref2_TPCNClsCR);
   out.Branch("ref2_TPCNClsFound", &o_ref2_TPCNClsFound);
   out.Branch("ref2_TPCChi2NCl", &o_ref2_TPCChi2NCl);
+  out.Branch("ref2_ITSClusterMap", &o_ref2_ITSClusterMap);
   // out.Branch("ref2_TPCSignal", &o_ref2_TPCSignal);
   // out.Branch("ref2_nsig_el", &o_ref2_nsig_el);
   // out.Branch("ref2_nsig_pi", &o_ref2_nsig_pi);
@@ -218,6 +225,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
         // o_ref1_TPCNClsCR = fTPCNClsCR_ref[iRef1];
         o_ref1_TPCNClsFound = fTPCNClsFound_ref[iRef1];
         o_ref1_TPCChi2NCl = fTPCChi2NCl_ref[iRef1];
+        o_ref1_ITSClusterMap = fITSClusterMap_ref[iRef1];
         // o_ref1_TPCSignal = fTPCSignal_ref[iRef1];
         // o_ref1_nsig_el = fTPCNSigmaEl_ref[iRef1];
         // o_ref1_nsig_pi = fTPCNSigmaPi_ref[iRef1];
@@ -233,6 +241,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
           // o_ref2_TPCNClsCR = fTPCNClsCR_ref_2[iRef2];
           o_ref2_TPCNClsFound = fTPCNClsFound_ref_2[iRef2];
           o_ref2_TPCChi2NCl = fTPCChi2NCl_ref_2[iRef2];
+          o_ref2_ITSClusterMap = fITSClusterMap_ref_2[iRef2];
           // o_ref2_TPCSignal = fTPCSignal_ref_2[iRef2];
           // o_ref2_nsig_el = fTPCNSigmaEl_ref_2[iRef2];
           // o_ref2_nsig_pi = fTPCNSigmaPi_ref_2[iRef2];
