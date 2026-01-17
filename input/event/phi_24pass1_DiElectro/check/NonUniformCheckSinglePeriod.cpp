@@ -4,6 +4,8 @@
 
 void NonUniformCheckSinglePeriod(
     TString path_input = "NonUniform_551013_24DiElectron.root") {
+
+  gStyle->SetOptStat(0);
   TFile *fInput = TFile::Open(path_input, "READ");
 
   // KEY: TH2D     fPTREF_fPhiREF;1

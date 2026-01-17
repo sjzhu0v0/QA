@@ -103,7 +103,7 @@ void NonUniformCheckRuns_af_sub(TString name_tag, TString path_list_base,
 void NonUniformCheckRuns_Period() {
   TString path_list =
       "./list/";
-
+  gStyle->SetOptStat(0);
   for (auto period : {"af", "ag", "aj", "al", "am", "an", "ao"}) {
     NonUniformCheckRuns_af_sub(
         "cluster1_" + TString(period),

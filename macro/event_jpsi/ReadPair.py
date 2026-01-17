@@ -7,10 +7,28 @@ from array import array
 # Global list to collect histogram handles
 gRResultHandles = []
 
-import ROOT
-
-# 声明自定义函数（C++ 代码字符串）
+# Declare efficient functional random number generator in C++
 ROOT.gInterpreter.Declare("""
+#include <cstdint>
+
+// SplitMix64: fast, high-quality, seedable PRNG (public domain)
+inline uint64_t splitmix64(uint64_t x) {
+    x += 0x9e3779b97f4a7c15ULL;
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+    return x ^ (x >> 31);
+}
+
+// Generate deterministic random number in [0,1) from r_event, toyIndex, and global seed
+inline double functionalRandom(double r_event, uint64_t toyIndex, uint64_t globalSeed = 0) {
+    // Clamp r_event to [0, 1 - ε] to avoid overflow
+    if (r_event >= 1.0) r_event = 0.999999999999999; // just below 1.0
+    uint64_t base = static_cast<uint64_t>(r_event * (1ULL << 53));
+    uint64_t s = base ^ (toyIndex + 0x9e3779b97f4a7c15ULL) ^ globalSeed;
+    uint64_t z = splitmix64(s);
+    return (z >> 11) * 0x1.0p-53; // use top 53 bits for double precision
+}
+
 int countSetBits_uint8(uint8_t x) {
     int count = 0;
     while (x) {
@@ -19,12 +37,10 @@ int countSetBits_uint8(uint8_t x) {
     }
     return count;
 }
-""")
 
-ROOT.gInterpreter.Declare("""
 float nDCA2Dev(float pt, float dca) {
-    double dev_dca = 0.00179344+0.000924651*pow(abs(pt),-1.4062);
-    return abs(dca)/dev_dca;
+    double dev_dca = 0.00179344 + 0.000924651 * pow(abs(pt), -1.4062);
+    return abs(dca) / dev_dca;
 }
 """)
 
@@ -74,7 +90,7 @@ class StrVar4Hist:
             self.fBins = list(bins)
 
 
-def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_config: str):
+def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_config: str, toy_index: int):
     global gRResultHandles
     gRResultHandles.clear()
 
@@ -137,15 +153,18 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
 
     # Build base RDataFrame
     rdf_base = ROOT.RDataFrame(tree_input)
+
+    # Define all needed columns including the random number
     rdf_AllVar = (
         rdf_base.Define("DeltaPhi", "jpsi_phi - ref_phi")
                 .Define("DeltaEta", "jpsi_eta - ref_eta")
                 .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
-                .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt,ref_dcaz)")
-                .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt,ref_dcaxy)")
+                .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt, ref_dcaz)")
+                .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt, ref_dcaxy)")
+                .Define("randNew", f"functionalRandom(randTag, {toy_index}ULL)")
     )
 
-    # Read cuts
+    # Read cuts from config and add random selection to each cut
     cuts_config = config.get("cuts", {})
     if not cuts_config:
         print("Warning: no 'cuts' section in config. Using default inclusive cut.")
@@ -179,6 +198,8 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         column_names = [v.fName for v in vec_var]
         hist_handle = rdf_filtered.HistoND(thnd_model, column_names)
         gRResultHandles.append(hist_handle)
+
+    ROOT.RDF.RunGraphs(gRResultHandles)
     # Write all results
     output_file = ROOT.TFile(path_output, "RECREATE")
     RResultWrite(gRResultHandles, output_file)
@@ -187,17 +208,18 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
 
 
 def main():
-    # Parse command-line arguments
+    # Parse command-line arguments: now accept optional toy_index (default=0)
     if len(sys.argv) < 4:
-        print("Usage: python script.py <input.root> <output.root> <config.yaml>")
-        print("Example: python analysis.py data.root results.root my_config.yaml")
+        print("Usage: python script.py <input.root> <output.root> <config.yaml> [toy_index]")
+        print("Example: python analysis.py data.root results.root my_config.yaml 42")
         sys.exit(1)
 
     path_input = sys.argv[1]
     path_output = sys.argv[2]
     path_config = sys.argv[3]
+    toy_index = int(sys.argv[4]) if len(sys.argv) >= 5 else 0
 
-    EventMixingReadingPair(path_input, path_output, path_config)
+    EventMixingReadingPair(path_input, path_output, path_config, toy_index)
 
 
 if __name__ == "__main__":
