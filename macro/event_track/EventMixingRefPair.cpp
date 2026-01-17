@@ -190,7 +190,7 @@ void EventMixingRef(TString path_input_flowVecd = "../input1.root",
   int tagProcess = 0;
   while (rPairs.Next()) {
     tagProcess++;
-    if (tagProcess != 20)
+    if (tagProcess != 9)
       continue;
     tagProcess = 0;
     o_iMult = *iMultPair;
