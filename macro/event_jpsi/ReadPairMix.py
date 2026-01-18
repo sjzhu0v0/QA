@@ -26,7 +26,6 @@ float nDCA2Dev(float pt, float dca) {
 
 #include <vector>
 const std::vector<float> vec_mutt = {2.5, 6.5, 9.5, 12.5, 16., 22.5, 25.5, 32., 42., 200.};
-const std::vector<float> vec_mutt = {2.5, 6.5, 9.5, 12.5, 16., 22.5, 25.5, 32., 42., 200.};
 
 float MultFromIndex(int index) {
     return vec_mult[index];
