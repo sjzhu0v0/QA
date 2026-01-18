@@ -9,6 +9,7 @@ gRResultHandles = []
 
 # Declare efficient functional random number generator in C++
 ROOT.gInterpreter.Declare("""
+#include <cstdint>
 int countSetBits_uint8(uint8_t x) {
     int count = 0;
     while (x) {
