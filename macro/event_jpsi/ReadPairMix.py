@@ -153,7 +153,7 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     rdf_AllVar = (
         rdf_base.Define("DeltaPhi", "jpsi_phi - ref_phi")
                 .Define("DeltaEta", "jpsi_eta - ref_eta")
-                .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
+                .Define("nITSCluster", "countSetBits_uint8(ref_ITSClusterMap)")
                 .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt, ref_dcaz)")
                 .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt, ref_dcaxy)")
                 .Define("NumContribCalib", "MultFromIndex(iMult)")
