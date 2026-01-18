@@ -10,25 +10,6 @@ gRResultHandles = []
 # Declare efficient functional random number generator in C++
 ROOT.gInterpreter.Declare("""
 #include <cstdint>
-
-// SplitMix64: fast, high-quality, seedable PRNG (public domain)
-inline uint64_t splitmix64(uint64_t x) {
-    x += 0x9e3779b97f4a7c15ULL;
-    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
-    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
-    return x ^ (x >> 31);
-}
-
-// Generate deterministic random number in [0,1) from r_event, toyIndex, and global seed
-inline double functionalRandom(double r_event, uint64_t toyIndex, uint64_t globalSeed = 0) {
-    // Clamp r_event to [0, 1 - ε] to avoid overflow
-    if (r_event >= 1.0) r_event = 0.999999999999999; // just below 1.0
-    uint64_t base = static_cast<uint64_t>(r_event * (1ULL << 53));
-    uint64_t s = base ^ (toyIndex + 0x9e3779b97f4a7c15ULL) ^ globalSeed;
-    uint64_t z = splitmix64(s);
-    return (z >> 11) * 0x1.0p-53; // use top 53 bits for double precision
-}
-
 int countSetBits_uint8(uint8_t x) {
     int count = 0;
     while (x) {
@@ -42,6 +23,20 @@ float nDCA2Dev(float pt, float dca) {
     double dev_dca = 0.00179344 + 0.000924651 * pow(abs(pt), -1.4062);
     return abs(dca) / dev_dca;
 }
+
+#include <vector>
+const std::vector<float> vec_mult = {2.5, 6.5, 9.5, 12.5, 16., 22.5, 25.5, 32., 42., 200.};
+
+float MultFromIndex(int index) {
+    return vec_mult[index];
+}
+
+#include "TRandom3.h"
+gRandom->SetSeed(0);
+float PosZFromIndex(int index) {
+    return (float) (gRandom->Uniform(-10.+2.*index,2.*index));
+}
+
 """)
 
 def RResultWrite(result_handles, output_file):
@@ -90,7 +85,7 @@ class StrVar4Hist:
             self.fBins = list(bins)
 
 
-def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_config: str, toy_index: int):
+def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_config: str):
     global gRResultHandles
     gRResultHandles.clear()
 
@@ -129,15 +124,12 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         "jpsi_mass", "M_{ee}", "GeV^{2}/c^{4}",
         n_bins_mass_assoYield, [1.8, 5.4]
     )
-    var_PtJpsiCandidate = StrVar4Hist(
-        "jpsi_pt", "p_{T}", "GeV/c", 10, [0.0, 5.0]
-    )
     var_DeltaEtaUS = StrVar4Hist(
-        "DeltaEta", "#Delta#eta_{J/#psi, track}", "",
+        "DeltaEta", "#Delta#eta_{trk, trk}", "",
         n_bins_deltaEta_assoYield, [min_deltaEta_assoYield, max_deltaEta_assoYield]
     )
     var_DeltaPhiUS = StrVar4Hist(
-        "DeltaPhi", "#Delta#phi_{J/#psi, track}", "",
+        "DeltaPhi", "#Delta#phi_{trk, trk}", "",
         n_bins_deltaPhi_assoYield,
         [low_edge_deltaPhiToPi * ROOT.TMath.Pi(), up_edge_deltaPhiToPi * ROOT.TMath.Pi()]
     )
@@ -146,8 +138,6 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         var_DeltaEtaUS,
         var_DeltaPhiUS,
         var_fPosZ,
-        var_MassJpsiCandidate,
-        var_PtJpsiCandidate,
         var_NumContribCalibBinned
     ]
 
@@ -156,12 +146,16 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
 
     # Define all needed columns including the random number
     rdf_AllVar = (
-        rdf_base.Define("DeltaPhi", "jpsi_phi - ref_phi")
-                .Define("DeltaEta", "jpsi_eta - ref_eta")
-                .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
-                .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt, ref_dcaz)")
-                .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt, ref_dcaxy)")
-                .Define("randNew", f"functionalRandom(randTag, {toy_index}ULL)")
+        rdf_base.Define("DeltaPhi", "ref1_phi - ref2_phi")
+                .Define("DeltaEta", "ref1_eta - ref2_eta")
+                .Define("nITSCluster1", "countSetBits_uint8(ref1_ITSClusterMap)")
+                .Define("nDcaZ2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaz)")
+                .Define("nDcaXY2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaxy)")
+                .Define("nITSCluster2", "countSetBits_uint8(ref2_ITSClusterMap)")
+                .Define("nDcaZ2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaz)")
+                .Define("nDcaXY2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaxy)")
+                .Define("NumContribCalib", "MultFromIndex(iMult)")
+                .Define("fPosZ", "PosZFromIndex(iVtxZ)")
     )
 
     # Read cuts from config and add random selection to each cut
@@ -208,18 +202,16 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
 
 
 def main():
-    # Parse command-line arguments: now accept optional toy_index (default=0)
     if len(sys.argv) < 4:
-        print("Usage: python script.py <input.root> <output.root> <config.yaml> [toy_index]")
-        print("Example: python analysis.py data.root results.root my_config.yaml 42")
+        print("Usage: python script.py <input.root> <output.root> <config.yaml>")
+        print("Example: python analysis.py data.root results.root my_config.yaml")
         sys.exit(1)
 
     path_input = sys.argv[1]
     path_output = sys.argv[2]
     path_config = sys.argv[3]
-    toy_index = int(sys.argv[4]) if len(sys.argv) >= 5 else 0
 
-    EventMixingReadingPair(path_input, path_output, path_config, toy_index)
+    EventMixingReadingPair(path_input, path_output, path_config)
 
 
 if __name__ == "__main__":
