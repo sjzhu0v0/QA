@@ -157,7 +157,7 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
                 .Define("NumContribCalib", "MultFromIndex(iMult)")
                 .Define("fPosZ", "PosZFromIndex(iVtxZ)")
     )
-    ROOT.RDF.Experimental.AddProgressBar(rdf_AllVar)
+    ROOT.RDF.Experimental.AddProgressBar(rdf_base)
     # Read cuts from config and add random selection to each cut
     cuts_config = config.get("cuts", {})
     if not cuts_config:
