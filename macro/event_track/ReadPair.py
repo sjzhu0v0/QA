@@ -163,8 +163,6 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
                 .Define("nITSCluster2", "countSetBits_uint8(ref2_ITSClusterMap)")
                 .Define("nDcaZ2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaz)")
                 .Define("nDcaXY2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaxy)")
-                .Define("NumContribCalib", "MultFromIndex(iMult)")
-                .Define("fPosZ", "PosZFromIndex(iVtxZ)")
                 .Define("randNew", f"functionalRandom(randTag, {toy_index}ULL)")
     )
 
