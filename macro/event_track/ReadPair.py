@@ -146,21 +146,25 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         var_DeltaEtaUS,
         var_DeltaPhiUS,
         var_fPosZ,
-        var_MassJpsiCandidate,
-        var_PtJpsiCandidate,
         var_NumContribCalibBinned
     ]
 
     # Build base RDataFrame
     rdf_base = ROOT.RDataFrame(tree_input)
+    ROOT.RDF.Experimental.AddProgressBar(rdf_base)
 
     # Define all needed columns including the random number
     rdf_AllVar = (
-        rdf_base.Define("DeltaPhi", "jpsi_phi - ref_phi")
-                .Define("DeltaEta", "jpsi_eta - ref_eta")
-                .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
-                .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt, ref_dcaz)")
-                .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt, ref_dcaxy)")
+        rdf_base.Define("DeltaPhi", "ref1_phi - ref2_phi")
+                .Define("DeltaEta", "ref1_eta - ref2_eta")
+                .Define("nITSCluster1", "countSetBits_uint8(ref1_ITSClusterMap)")
+                .Define("nDcaZ2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaz)")
+                .Define("nDcaXY2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaxy)")
+                .Define("nITSCluster2", "countSetBits_uint8(ref2_ITSClusterMap)")
+                .Define("nDcaZ2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaz)")
+                .Define("nDcaXY2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaxy)")
+                .Define("NumContribCalib", "MultFromIndex(iMult)")
+                .Define("fPosZ", "PosZFromIndex(iVtxZ)")
                 .Define("randNew", f"functionalRandom(randTag, {toy_index}ULL)")
     )
 
