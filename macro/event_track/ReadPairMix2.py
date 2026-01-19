@@ -144,7 +144,7 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     # Build base RDataFrame
     rdf_base = ROOT.RDataFrame(tree_input)
     ROOT.RDF.Experimental.AddProgressBar(rdf_base)
-    rdf_base = rdf_base.Filter("gRandom->Rndm() < 0.1", "10% random sampling")
+    rdf_base = rdf_base.Filter("gRandom->Rndm() < 0.1/4.", "10% random sampling")
     # Define all needed columns including the random number
     rdf_AllVar = (
         rdf_base.Define("DeltaPhi", "ref1_phi - ref2_phi")
