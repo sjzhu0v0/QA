@@ -47,9 +47,10 @@ float nDCA2Dev(float pt, float dca) {
 
 bool isSameJpsi(float tag) {
     thread_local float tag_old = -1;
-    bool toBeReturned = (tag == tag_old);
-    tag_old = tag;
     cout << tag << "  " << tag_old << endl;
+    bool toBeReturned = (tag == tag_old);
+    cout << toBeReturned << endl;
+    tag_old = tag;
     return toBeReturned;
 }
 """)
