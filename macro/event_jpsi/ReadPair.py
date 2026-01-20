@@ -43,16 +43,6 @@ float nDCA2Dev(float pt, float dca) {
     return abs(dca) / dev_dca;
 }
 
-#include <iostream>
-
-bool isSameJpsi(float tag) {
-    thread_local float tag_old = -1;
-    cout << tag << "  " << tag_old << endl;
-    bool toBeReturned = (tag == tag_old);
-    cout << toBeReturned << endl;
-    tag_old = tag;
-    return toBeReturned;
-}
 """)
 
 def RResultWrite(result_handles, output_file):
@@ -193,7 +183,16 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     # Book histograms for each cut
     for cut_name, cut_expr in cut_items:
         print(f"Applying cut '{cut_name}': {cut_expr}")
-        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define("isSameJpsi","isSameJpsi(jpsi_mass)")
+        ROOT.gInterpreter.Declare(f"""
+bool isSameJpsi{cut_name}(float tag)
+{
+    static float tag_old = -1.;
+    bool aaa = (tag_old == tag);
+    tag_old = tag;
+    return aaa;
+};
+""")
+        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define("isSameJpsi",f"isSameJpsi{cut_name}(jpsi_mass)")
 
         hist_name = "_".join(v.fName for v in vec_var) + "_" + cut_name
         axis_titles = ";".join(
