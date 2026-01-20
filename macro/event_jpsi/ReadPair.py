@@ -44,8 +44,8 @@ float nDCA2Dev(float pt, float dca) {
 }
 
 bool isSameJpsi(double tag) {
-    static double tag_old = -1;
-    bool toBeReturned = tag == tag_old;
+    thread_local double tag_old = -1;
+    bool toBeReturned = (tag == tag_old);
     tag_old = tag;
     return toBeReturned;
 }
