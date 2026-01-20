@@ -42,6 +42,13 @@ float nDCA2Dev(float pt, float dca) {
     double dev_dca = 0.00179344 + 0.000924651 * pow(abs(pt), -1.4062);
     return abs(dca) / dev_dca;
 }
+
+bool isSameJpsi(double tag) {
+    static double tag_old = -1;
+    bool toBeReturned = tag == tag_old;
+    tag_old = tag;
+    return toBeReturned;
+}
 """)
 
 def RResultWrite(result_handles, output_file):
@@ -151,6 +158,13 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         var_NumContribCalibBinned
     ]
 
+    vec_var2 = [
+        var_fPosZ,
+        var_MassJpsiCandidate,
+        var_PtJpsiCandidate,
+        var_NumContribCalibBinned
+    ]
+
     # Build base RDataFrame
     rdf_base = ROOT.RDataFrame(tree_input)
 
@@ -175,7 +189,7 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     # Book histograms for each cut
     for cut_name, cut_expr in cut_items:
         print(f"Applying cut '{cut_name}': {cut_expr}")
-        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name)
+        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define("isSameJpsi","isSameJpsi(randTag)")
 
         hist_name = "_".join(v.fName for v in vec_var) + "_" + cut_name
         axis_titles = ";".join(
@@ -198,6 +212,28 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         column_names = [v.fName for v in vec_var]
         hist_handle = rdf_filtered.HistoND(thnd_model, column_names)
         gRResultHandles.append(hist_handle)
+
+        rdf_filtered2 = rdf_filtered.Filter("!isSameJpsi")
+        hist_name2 = "_".join(v.fName for v in vec_var2) + "_" + cut_name
+        axis_titles2 = ";".join(
+            v.fTitle + (" (" + v.fUnit + ")" if v.fUnit else "") for v in vec_var2
+        )
+        full_title2 = f"{hist_name2};{axis_titles2}"
+
+        nbins_list2 = [v.fNbins for v in vec_var2]
+        edges_list2 = [v.fBins for v in vec_var2]
+        edge_arrays2 = [array('d', edges) for edges in edges_list2]
+
+        thnd_model2 = ROOT.RDF.THnDModel(
+            hist_name2,
+            full_title2,
+            len(vec_var2),
+            nbins_list2,
+            edge_arrays2
+        )
+        column_names2 = [v.fName for v in vec_var2]
+        hist_handle2 = rdf_filtered2.HistoND(thnd_model2, column_names2)
+        gRResultHandles.append(hist_handle2)
 
     ROOT.RDF.RunGraphs(gRResultHandles)
     # Write all results
