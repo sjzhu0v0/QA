@@ -43,8 +43,10 @@ float nDCA2Dev(float pt, float dca) {
     return abs(dca) / dev_dca;
 }
 
-bool isSameJpsi(double tag) {
-    thread_local double tag_old = -1;
+#include <iostream>
+
+bool isSameJpsi(float tag) {
+    thread_local float tag_old = -1;
     bool toBeReturned = (tag == tag_old);
     tag_old = tag;
     return toBeReturned;
@@ -189,7 +191,7 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     # Book histograms for each cut
     for cut_name, cut_expr in cut_items:
         print(f"Applying cut '{cut_name}': {cut_expr}")
-        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define("isSameJpsi","isSameJpsi(randTag)")
+        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define("isSameJpsi","isSameJpsi(jpsi_mass)")
 
         hist_name = "_".join(v.fName for v in vec_var) + "_" + cut_name
         axis_titles = ";".join(
