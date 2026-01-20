@@ -185,12 +185,12 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
         print(f"Applying cut '{cut_name}': {cut_expr}")
         ROOT.gInterpreter.Declare(f"""
 bool isSameJpsi{cut_name}(float tag)
-{
+{{
     static float tag_old = -1.;
     bool aaa = (tag_old == tag);
     tag_old = tag;
     return aaa;
-};
+}};
 """)
         rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define("isSameJpsi",f"isSameJpsi{cut_name}(jpsi_mass)")
 
