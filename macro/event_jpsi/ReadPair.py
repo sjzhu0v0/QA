@@ -49,6 +49,7 @@ bool isSameJpsi(float tag) {
     thread_local float tag_old = -1;
     bool toBeReturned = (tag == tag_old);
     tag_old = tag;
+    cout << tag << "  " << tag_old << endl;
     return toBeReturned;
 }
 """)
