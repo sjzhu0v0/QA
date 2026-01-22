@@ -1,3 +1,4 @@
+build/
 include/
 kit/
 output/
@@ -11,3 +12,4 @@ backup/
 *.so
 *.d
 list/
+compile_commands.json
