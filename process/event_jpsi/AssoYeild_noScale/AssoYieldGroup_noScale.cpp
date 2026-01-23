@@ -15,6 +15,7 @@ void AssoYieldGroup_noScale(
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYieldGroup_noScale.pdf") {
   gROOT->SetBatch(kTRUE);
+  gErrorIgnoreLevel = kWarning;
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   YAML::Node config = YAML::LoadFile("config.yaml");
   const double low_edge_deltaPhiToPi =
