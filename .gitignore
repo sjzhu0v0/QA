@@ -13,3 +13,4 @@ backup/
 *.d
 list/
 compile_commands.json
+.cache/
