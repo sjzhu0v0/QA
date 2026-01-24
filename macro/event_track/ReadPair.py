@@ -196,10 +196,8 @@ bool isSameTrack{cut_name}(float tag)
 """
         )
         print(f"Applying cut '{cut_name}': {cut_expr}")
-        rdf_filtered = (
-            rdf_AllVar.Filter(cut_expr, cut_name)
-            .Define("")
-            .Define("isSameTrack", f"isSameTrack{cut_name}(ref1_phi)")
+        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define(
+            "isSameTrack", f"isSameTrack{cut_name}(ref1_phi)"
         )
 
         hist_name = "_".join(v.fName for v in vec_var) + "_" + cut_name
