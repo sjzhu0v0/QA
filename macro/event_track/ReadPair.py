@@ -233,7 +233,7 @@ bool isSameTrack{cut_name}(float tag)
             hist_name2, full_title2, len(vec_var2), nbins_list2, edge_arrays2
         )
 
-        column_names = [v.fName for v in vec_var2]
+        column_names2 = [v.fName for v in vec_var2]
         hist_handle2 = rdf_filtered2.HistoND(thnd_model2, column_names2)
         gRResultHandles.append(hist_handle2)
 
