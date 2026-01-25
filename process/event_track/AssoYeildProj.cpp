@@ -80,7 +80,7 @@ public:
   TH2D* AssociatedYieldVtxZ(int iVtxZ, int iMult, bool doNTrigScale = true) {
     TH2D* h2D = fHnSame->Project(gtype_vars::kDeltaPhi, gtype_vars::kDeltaEta, {iVtxZ, iMult});
     TH2D* h2DMix = fHnMix->Project(gtype_vars::kDeltaPhi, gtype_vars::kDeltaEta,
-                                   {iVtxZ, doMixMultInt ? iMult : 0});
+                                   {iVtxZ, doMixMultInt ? 0 : iMult});
 
     vector<int> vec_idTrigger_new = {iVtxZ, iMult};
     double number_triggered = fHnTrigger->GetBinContent(vec_idTrigger_new);
@@ -108,7 +108,7 @@ public:
   TH2D* AssociatedYieldVtxZPtSum(int iVtxZ, int iMult, bool doNTrigScale = true) {
     TH2D* h2D = fHnSame->Project(gtype_vars::kDeltaPhi, gtype_vars::kDeltaEta, {iVtxZ, iMult});
     TH2D* h2DMix = fHnMix->Project(gtype_vars::kDeltaPhi, gtype_vars::kDeltaEta,
-                                   {iVtxZ, doMixMultInt ? iMult : 0});
+                                   {iVtxZ, doMixMultInt ? 0 : iMult});
 
     vector<int> vec_idTrigger_new = {iVtxZ, iMult};
     double number_triggered = fHnTrigger->GetBinContent(vec_idTrigger_new);
@@ -144,13 +144,14 @@ public:
       h2D_temp->Delete();
     }
     TH2D* h2DMix = fHnMix->Project(gtype_vars::kDeltaPhi, gtype_vars::kDeltaEta,
-                                   {iVtxZ, doMixMultInt ? vec_iMult[0] : 0});
-    for (int i = 1; i < vec_iMult.size(); i++) {
-      TH2D* h2DMix_temp = fHnMix->Project(gtype_vars::kDeltaPhi, gtype_vars::kDeltaEta,
-                                          {iVtxZ, doMixMultInt ? vec_iMult[i] : 0});
-      h2DMix->Add(h2DMix_temp);
-      h2DMix_temp->Delete();
-    }
+                                   {iVtxZ, doMixMultInt ? 0 : vec_iMult[0]});
+    if (!doMixMultInt)
+      for (int i = 1; i < vec_iMult.size(); i++) {
+        TH2D* h2DMix_temp = fHnMix->Project(gtype_vars::kDeltaPhi, gtype_vars::kDeltaEta,
+                                            {iVtxZ, doMixMultInt ? 0 : vec_iMult[i]});
+        h2DMix->Add(h2DMix_temp);
+        h2DMix_temp->Delete();
+      }
 
     vector<int> vec_idTrigger_new = {iVtxZ, vec_iMult[0]};
     double number_triggered = fHnTrigger->GetBinContent(vec_idTrigger_new);
