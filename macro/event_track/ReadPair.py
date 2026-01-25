@@ -192,6 +192,8 @@ bool isSameTrack{cut_name}(float tag)
 """
         )
         print(f"Applying cut '{cut_name}': {cut_expr}")
+        rdf_test = rdf_AllVar.Define("CutEff", cut_expr)
+        gRResultHandles.append(rdf_test.Histo1D("CutEff", f"CutEff_{cut_name};CutEff;Entries", 2, -0.5, 1.5))
         rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define(
             "isSameTrack", f"isSameTrack{cut_name}(ref1_phi)"
         )
