@@ -351,3 +351,8 @@ void AssoYieldEtagap(
   file_output->Write();
   // file_output->Close();
 }
+
+int main(int argc, char **argv) {
+  AssoYieldEtagap(argv[1], argv[2], argv[3], argv[4]);
+  return 0;
+}
