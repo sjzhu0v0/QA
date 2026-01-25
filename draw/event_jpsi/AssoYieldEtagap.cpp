@@ -91,7 +91,7 @@ void AssoYieldEtagap(
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                           "AssoYieldEtagap.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "AssoYieldEtagap.pdf") {
+                       "AssoYieldEtagap") {
   gErrorIgnoreLevel = kWarning;
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
@@ -230,7 +230,7 @@ void AssoYieldEtagap(
   MIndexHist indexEtagap(var_EtaGap);
   MIndexHist indexPtV2Jpsi(var_PtV2Jpsi);
 
-  gPublisherCanvas = new MPublisherCanvas(path_pdf, 3, 1);
+  gPublisherCanvas = new MPublisherCanvas(path_pdf+".pdf", 3, 1);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
 
@@ -319,8 +319,7 @@ void AssoYieldEtagap(
     h->SetTitle(TString::Format("v_{2}^{J/#psi} at #Delta#eta = %.2f", etaGap));
     h->Draw();
   }
-  c_v2_pT_etaGap->SaveAs("/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                         "v2Jpsi_etaGap.pdf");
+  c_v2_pT_etaGap->SaveAs(path_pdf + "_v2Jpsi_etaGap.pdf");
 
   TCanvas *c_v2_pT_etaGap1p2 =
       new TCanvas("c_v2_pT_etaGap1p2", "c_v2_pT_etaGap1p2", 600, 600);
@@ -330,8 +329,7 @@ void AssoYieldEtagap(
   h_v2_etaGap1p2->SetTitle("v_{2}^{J/#psi} at #Delta#eta = 1.2");
   h_v2_etaGap1p2->Draw();
   c_v2_pT_etaGap1p2->SaveAs(
-      "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-      "v2Jpsi_etaGap1p2.pdf");
+      path_pdf + "_v2_pT_etaGap1p2.pdf");
 
   TCanvas *c_V2_pT_etaGap =
       new TCanvas("c_V2_pT_etaGap", "c_V2_pT_etaGap", 1200, 1200);
