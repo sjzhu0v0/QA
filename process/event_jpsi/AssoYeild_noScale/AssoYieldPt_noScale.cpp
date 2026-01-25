@@ -4,26 +4,23 @@
 #include "TApplication.h"
 #include "yaml-cpp/yaml.h"
 
-void AssoYieldPt(
-    TString input_se_pr =
-        "/home/szhu/work/alice/analysis/QA/test/JpsiAsso.root:DeltaEtaUS_"
-        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString input_se_raw =
-        "/home/szhu/work/alice/analysis/QA/test/JpsiQA.root:fPosZ_"
-        "MassUS_PtUS_NumContribCalib",
-    TString input_me_pr = "/home/szhu/work/alice/analysis/QA/test/"
-                          "MixEventReading.root:DeltaEtaUS_"
-                          "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYieldPt") {
+void AssoYieldPt(TString input_se_pr =
+                     "/home/szhu/work/alice/analysis/QA/test/JpsiAsso.root:DeltaEtaUS_"
+                     "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+                 TString input_se_raw = "/home/szhu/work/alice/analysis/QA/test/JpsiQA.root:fPosZ_"
+                                        "MassUS_PtUS_NumContribCalib",
+                 TString input_me_pr = "/home/szhu/work/alice/analysis/QA/test/"
+                                       "MixEventReading.root:DeltaEtaUS_"
+                                       "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
+                 TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
+                                       "AssoYieldPt") {
   YAML::Node config = YAML::LoadFile("config.yaml");
 
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
   auto hist_me_pr = MRootIO::GetObjectDiectly<THnD>(input_me_pr);
 
-  TFile *file_output =
-      new TFile(Form("%s.root", path_output.Data()), "RECREATE");
+  TFile* file_output = new TFile(Form("%s.root", path_output.Data()), "RECREATE");
 
   MHnTool hnTool_se_pr(hist_se_pr);
   MHnTool hnTool_se_raw(hist_se_raw);
@@ -33,19 +30,16 @@ void AssoYieldPt(
   else if (nbins_posz_raw == 8) {
     // Do nothing, already rebinned
   } else {
-    cerr << "Error: Unexpected number of bins for PosZ: " << nbins_posz_raw
-         << endl;
+    cerr << "Error: Unexpected number of bins for PosZ: " << nbins_posz_raw << endl;
     exit(1);
   }
   MHnTool hnTool_me_pr(hist_me_pr);
 
   AssocYieldHelper_v2 assoYield(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
-  assoYield.Rebin(gtype_vars::kNumContrib, 5);
-  int n_rebin_deltaEta_assoYield =
-      config["hist_binning"]["n_rebin_deltaEta_assoYield"].as<int>();
+  // assoYield.Rebin(gtype_vars::kNumContrib, 5);
+  int n_rebin_deltaEta_assoYield = config["hist_binning"]["n_rebin_deltaEta_assoYield"].as<int>();
   assoYield.Rebin(gtype_vars::kDeltaEta, n_rebin_deltaEta_assoYield);
-  int n_rebin_mass_assoYield =
-      config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
+  int n_rebin_mass_assoYield = config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
   assoYield.Rebin(gtype_vars::kMass, n_rebin_mass_assoYield);
 
   hnTool_se_pr.PrintAllAxis();
@@ -87,7 +81,7 @@ void AssoYieldPt(
 
   auto h2_lowMult = assoYield.AssociatedYield(0, 0, 1);
   auto h2_highMult = assoYield.AssociatedYield(0, 0, 2);
-  auto h2_highSubLow = (TH2D *)h2_highMult->Clone("h2_highSubLow");
+  auto h2_highSubLow = (TH2D*)h2_highMult->Clone("h2_highSubLow");
   HistSubstraction2D(h2_highSubLow, h2_highMult, h2_lowMult);
 
   // h2_total->GetZaxis()->SetRangeUser(1., 4.5);
@@ -168,12 +162,12 @@ void AssoYieldPt(
 
   for (int i_pt = 1; i_pt <= strAny_ptV2.fNbins; i_pt++)
     for (int i_mass = 1; i_mass <= hnTool_se_pr.GetNbins(3); i_mass++) {
-      auto h2_total_mass_pt = assoYield.AssociatedYieldPtSum(
-          i_mass, strAny_ptV2[i_pt - 1], 0, false);
-      auto h2_lowMult_mass_pt = assoYield.AssociatedYieldPtSum(
-          i_mass, strAny_ptV2[i_pt - 1], 1, false);
-      auto h2_highMult_mass_pt = assoYield.AssociatedYieldPtSum(
-          i_mass, strAny_ptV2[i_pt - 1], 2, false);
+      auto h2_total_mass_pt =
+          assoYield.AssociatedYieldPtSum(i_mass, strAny_ptV2[i_pt - 1], 0, false);
+      auto h2_lowMult_mass_pt = assoYield.AssociatedYieldPtSum(i_mass, strAny_ptV2[i_pt - 1],
+                                                               {1, 2, 3, 4, 5, 6, 7}, false);
+      auto h2_highMult_mass_pt =
+          assoYield.AssociatedYieldPtSum(i_mass, strAny_ptV2[i_pt - 1], {8, 9, 10}, false);
       // auto h2_highSubLow_mass_pt = (TH2D *)h2_highMult_mass_pt->Clone(
       //     Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
       // HistSubstraction2D(h2_highSubLow_mass_pt, h2_highMult_mass_pt,
@@ -187,10 +181,8 @@ void AssoYieldPt(
       // StyleFlow::DeltaPhi_DeltaEta(gPublisherCanvas->NewPad(),
       //                              h2_highSubLow_mass_pt);
       h2_total_mass_pt->SetName(Form("h2_total_mass_pt_%d_%d", i_mass, i_pt));
-      h2_lowMult_mass_pt->SetName(
-          Form("h2_lowMult_mass_pt_%d_%d", i_mass, i_pt));
-      h2_highMult_mass_pt->SetName(
-          Form("h2_highMult_mass_pt_%d_%d", i_mass, i_pt));
+      h2_lowMult_mass_pt->SetName(Form("h2_lowMult_mass_pt_%d_%d", i_mass, i_pt));
+      h2_highMult_mass_pt->SetName(Form("h2_highMult_mass_pt_%d_%d", i_mass, i_pt));
       // h2_highSubLow_mass_pt->SetName(
       //     Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
       h2_total_mass_pt->Write();
@@ -203,23 +195,19 @@ void AssoYieldPt(
   file_output->Close();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   gROOT->SetBatch(kTRUE);
-  TString path_input_se_pr =
-      "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-      "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_"
-      "MassUS_"
-      "PtUS_NumContribCalibUS";
-  TString path_input_se_raw =
-      "/home/szhu/work/alice/analysis/QA/input/jpsi/"
-      "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_MassUS_PtUS_NumContribCalib";
-  TString path_input_me_pr =
-      "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-      "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_"
-      "PosZUS_"
-      "MassUS_PtUS_NumContribCalibUS";
-  TString path_output =
-      "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYieldQA";
+  TString path_input_se_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                             "JpsiAsso_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_PosZUS_"
+                             "MassUS_"
+                             "PtUS_NumContribCalibUS";
+  TString path_input_se_raw = "/home/szhu/work/alice/analysis/QA/input/jpsi/"
+                              "JpsiQA_LHC22pass4_dqfilter.root:fPosZ_MassUS_PtUS_NumContribCalib";
+  TString path_input_me_pr = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                             "MixEventReading_LHC22pass4_dqfilter.root:DeltaEtaUS_DeltaPhiUS_"
+                             "PosZUS_"
+                             "MassUS_PtUS_NumContribCalibUS";
+  TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYieldQA";
 
   if (argc > 1) {
     path_input_se_pr = argv[1];
@@ -233,8 +221,7 @@ int main(int argc, char **argv) {
   if (argc > 4) {
     path_output = argv[4];
   }
-  AssoYieldPt(path_input_se_pr, path_input_se_raw, path_input_me_pr,
-              path_output);
+  AssoYieldPt(path_input_se_pr, path_input_se_raw, path_input_me_pr, path_output);
 
   return 0;
 }
