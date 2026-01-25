@@ -222,7 +222,7 @@ public:
 
   TH2D* AssociatedYieldPtSum(vector<int> vec_iMult, bool doNTrigScale = true) {
     int nVtxZ = fHnSame->GetNbins(2);
-    TH2D* h2_first = AssociatedYieldVtxZPtSum(1, vec_iMult[0], false);
+    TH2D* h2_first = AssociatedYieldVtxZPtSum(1, vec_iMult, false);
     // int iMass_new;
     // if (iMass != 0)
     //   iMass_new = fHnTrigger->hN->GetAxis(1)->FindBin(
