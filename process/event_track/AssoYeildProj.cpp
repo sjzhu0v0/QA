@@ -85,7 +85,7 @@ public:
     vector<int> vec_idTrigger_new = {iVtxZ, iMult};
     double number_triggered = fHnTrigger->GetBinContent(vec_idTrigger_new);
     TH2D* h_assoYield = (TH2D*)h2D->Clone(Form("h_assoYield_%d_%d", iVtxZ, iMult));
-    DensityHisto2DNoWeight(h2DMix);
+    AccCorrHisto2DNoWeight(h2DMix);
 
     h_assoYield->Divide(h2DMix);
     // h_assoYield->Scale(1.0 / number_triggered);

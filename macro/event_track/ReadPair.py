@@ -131,10 +131,6 @@ def EventMixingReadingPair(
         10,
         [0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300],
     )
-    var_MassJpsiCandidate = StrVar4Hist(
-        "jpsi_mass", "M_{ee}", "GeV^{2}/c^{4}", n_bins_mass_assoYield, [1.8, 5.4]
-    )
-    var_PtJpsiCandidate = StrVar4Hist("jpsi_pt", "p_{T}", "GeV/c", 10, [0.0, 5.0])
     var_DeltaEtaUS = StrVar4Hist(
         "DeltaEta",
         "#Delta#eta_{J/#psi, track}",
@@ -218,7 +214,7 @@ bool isSameTrack{cut_name}(float tag)
         hist_handle = rdf_filtered.HistoND(thnd_model, column_names)
         gRResultHandles.append(hist_handle)
 
-        rdf_filtered2 = rdf_filtered.Filter("isSameTrack")
+        rdf_filtered2 = rdf_filtered.Filter("!isSameTrack")
         hist_name2 = "_".join(v.fName for v in vec_var2) + "_" + cut_name
         axis_titles2 = ";".join(
             v.fTitle + (" (" + v.fUnit + ")" if v.fUnit else "") for v in vec_var2
