@@ -86,6 +86,8 @@ compute_V2_and_error(const TFitResultPtr &result_sub,
 void AssoYieldEtagap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
                          "JpsiAssocYield_24apass1.root",
+    TString path_hist_ref = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                         "JpsiAssocYield_24apass1.root:hist",
     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                           "AssoYieldEtagap.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
@@ -232,9 +234,7 @@ void AssoYieldEtagap(
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
 
-  auto v2REF_etaGap = MRootIO::GetObjectDiectly<TH1D>(
-      "/home/szhu/work/alice/analysis/QA/output/event_track/"
-      "v2_etagap_24pass1.root:EtaGap_v2");
+  auto v2REF_etaGap = MRootIO::GetObjectDiectly<TH1D>(path_hist_ref);
 
   file_output->cd();
 
