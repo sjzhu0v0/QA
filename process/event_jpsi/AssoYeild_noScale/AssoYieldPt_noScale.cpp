@@ -36,7 +36,7 @@ void AssoYieldPt(TString input_se_pr =
   MHnTool hnTool_me_pr(hist_me_pr);
 
   AssocYieldHelper_v2 assoYield(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
-  // assoYield.Rebin(gtype_vars::kNumContrib, 5);
+  assoYield.Rebin(gtype_vars::kNumContrib, 2);
   int n_rebin_deltaEta_assoYield = config["hist_binning"]["n_rebin_deltaEta_assoYield"].as<int>();
   assoYield.Rebin(gtype_vars::kDeltaEta, n_rebin_deltaEta_assoYield);
   int n_rebin_mass_assoYield = config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
@@ -165,9 +165,9 @@ void AssoYieldPt(TString input_se_pr =
       auto h2_total_mass_pt =
           assoYield.AssociatedYieldPtSum(i_mass, strAny_ptV2[i_pt - 1], 0, false);
       auto h2_lowMult_mass_pt = assoYield.AssociatedYieldPtSum(i_mass, strAny_ptV2[i_pt - 1],
-                                                               {1, 2, 3, 4, 5, 6, 7}, false);
+                                                               {1, 2, 3, 4}, false);
       auto h2_highMult_mass_pt =
-          assoYield.AssociatedYieldPtSum(i_mass, strAny_ptV2[i_pt - 1], {8, 9, 10}, false);
+          assoYield.AssociatedYieldPtSum(i_mass, strAny_ptV2[i_pt - 1], {5}, false);
       // auto h2_highSubLow_mass_pt = (TH2D *)h2_highMult_mass_pt->Clone(
       //     Form("h2_highSubLow_mass_pt_%d_%d", i_mass, i_pt));
       // HistSubstraction2D(h2_highSubLow_mass_pt, h2_highMult_mass_pt,

@@ -339,7 +339,7 @@ void AssoYieldProj(
   MHnTool hnTool_me_pr(hist_me_pr);
 
   AssocYieldHelperREF assoYield(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
-  assoYield.Rebin(gtype_vars::kNumContrib, 5);
+  assoYield.Rebin(gtype_vars::kNumContrib, 2);
   int n_rebin_deltaEta_assoYield = config["hist_binning"]["n_rebin_deltaEta_assoYield"].as<int>();
   assoYield.Rebin(gtype_vars::kDeltaEta, n_rebin_deltaEta_assoYield);
 
@@ -351,8 +351,8 @@ void AssoYieldProj(
   gStyle->SetPalette(kRainBow);
   file_output->cd();
   auto h2_total_mass_pt = assoYield.AssociatedYieldPtSum(0, true);
-  auto h2_lowMult_mass_pt = assoYield.AssociatedYieldPtSum({1, 2, 3, 4, 5, 6, 7}, true);
-  auto h2_highMult_mass_pt = assoYield.AssociatedYieldPtSum({8, 9, 10}, true);
+  auto h2_lowMult_mass_pt = assoYield.AssociatedYieldPtSum({1, 2, 3, 4}, true);
+  auto h2_highMult_mass_pt = assoYield.AssociatedYieldPtSum({5}, true);
   h2_total_mass_pt->SetName("h2_total");
   h2_lowMult_mass_pt->SetName("h2_lowMult");
   h2_highMult_mass_pt->SetName("h2_highMult");
