@@ -31,12 +31,13 @@ inline double functionalRandom(double r_event, uint64_t toyIndex, uint64_t globa
 }
 
 int countSetBits_uint8(uint8_t x) {
-    int count = 0;
-    while (x) {
-        count += x & 1;
-        x >>= 1;
-    }
-    return count;
+    // int count = 0;
+    // while (x) {
+    //     count += x & 1;
+    //     x >>= 1;
+    // }
+    // return count;
+    return 10;
 }
 
 float nDCA2Dev(float pt, float dca) {

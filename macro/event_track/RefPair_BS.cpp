@@ -118,7 +118,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fTPCChi2NCl", "ref1_idx"})
           .Define("ref1_ITSClusterMap",
-                  [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  [](const RVec<uint8_t>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fITSClusterMap", "ref1_idx"})
           .Define("ref1_TPCSignal",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
@@ -155,7 +155,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fTPCChi2NCl", "ref2_idx"})
           .Define("ref2_ITSClusterMap",
-                  [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  [](const RVec<uint8_t>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fITSClusterMap", "ref2_idx"})
           .Define("ref2_TPCSignal",
                   [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
