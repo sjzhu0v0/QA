@@ -169,7 +169,8 @@ def EventMixingReadingPair(
         .Define("nDcaXY2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaxy)")
         .Define("randNew", f"functionalRandom(randTag, {toy_index}ULL)")
     )
-
+# "ref1_pt > 0.4 && ref1_pt < 3 && ref1_ITSChi2NCl < 4 && ref1_TPCNClsFound > 80 && nITSCluster1 > 2.5 && nDcaZ2Dev1 < 3 && nDcaXY2Dev1 < 3 && ref2_pt > 0.4 && ref2_pt < 3 && ref2_ITSChi2NCl < 4 && ref2_TPCNClsFound > 80 && nITSCluster2 > 2.5 && nDcaZ2Dev2 < 3 && nDcaXY2Dev2 < 3 && randNew < 0.5"
+    gRResultHandles.append(rdf_AllVar.Histo1D("ref1_pt > 0.4"))
     # Read cuts from config and add random selection to each cut
     cuts_config = config.get("cuts", {})
     if not cuts_config:
