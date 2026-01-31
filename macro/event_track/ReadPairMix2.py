@@ -8,7 +8,8 @@ from array import array
 gRResultHandles = []
 
 # Declare efficient functional random number generator in C++
-ROOT.gInterpreter.Declare("""
+ROOT.gInterpreter.Declare(
+    """
 #include <cstdint>
 int countSetBits_uint8(uint8_t x) {
     int count = 0;
@@ -37,7 +38,24 @@ float PosZFromIndex(int index) {
     return (float) (gRandom->Uniform(-10.+2.*index,2.*index));
 }
 
-""")
+float GetDeltaPhi(float phi1, float phi2) {
+    float delta_phi = phi1 - phi2;
+    int n = 0;
+    while (delta_phi > 1.5 * M_PI && n < 10) {
+        n++;
+        delta_phi -= 2 * M_PI;
+    }
+    while (delta_phi < -0.5 * M_PI && n < 10) {
+        n++;
+        delta_phi += 2 * M_PI;
+    }
+    if (n >= 10)
+        delta_phi = -999.;
+    return delta_phi;
+}
+"""
+)
+
 
 def RResultWrite(result_handles, output_file):
     """Write histograms, handling duplicate names by appending _0, _1, ..."""
@@ -51,7 +69,7 @@ def RResultWrite(result_handles, output_file):
             print(f"Warning: Could not retrieve histogram from handle: {e}")
             continue
 
-        if not hasattr(h, 'GetName'):
+        if not hasattr(h, "GetName"):
             continue
         name = h.GetName()
 
@@ -78,14 +96,14 @@ class StrVar4Hist:
 
         if len(bins) == 2:
             start, stop = bins[0], bins[1]
-            self.fBins = [
-                start + i * (stop - start) / nbins for i in range(nbins + 1)
-            ]
+            self.fBins = [start + i * (stop - start) / nbins for i in range(nbins + 1)]
         else:
             self.fBins = list(bins)
 
 
-def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_config: str):
+def EventMixingReadingPair(
+    path_input_flowVecd: str, path_output: str, path_config: str
+):
     global gRResultHandles
     gRResultHandles.clear()
 
@@ -117,29 +135,34 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     # Define histogram axes
     var_fPosZ = StrVar4Hist("fPosZ", "#it{V}_{Z}", "cm", 8, [-10, 10])
     var_NumContribCalibBinned = StrVar4Hist(
-        "NumContribCalib", "N_{vtx contrib} Calibrated", "",
-        10, [0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300]
+        "NumContribCalib",
+        "N_{vtx contrib} Calibrated",
+        "",
+        10,
+        [0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300],
     )
     var_MassJpsiCandidate = StrVar4Hist(
-        "jpsi_mass", "M_{ee}", "GeV^{2}/c^{4}",
-        n_bins_mass_assoYield, [1.8, 5.4]
+        "jpsi_mass", "M_{ee}", "GeV^{2}/c^{4}", n_bins_mass_assoYield, [1.8, 5.4]
     )
     var_DeltaEtaUS = StrVar4Hist(
-        "DeltaEta", "#Delta#eta_{trk, trk}", "",
-        n_bins_deltaEta_assoYield, [min_deltaEta_assoYield, max_deltaEta_assoYield]
+        "DeltaEta",
+        "#Delta#eta_{trk, trk}",
+        "",
+        n_bins_deltaEta_assoYield,
+        [min_deltaEta_assoYield, max_deltaEta_assoYield],
     )
     var_DeltaPhiUS = StrVar4Hist(
-        "DeltaPhi", "#Delta#phi_{trk, trk}", "",
+        "DeltaPhi",
+        "#Delta#phi_{trk, trk}",
+        "",
         n_bins_deltaPhi_assoYield,
-        [low_edge_deltaPhiToPi * ROOT.TMath.Pi(), up_edge_deltaPhiToPi * ROOT.TMath.Pi()]
+        [
+            low_edge_deltaPhiToPi * ROOT.TMath.Pi(),
+            up_edge_deltaPhiToPi * ROOT.TMath.Pi(),
+        ],
     )
 
-    vec_var = [
-        var_DeltaEtaUS,
-        var_DeltaPhiUS,
-        var_fPosZ,
-        var_NumContribCalibBinned
-    ]
+    vec_var = [var_DeltaEtaUS, var_DeltaPhiUS, var_fPosZ, var_NumContribCalibBinned]
 
     # Build base RDataFrame
     rdf_base = ROOT.RDataFrame(tree_input)
@@ -147,16 +170,16 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
     rdf_base = rdf_base.Filter("gRandom->Rndm() < 0.1/4.", "10% random sampling")
     # Define all needed columns including the random number
     rdf_AllVar = (
-        rdf_base.Define("DeltaPhi", "ref1_phi - ref2_phi")
-                .Define("DeltaEta", "ref1_eta - ref2_eta")
-                .Define("nITSCluster1", "countSetBits_uint8(ref1_ITSClusterMap)")
-                .Define("nDcaZ2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaz)")
-                .Define("nDcaXY2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaxy)")
-                .Define("nITSCluster2", "countSetBits_uint8(ref2_ITSClusterMap)")
-                .Define("nDcaZ2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaz)")
-                .Define("nDcaXY2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaxy)")
-                .Define("NumContribCalib", "MultFromIndex(iMult)")
-                .Define("fPosZ", "PosZFromIndex(iVtxZ)")
+        rdf_base.Define("DeltaPhi", "GetDeltaPhi(ref1_phi, ref2_phi)")
+        .Define("DeltaEta", "ref1_eta - ref2_eta")
+        .Define("nITSCluster1", "countSetBits_uint8(ref1_ITSClusterMap)")
+        .Define("nDcaZ2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaz)")
+        .Define("nDcaXY2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaxy)")
+        .Define("nITSCluster2", "countSetBits_uint8(ref2_ITSClusterMap)")
+        .Define("nDcaZ2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaz)")
+        .Define("nDcaXY2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaxy)")
+        .Define("NumContribCalib", "MultFromIndex(iMult)")
+        .Define("fPosZ", "PosZFromIndex(iVtxZ)")
     )
 
     # Read cuts from config and add random selection to each cut
@@ -180,14 +203,10 @@ def EventMixingReadingPair(path_input_flowVecd: str, path_output: str, path_conf
 
         nbins_list = [v.fNbins for v in vec_var]
         edges_list = [v.fBins for v in vec_var]
-        edge_arrays = [array('d', edges) for edges in edges_list]
+        edge_arrays = [array("d", edges) for edges in edges_list]
 
         thnd_model = ROOT.RDF.THnDModel(
-            hist_name,
-            full_title,
-            len(vec_var),
-            nbins_list,
-            edge_arrays
+            hist_name, full_title, len(vec_var), nbins_list, edge_arrays
         )
 
         column_names = [v.fName for v in vec_var]

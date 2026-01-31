@@ -44,6 +44,23 @@ float nDCA2Dev(float pt, float dca) {
     double dev_dca = 0.00179344 + 0.000924651 * pow(abs(pt), -1.4062);
     return abs(dca) / dev_dca;
 }
+
+float GetDeltaPhi(float phi1, float phi2) {
+    float delta_phi = phi1 - phi2;
+    int n = 0;
+    while (delta_phi > 1.5 * M_PI && n < 10) {
+        n++;
+        delta_phi -= 2 * M_PI;
+    }
+    while (delta_phi < -0.5 * M_PI && n < 10) {
+        n++;
+        delta_phi += 2 * M_PI;
+    }
+    if (n >= 10)
+        delta_phi = -999.;
+    return delta_phi;
+}
+
 """
 )
 
@@ -160,7 +177,7 @@ def EventMixingReadingPair(
 
     # Define all needed columns including the random number
     rdf_AllVar = (
-        rdf_base.Define("DeltaPhi", "ref1_phi - ref2_phi")
+        rdf_base.Define("DeltaPhi", "GetDeltaPhi(ref1_phi, ref2_phi)")
         .Define("DeltaEta", "ref1_eta - ref2_eta")
         .Define("nITSCluster1", "countSetBits_uint8(ref1_ITSClusterMap)")
         .Define("nDcaZ2Dev1", "nDCA2Dev(ref1_pt, ref1_dcaz)")
@@ -170,7 +187,7 @@ def EventMixingReadingPair(
         .Define("nDcaXY2Dev2", "nDCA2Dev(ref2_pt, ref2_dcaxy)")
         .Define("randNew", f"functionalRandom(randTag, {toy_index}ULL)")
     )
-# "ref1_pt > 0.4 && ref1_pt < 3 && ref1_ITSChi2NCl < 4 && ref1_TPCNClsFound > 80 && nITSCluster1 > 2.5 && nDcaZ2Dev1 < 3 && nDcaXY2Dev1 < 3 && ref2_pt > 0.4 && ref2_pt < 3 && ref2_ITSChi2NCl < 4 && ref2_TPCNClsFound > 80 && nITSCluster2 > 2.5 && nDcaZ2Dev2 < 3 && nDcaXY2Dev2 < 3 && randNew < 0.5"
+    # "ref1_pt > 0.4 && ref1_pt < 3 && ref1_ITSChi2NCl < 4 && ref1_TPCNClsFound > 80 && nITSCluster1 > 2.5 && nDcaZ2Dev1 < 3 && nDcaXY2Dev1 < 3 && ref2_pt > 0.4 && ref2_pt < 3 && ref2_ITSChi2NCl < 4 && ref2_TPCNClsFound > 80 && nITSCluster2 > 2.5 && nDcaZ2Dev2 < 3 && nDcaXY2Dev2 < 3 && randNew < 0.5"
     gRResultHandles.append(rdf_AllVar.Histo1D("nITSCluster1"))
     gRResultHandles.append(rdf_AllVar.Histo1D("nDcaZ2Dev1"))
     gRResultHandles.append(rdf_AllVar.Histo1D("nDcaXY2Dev1"))

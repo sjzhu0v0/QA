@@ -44,6 +44,22 @@ float nDCA2Dev(float pt, float dca) {
     return abs(dca) / dev_dca;
 }
 
+float GetDeltaPhi(float phi1, float phi2) {
+    float delta_phi = phi1 - phi2;
+    int n = 0;
+    while (delta_phi > 1.5 * M_PI && n < 10) {
+        n++;
+        delta_phi -= 2 * M_PI;
+    }
+    while (delta_phi < -0.5 * M_PI && n < 10) {
+        n++;
+        delta_phi += 2 * M_PI;
+    }
+    if (n >= 10)
+        delta_phi = -999.;
+    return delta_phi;
+}
+
 """
 )
 
@@ -175,7 +191,7 @@ def EventMixingReadingPair(
 
     # Define all needed columns including the random number
     rdf_AllVar = (
-        rdf_base.Define("DeltaPhi", "jpsi_phi - ref_phi")
+        rdf_base.Define("DeltaPhi", "GetDeltaPhi(jpsi_phi, ref_phi)")
         .Define("DeltaEta", "jpsi_eta - ref_eta")
         .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
         .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt, ref_dcaz)")
