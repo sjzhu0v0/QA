@@ -85,9 +85,11 @@ public:
     vector<int> vec_idTrigger_new = {iVtxZ, iMult};
     double number_triggered = fHnTrigger->GetBinContent(vec_idTrigger_new);
     TH2D* h_assoYield = (TH2D*)h2D->Clone(Form("h_assoYield_%d_%d", iVtxZ, iMult));
-    AccCorrHisto2DNoWeight(h2DMix);
 
-    h_assoYield->Divide(h2DMix);
+    if (h2DMix->Integral() > 0) {
+      AccCorrHisto2DNoWeight(h2DMix);
+      h_assoYield->Divide(h2DMix);
+    }
     // h_assoYield->Scale(1.0 / number_triggered);
     if (doNTrigScale) {
       if (number_triggered != 0) {
@@ -114,10 +116,12 @@ public:
     double number_triggered = fHnTrigger->GetBinContent(vec_idTrigger_new);
 
     TH2D* h_assoYield = (TH2D*)h2D->Clone(Form("h_assoYield_%d_%d", iVtxZ, iMult));
-    AccCorrHisto2DNoWeight(h2DMix);
 
-    h_assoYield->Divide(h2DMix);
-    // h_assoYield->Scale(1.0 / number_triggered);
+    if (h2DMix->Integral() > 0) {
+      AccCorrHisto2DNoWeight(h2DMix);
+      h_assoYield->Divide(h2DMix);
+    }
+
     if (doNTrigScale) {
       if (number_triggered != 0) {
         h_assoYield->Scale(1.0 / number_triggered);
@@ -128,7 +132,6 @@ public:
         exit(1);
       }
     }
-
     h2DMix->Delete();
     h2D->Delete();
     return h_assoYield;
@@ -161,9 +164,11 @@ public:
     }
 
     TH2D* h_assoYield = (TH2D*)h2D->Clone(Form("h_assoYield_%d_%d", iVtxZ, vec_iMult[0]));
-    AccCorrHisto2DNoWeight(h2DMix);
 
-    h_assoYield->Divide(h2DMix);
+    if (h2DMix->Integral() > 0) {
+      AccCorrHisto2DNoWeight(h2DMix);
+      h_assoYield->Divide(h2DMix);
+    }
     // h_assoYield->Scale(1.0 / number_triggered);
     if (doNTrigScale) {
       if (number_triggered != 0) {
