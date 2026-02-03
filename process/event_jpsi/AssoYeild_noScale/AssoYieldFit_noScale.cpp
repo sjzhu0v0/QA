@@ -124,12 +124,15 @@ void AssoYieldEtagap(
 
   auto h_mass = MRootIO::GetObjectDiectly<THnD>(path_input_mass);
   MHnTool hnTool_mass(h_mass);
-  hnTool_mass.Rebin(0, 200);
-  // hnTool_mass.Rebin(3, 5);
+  // hnTool_mass.Rebin(0, 200);
+  hnTool_mass.Rebin(3, 2);
   hnTool_mass.PrintAllAxis();
 
   TH2D *mass_pt_lowMult = hnTool_mass.Project(1, 2, {0, 1});
-  TH2D *mass_pt_highMult = hnTool_mass.Project(1, 2, {0, 2});
+  mass_pt_lowMult->Add(hnTool_mass.Project(1, 2, {0, 2}));
+  mass_pt_lowMult->Add(hnTool_mass.Project(1, 2, {0, 3}));
+  mass_pt_lowMult->Add(hnTool_mass.Project(1, 2, {0, 4}));
+  TH2D *mass_pt_highMult = hnTool_mass.Project(1, 2, {0, 5});
   MFitterPoly fitterPoly_mass(mass_pt_highMult->ProjectionY(), 1.88, 4.32);
   fitterPoly_mass.initializeBasis(6);
 
