@@ -242,9 +242,9 @@ bool isSameJpsi{cut_name}(float tag)
         column_names = [v.fName for v in vec_var]
         hist_handle = rdf_filtered.HistoND(thnd_model, column_names)
         gRResultHandles.append(hist_handle)
-        gRResultHandles.append(rdf_filtered.Histo1D("isSameJpsi"))
-        gRResultHandles.append(rdf_filtered.Histo1D("randNew"))
-        gRResultHandles.append(rdf_filtered.Histo1D("randTag"))
+        # gRResultHandles.append(rdf_filtered.Histo1D("isSameJpsi"))
+        # gRResultHandles.append(rdf_filtered.Histo1D("randNew"))
+        # gRResultHandles.append(rdf_filtered.Histo1D("randTag"))
 
         rdf_filtered2 = rdf_filtered.Filter("!isSameJpsi")
         hist_name2 = "_".join(v.fName for v in vec_var2) + "_" + cut_name
