@@ -39,28 +39,8 @@ void MultPileupCut(
           .Define("RunNumber", [] { return float(0.5); })
           .DefineSlot("NumContribCalib",
                       Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
-                      {"fNumContrib", "fPosZ"})
-          .Define(
-              "LevelTrigger",
-              [](bool bool1, bool bool2, bool bool3, bool bool4, bool bool5) {
-                // if only bool1 but bool2 is false, return 1
-                ROOT::RVec<int> vec_levelTrigger;
-                vec_levelTrigger.push_back(0);
-                if (bool1)
-                  vec_levelTrigger.push_back(1);
-                if (bool1 && bool2)
-                  vec_levelTrigger.push_back(2);
-                if (bool1 && bool2 && bool3)
-                  vec_levelTrigger.push_back(3);
-                if (bool1 && bool2 && bool3 && bool4)
-                  vec_levelTrigger.push_back(4);
-                if (bool1 && bool2 && bool3 && bool4 && bool5)
-                  vec_levelTrigger.push_back(5);
+                      {"fNumContrib", "fPosZ"});
 
-                return vec_levelTrigger;
-              },
-              {"isTriggerTVX", "isntTimeFrameBorder", "isntITSROFrameBorder",
-               "isntSameBunchPileup", "isntSelfDefinedPileup"});
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
@@ -74,10 +54,6 @@ void MultPileupCut(
           .Filter("isntSameBunchPileup", "no same bunch pileup");
   if (is_interactive())
     ROOT::RDF::Experimental::AddProgressBar(rdf_basicTrigger);
-
-  gRResultHandlesFast.push_back(rdf_witTrigger.Histo1D(
-      {"LevelTrigger", "Trigger Level; Trigger Level", 6, -0.5, 5.5},
-      "LevelTrigger"));
 
   StrVar4Hist var_fPosX("fPosX", "fPosX", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-10, 10});
