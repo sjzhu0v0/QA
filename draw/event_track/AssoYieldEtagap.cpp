@@ -231,6 +231,9 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
   MHist1D ratio_etaGap(index_etaGap, "ratio_a2prime_a0prime");
   ratio_etaGap.fHisto->GetYaxis()->SetTitle("a2'/a0'");
 
+  MHist1D v2_new_etaGap(index_etaGap, "v2_new");
+  v2_etaGap.fHisto->GetYaxis()->SetTitle("v2");
+
   gDirectory = nullptr;
   MRootGraphic::StyleCommon();
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 2, 2);
@@ -252,9 +255,13 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     ComputePrimeErrorsWithFullCov(result_high, result_low, a0_prime, err_a0_prime, a2_prime,
                                   err_a2_prime, ratio, err_ratio);
 
+    double v2_new = sqrt(ratio);
+    double err_v2_new = err_ratio / v2_new;
+
     a0prime_etaGap.SetBinInfo(a0_prime, err_a0_prime);
     a2prime_etaGap.SetBinInfo(a2_prime, err_a2_prime);
     ratio_etaGap.SetBinInfo(a2_prime / a0_prime, err_ratio);
+    v2_new_etaGap.SetBinInfo(v2_new, err_v2_new);
 
     auto pair_v2 = compute_v2_and_error(result_sub, result_low, f_low);
     v2_etaGap.SetBinInfo(pair_v2.first, pair_v2.second);
