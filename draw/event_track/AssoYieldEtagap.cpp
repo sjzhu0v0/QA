@@ -38,6 +38,103 @@ std::pair<double, double> EvalError(TF1* f, const TFitResultPtr& r, double x) {
   return {value, std::sqrt(std::max(err2, 0.0))};
 }
 
+static double PropagateWithCov(const TMatrixDSym& Cov, const TVectorD& grad) {
+  // var = grad^T * Cov * grad
+  double var = 0.0;
+  const int n = grad.GetNrows();
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      var += grad(i) * Cov(i, j) * grad(j);
+    }
+  }
+  return (var >= 0.0) ? std::sqrt(var) : 0.0; // 数值误差下 var 可能出现极小负数
+}
+
+void ComputePrimeErrorsWithFullCov(const TFitResultPtr& result_high,
+                                   const TFitResultPtr& result_low, double& a0_prime,
+                                   double& ea0_prime, double& a2_prime, double& ea2_prime,
+                                   double& ratio, double& eratio) {
+  if (!result_high.Get() || !result_low.Get()) {
+    cout << "Fit result is null! Cannot compute errors." << endl;
+    a0_prime = ea0_prime = a2_prime = ea2_prime = ratio = eratio = NAN;
+    return;
+  }
+
+  // ---- 取参数（假设: par0=a0, par1=a1, par2=a2）----
+  const double a0_h = result_high->Parameter(0);
+  const double a1_h = result_high->Parameter(1);
+  const double a2_h = result_high->Parameter(2);
+
+  const double a0_l = result_low->Parameter(0);
+  const double a1_l = result_low->Parameter(1);
+  const double a2_l = result_low->Parameter(2);
+
+  // ---- 取协方差矩阵（每个 fit 内部 3x3，含相关性）----
+  // ROOT: GetCovarianceMatrix() 返回 TMatrixDSym
+  const TMatrixDSym CovH = result_high->GetCovarianceMatrix();
+  const TMatrixDSym CovL = result_low->GetCovarianceMatrix();
+
+  // ---- 拼成总协方差矩阵 6x6： (a0_h,a1_h,a2_h,a0_l,a1_l,a2_l) ----
+  TMatrixDSym Cov(6);
+  Cov.Zero();
+
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      Cov(i, j) = CovH(i, j);
+      Cov(i + 3, j + 3) = CovL(i, j);
+    }
+  }
+
+  // ---- 定义 a0' 与 a2' ----
+  a0_prime = a0_h - a1_h * a0_l / a1_l;
+  a2_prime = a2_h - a1_h * a2_l / a1_l;
+
+  // ---- 梯度（对 6 个参数）----
+  // a0' = a0_h - a1_h*a0_l/a1_l
+  // grad_a0' = (∂/∂a0_h, ∂/∂a1_h, ∂/∂a2_h, ∂/∂a0_l, ∂/∂a1_l, ∂/∂a2_l)
+  TVectorD g_a0p(6);
+  g_a0p = 0.0;
+  g_a0p(0) = 1.0;
+  g_a0p(1) = -a0_l / a1_l;
+  g_a0p(2) = 0.0;
+  g_a0p(3) = -a1_h / a1_l;
+  g_a0p(4) = a1_h * a0_l / (a1_l * a1_l);
+  g_a0p(5) = 0.0;
+
+  // a2' = a2_h - a1_h*a2_l/a1_l
+  TVectorD g_a2p(6);
+  g_a2p = 0.0;
+  g_a2p(0) = 0.0;
+  g_a2p(1) = -a2_l / a1_l;
+  g_a2p(2) = 1.0;
+  g_a2p(3) = 0.0;
+  g_a2p(4) = a1_h * a2_l / (a1_l * a1_l);
+  g_a2p(5) = -a1_h / a1_l;
+
+  // ---- 误差（含协方差）----
+  ea0_prime = PropagateWithCov(Cov, g_a0p);
+  ea2_prime = PropagateWithCov(Cov, g_a2p);
+
+  // ---- ratio = a2'/a0' ----
+  ratio = a2_prime / a0_prime;
+
+  // 用链式法则： r = a2'/a0'
+  // ∂r/∂p = (1/a0') * ∂a2'/∂p  - (a2'/a0'^2) * ∂a0'/∂p
+  TVectorD g_r(6);
+  const double inv_a0p = 1.0 / a0_prime;
+  const double coeff = a2_prime / (a0_prime * a0_prime);
+  for (int k = 0; k < 6; ++k) {
+    g_r(k) = inv_a0p * g_a2p(k) - coeff * g_a0p(k);
+  }
+
+  eratio = PropagateWithCov(Cov, g_r);
+
+  // ---- 输出 ----
+  cout << "a0' = " << a0_prime << " +/- " << ea0_prime << endl;
+  cout << "a2' = " << a2_prime << " +/- " << ea2_prime << endl;
+  cout << "a2'/a0' = " << ratio << " +/- " << eratio << endl;
+}
+
 // 计算 v2 及误差（独立情形：Cov(a0_low, a2_sub)=Cov(a0_low, a0_sub)=0）
 std::pair<double, double> compute_v2_and_error(const TFitResultPtr& result_sub,
                                                const TFitResultPtr& result_low, TF1* f_low,
@@ -149,45 +246,14 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     auto result_high = h_high->Fit(f_high, "S Q N R");
     auto result_low = h_low->Fit(f_low, "S Q N R");
 
-    // Debug: Print fitted parameters for h_high and h_low
-    cout << "Etagap bin " << iEtagap << ":" << endl;
-    if (result_high.Get()) {
-      cout << "  High mult fit parameters:" << endl;
-      for (int i = 0; i < f_high->GetNpar(); ++i) {
-        cout << "    Parameter " << i << ": " << result_high->Parameter(i) << " +/- "
-             << result_high->ParError(i) << endl;
-      }
-    } else {
-      cout << "  High mult fit failed!" << endl;
-    }
+    double a0_prime, a2_prime, ratio;
+    double err_a0_prime, err_a2_prime, err_ratio;
+    ComputePrimeErrorsWithFullCov(result_high, result_low, a0_prime, err_a0_prime, a2_prime,
+                                  err_a2_prime, ratio, err_ratio);
 
-    if (result_low.Get()) {
-      cout << "  Low mult fit parameters:" << endl;
-      for (int i = 0; i < f_low->GetNpar(); ++i) {
-        cout << "    Parameter " << i << ": " << result_low->Parameter(i) << " +/- "
-             << result_low->ParError(i) << endl;
-      }
-    } else {
-      cout << "  Low mult fit failed!" << endl;
-    }
-
-    double a2_high = result_high->Parameter(2);
-    double a2_low = result_low->Parameter(2);
-    double a1_high = result_high->Parameter(1);
-    double a1_low = result_low->Parameter(1);
-    double a0_high = result_high->Parameter(0);
-    double a0_low = result_low->Parameter(0);
-
-    double a0_prime = a0_high - a1_high * a0_low / a1_low;
-    double a2_prime = a2_high - a1_high * a2_low / a1_low;
-
-    cout << "a0_prime: " << a0_prime << " a2_prime: " << a2_prime
-         << " V2 test: " << a2_prime / a0_prime << endl;
-
-    // Store calculated values in histograms
-    a0prime_etaGap.SetBinInfo(a0_prime, 0);
-    a2prime_etaGap.SetBinInfo(a2_prime, 0);
-    ratio_etaGap.SetBinInfo(a2_prime / a0_prime, 0);
+    a0prime_etaGap.SetBinInfo(a0_prime, err_a0_prime);
+    a2prime_etaGap.SetBinInfo(a2_prime, err_a2_prime);
+    ratio_etaGap.SetBinInfo(a2_prime / a0_prime, err_ratio);
 
     auto pair_v2 = compute_v2_and_error(result_sub, result_low, f_low);
     v2_etaGap.SetBinInfo(pair_v2.first, pair_v2.second);
