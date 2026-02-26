@@ -255,8 +255,8 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     ComputePrimeErrorsWithFullCov(result_high, result_low, a0_prime, err_a0_prime, a2_prime,
                                   err_a2_prime, ratio, err_ratio);
 
-    double v2_new = ratio >= 0 ? 0 : sqrt(ratio);
-    double err_v2_new = ratio >= 0 ? 0 : err_ratio / v2_new / 2.;
+    double v2_new = ratio >= 0 || ratio != ratio ? 0 : sqrt(ratio);
+    double err_v2_new = ratio >= 0 || ratio != ratio ? 0 : err_ratio / v2_new / 2.;
     cout << "v2_new: " << v2_new << " err_v2_new: " << err_v2_new << endl;
 
     a0prime_etaGap.SetBinInfo(a0_prime, err_a0_prime);
