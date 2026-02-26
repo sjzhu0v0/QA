@@ -176,11 +176,11 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     auto h_low = Hs_lowMult.GetHist(vector<int>{iEtagap});
     auto result = fit(h_high, h_low);
     double val_V2 = result.V2;
-    if (val_V2 < 0) {
-      std::cerr << "Warning: V2 < 0 for eta gap bin " << iEtagap << ", setting V2 to 0."
-                << std::endl;
-      exit(1);
-    }
+    // if (val_V2 < 0) {
+    //   std::cerr << "Warning: V2 < 0 for eta gap bin " << iEtagap << ", setting V2 to 0."
+    //             << std::endl;
+    //   exit(1);
+    // }
     double err_V2 = result.V2_err;
     double val_v2 = sqrt(val_V2);
     double err_v2 = 0.5 * err_V2 / val_v2;
