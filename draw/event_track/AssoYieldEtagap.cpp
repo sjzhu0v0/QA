@@ -2,6 +2,7 @@
 #include "MRootGraphic.h"
 #include "MRootIO.h"
 #include "TFitResult.h"
+#include "TVectorD.h"
 #include "yaml-cpp/yaml.h"
 
 #include "TFitResult.h"
