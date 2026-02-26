@@ -122,6 +122,17 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
   file_output->cd();
   MHist1D v2_etaGap(index_etaGap, "v2");
   v2_etaGap.fHisto->GetYaxis()->SetTitle("v_{2}^{REF}");
+
+  // Create histograms to store a0_prime, a2_prime, and their ratio
+  MHist1D a0prime_etaGap(index_etaGap, "a0_prime");
+  a0prime_etaGap.fHisto->GetYaxis()->SetTitle("a0'");
+
+  MHist1D a2prime_etaGap(index_etaGap, "a2_prime");
+  a2prime_etaGap.fHisto->GetYaxis()->SetTitle("a2'");
+
+  MHist1D ratio_etaGap(index_etaGap, "ratio_a2prime_a0prime");
+  ratio_etaGap.fHisto->GetYaxis()->SetTitle("a2'/a0'");
+
   gDirectory = nullptr;
   MRootGraphic::StyleCommon();
   gPublisherCanvas = new MPublisherCanvas(path_pdf, 2, 2);
@@ -172,6 +183,11 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
 
     cout << "a0_prime: " << a0_prime << " a2_prime: " << a2_prime
          << " V2 test: " << a2_prime / a0_prime << endl;
+
+    // Store calculated values in histograms
+    a0prime_etaGap.SetBinInfo(a0_prime, 0);
+    a2prime_etaGap.SetBinInfo(a2_prime, 0);
+    ratio_etaGap.SetBinInfo(a2_prime / a0_prime, 0);
 
     auto pair_v2 = compute_v2_and_error(result_sub, result_low, f_low);
     v2_etaGap.SetBinInfo(pair_v2.first, pair_v2.second);
