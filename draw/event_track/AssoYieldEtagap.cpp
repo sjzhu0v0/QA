@@ -149,25 +149,34 @@ void AssoYieldEtagap(
         (TF1 *)h_low->GetListOfFunctions()->FindObject("f1_modulation");
 
     auto result_sub = h_sub->Fit(f_sub, "S Q N R");
-    // The line 'auto result_sub = h_sub->Fit(f_sub, "S Q N R");' performs a fit
-    // of the histogram 'h_sub' using the function 'f_sub'. The fit options
-    // specified are: "S": This option indicates that the fit should return a
-    // 'TFitResultPtr' object, which contains detailed information about the fit
-    // results, including parameter values, errors, and fit quality. "Q": This
-    // option suppresses the printing of fit results to the console. It is
-    // useful when you want to perform the fit silently without displaying
-    // output. "N": This option prevents the histogram from being drawn after
-    // the fit. It is useful when you want to fit the data without visualizing
-    // it immediately. "R": This option restricts the fit to the range defined
-    // by the function 'f_sub'. It ensures that the fit is performed only within
-    // the specified limits of the function.
     auto result_high = h_high->Fit(f_high, "S Q N R");
     auto result_low = h_low->Fit(f_low, "S Q N R");
 
+    // Debug: Print fitted parameters for h_high and h_low
+    cout << "Etagap bin " << iEtagap << ":" << endl;
+    if (result_high.Get()) {
+        cout << "  High mult fit parameters:" << endl;
+        for (int i = 0; i < f_high->GetNpar(); ++i) {
+            cout << "    Parameter " << i << ": " << result_high->Parameter(i)
+                 << " +/- " << result_high->ParError(i) << endl;
+        }
+    } else {
+        cout << "  High mult fit failed!" << endl;
+    }
+
+    if (result_low.Get()) {
+        cout << "  Low mult fit parameters:" << endl;
+        for (int i = 0; i < f_low->GetNpar(); ++i) {
+            cout << "    Parameter " << i << ": " << result_low->Parameter(i)
+                 << " +/- " << result_low->ParError(i) << endl;
+        }
+    } else {
+        cout << "  Low mult fit failed!" << endl;
+    }
+
     auto pair_v2 = compute_v2_and_error(result_sub, result_low, f_low);
     v2_etaGap.SetBinInfo(pair_v2.first, pair_v2.second);
-    cout << "Etagap bin " << iEtagap << ": v2 = " << pair_v2.first << " +/- "
-         << pair_v2.second << endl;
+    cout << "  v2 = " << pair_v2.first << " +/- " << pair_v2.second << endl;
   }
   MRootGraphic::StyleHistCommon(v2_etaGap.fHisto.get());
   gPublisherCanvas->DrawClone(v2_etaGap.fHisto.get(), "Text");
