@@ -342,7 +342,7 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
 
   auto v2REF_etaGap = MRootIO::GetObjectDiectly<TH1D>(path_hist_ref);
-  auto v2REF_etaGap_new = MRootIO::GetObjectDiectly<TH1D>(path_hist_ref);
+  auto v2REF_etaGap_new = MRootIO::GetObjectDiectly<TH1D>(path_hist_ref_new);
 
   file_output->cd();
 
