@@ -349,6 +349,11 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
   vector<int> vec_binning_sel = parseBinningString(str_binning);
   vector<double> vec_binning_pt;
 
+  cout << "vec_binning_sel: ";
+  for (auto i : vec_binning_sel)
+    cout << i << ", ";
+  cout << endl;
+
   int ibin_last = 0;
   for (auto bin : vec_binning_sel) {
     vector<int> bin_sel = strAny_ptV2.bins[bin - 1];
@@ -359,10 +364,19 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     vec_binning_pt.push_back(bin_sel[0]);
     ibin_last = bin_sel[bin_sel.size() - 1];
   }
+  cout << "raw vec_binning_pt: ";
+  for (auto i : vec_binning_pt)
+    cout << i << ", ";
+  cout << endl;
+
   for (int i = 0; i < vec_binning_pt.size(); i++) {
     vec_binning_pt[i] = vec_binning_pt[i] * 0.5 - 0.5;
   }
   vec_binning_pt.push_back(ibin_last * 0.5);
+  cout << "vec_binning_pt: ";
+  for (auto i : vec_binning_pt)
+    cout << i << ", ";
+  cout << endl;
 
   auto V2_pT_etaGap =
       new TH2D("V2Jpsi_pT_etaGap",
@@ -505,6 +519,6 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
 }
 
 int main(int argc, char** argv) {
-  AssoYieldEtagap(argv[1], argv[2], argv[3], argv[4], argv[5]);
+  AssoYieldEtagap(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
   return 0;
 }
