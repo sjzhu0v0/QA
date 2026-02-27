@@ -451,7 +451,7 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
       double v2_poi_new;
       double err_v2_poi_new;
 
-      if (v2_ref_new == 0) {
+      if (iEtagap <= 5) {
         v2_poi_new = 0;
         err_v2_poi_new = 0;
       } else {
