@@ -350,8 +350,12 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
   vector<double> vec_binning_pt;
 
   cout << "vec_binning_sel: ";
-  for (auto i : vec_binning_sel)
-    cout << i << ", ";
+  for (auto i : vec_binning_sel) {
+    cout << i << ": ";
+    for (auto j : strAny_ptV2.bins[i - 1])
+      cout << j << ", ";
+    cout << ";";
+  }
   cout << endl;
 
   int ibin_last = 0;
