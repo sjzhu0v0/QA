@@ -8,9 +8,13 @@
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
 #include "TMatrixDSym.h"
+#include <algorithm>
 #include <cmath>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 #include <utility>
+#include <vector>
 
 std::pair<double, double> EvalError(TF1* f, const TFitResultPtr& r, double x) {
   if (!f || !r.Get()) {
@@ -49,6 +53,26 @@ static double PropagateWithCov(const TMatrixDSym& Cov, const TVectorD& grad) {
     }
   }
   return (var >= 0.0) ? std::sqrt(var) : 0.0; // 数值误差下 var 可能出现极小负数
+}
+
+std::vector<int> parseBinningString(const TString& str_binning) {
+  std::vector<int> result;
+  std::string s = str_binning.Data();
+  std::stringstream ss(s);
+  std::string item;
+
+  while (std::getline(ss, item, ',')) {
+    try {
+      int value = std::stoi(item);
+      result.push_back(value);
+    } catch (const std::invalid_argument& e) {
+      std::cerr << "Invalid integer in binning string: " << item << std::endl;
+    } catch (const std::out_of_range& e) {
+      std::cerr << "Integer out of range in binning string: " << item << std::endl;
+    }
+  }
+
+  return result;
 }
 
 void ComputePrimeErrorsWithFullCov(const TFitResultPtr& result_high,
@@ -184,6 +208,7 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
                      TString path_hist_ref_new =
                          "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
                          "JpsiAssocYield_24apass1.root:hist_new",
+                     TString str_binning = "11,13,15,34",
                      TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
                                            "AssoYieldEtagap.root",
                      TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
@@ -321,35 +346,53 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
 
   file_output->cd();
 
+  vector<int> vec_binning_sel = parseBinningString(str_binning);
+  vector<double> vec_binning_pt;
+
+  int ibin_last = 0;
+  for (auto bin : vec_binning_sel) {
+    vector<int> bin_sel = strAny_ptV2.bins[bin - 1];
+    if (ibin_last != 0 && ibin_last != bin_sel[0] - 1) {
+      cerr << "str_binning is wrong. exit" << endl;
+      exit(1);
+    }
+    vec_binning_pt.push_back(bin_sel[0]);
+    ibin_last = bin_sel[bin_sel.size() - 1];
+  }
+  for (int i = 0; i < vec_binning_pt.size(); i++) {
+    vec_binning_pt[i] = vec_binning_pt[i] * 0.5 - 0.5;
+  }
+  vec_binning_pt.push_back(ibin_last * 0.5);
+
   auto V2_pT_etaGap =
       new TH2D("V2Jpsi_pT_etaGap",
                "V2Jpsi_pT_etaGap;p_{T} "
                "(GeV/c);#Delta#eta;V_{2}^{J/#psi}",
-               4, vector<double>{0., 1., 2., 3., 5.}.data(), n_bins_deltaEta_assoYield / 2 - 2,
+               vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
                -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
   auto v2_pT_etaGap =
       new TH2D("v2Jpsi_pT_etaGap",
                "v2Jpsi_pT_etaGap;p_{T} "
                "(GeV/c);#Delta#eta;v_{2}^{J/#psi}",
-               4, vector<double>{0., 1., 2., 3., 5.}.data(), n_bins_deltaEta_assoYield / 2 - 2,
+               vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
                -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
 
   auto V2_pT_etaGap_new =
       new TH2D("V2Jpsi_pT_etaGap_new",
                "V2Jpsi_pT_etaGap;p_{T} "
                "(GeV/c);#Delta#eta;V_{2}^{J/#psi}",
-               4, vector<double>{0., 1., 2., 3., 5.}.data(), n_bins_deltaEta_assoYield / 2 - 2,
+               vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
                -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
   auto v2_pT_etaGap_new =
       new TH2D("v2Jpsi_pT_etaGap_new",
                "v2Jpsi_pT_etaGap;p_{T} "
                "(GeV/c);#Delta#eta;v_{2}^{J/#psi}",
-               4, vector<double>{0., 1., 2., 3., 5.}.data(), n_bins_deltaEta_assoYield / 2 - 2,
+               vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
                -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
   gDirectory = nullptr;
 
   int iPt_v2_pT_etaGap = 0;
-  for (auto iPt : {11, 13, 15, 34}) {
+  for (auto iPt : vec_binning_sel) {
     iPt_v2_pT_etaGap++;
     for (auto iEtagap : indexEtagap) {
       auto h_sub = DeltaPhi_sub.MH1DGetBin(iEtagap, iPt);
