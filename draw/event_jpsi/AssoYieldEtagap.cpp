@@ -484,6 +484,22 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     MRootGraphic::StyleHistCommon(H_proj);
     H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
   }
+  for (int i = 1; i <= v2_pT_etaGap_new->GetNbinsX(); ++i) {
+    auto h_proj = v2_pT_etaGap_new->ProjectionY(TString::Format("v2Jpsi_new_etaGap_pTbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(h_proj);
+    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+    auto H_proj = V2_pT_etaGap_new->ProjectionY(TString::Format("V2Jpsi_new_etaGap_pTbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(H_proj);
+    H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
+  }
+  for (int i = 1; i <= v2_pT_etaGap_new->GetNbinsY(); ++i) {
+    auto h_proj = v2_pT_etaGap_new->ProjectionX(TString::Format("v2Jpsi_new_pT_etaGapbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(h_proj);
+    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+    auto H_proj = V2_pT_etaGap_new->ProjectionX(TString::Format("V2Jpsi_new_pT_etaGapbin%d", i), i, i);
+    MRootGraphic::StyleHistCommon(H_proj);
+    H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
+  }
 
   TCanvas* c_v2_pT_etaGap = new TCanvas("c_v2_pT_etaGap", "c_v2_pT_etaGap", 1200, 1200);
   c_v2_pT_etaGap->Divide(2, 2);
