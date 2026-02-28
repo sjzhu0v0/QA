@@ -9,6 +9,7 @@ hist_binning:
   n_rebin_deltaEta_assoYield: 1
   low_edge_deltaPhiToPi: -0.5
   up_edge_deltaPhiToPi: 1.5
+  poly_order: 6
 
 cuts:
   # var ref: ref_pt ref_eta ref_phi ref_ITSChi2NCl ref_TPCNClsCR ref_TPCNClsFound ref_TPCChi2NCl ref_TPCSignal ref_nsig_el ref_nsig_pi ref_nsig_pr ref_dcaxy ref_dcaz 

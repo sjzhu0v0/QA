@@ -24,6 +24,8 @@ void AssoYieldEtagap(
       config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
   const double up_edge_deltaPhiToPi =
       config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
+  const int poly_order =
+      config["poly_order"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_input_tf1 = new TFile(path_input_tf1);
@@ -134,7 +136,7 @@ void AssoYieldEtagap(
   mass_pt_lowMult->Add(hnTool_mass.Project(1, 2, {0, 4}));
   TH2D *mass_pt_highMult = hnTool_mass.Project(1, 2, {0, 5});
   MFitterPoly fitterPoly_mass(mass_pt_highMult->ProjectionY(), 1.88, 4.32);
-  fitterPoly_mass.initializeBasis(6);
+  fitterPoly_mass.initializeBasis(poly_order);
 
   MHGroupTool1D assoYield_lowMult(
       file_input,
@@ -148,7 +150,7 @@ void AssoYieldEtagap(
       {n_rebin_deltaEta_assoYield, 1, 1});
   MFitterPoly fitterPoly_asso(assoYield_highMult.GetHist(vector<int>{1, 1, 1}),
                               1.88, 4.32);
-  fitterPoly_asso.initializeBasis(6);
+  fitterPoly_asso.initializeBasis(poly_order);
 
   gDirectory = nullptr;
   MHist1D h1_assoYield_sub(indexHistDeltaPhiUS, "AssoYield_sub");
