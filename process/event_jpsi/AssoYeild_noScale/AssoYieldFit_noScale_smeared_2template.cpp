@@ -16,9 +16,10 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
                      TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
                                            "AssoYieldFit_noScale.root",
                      TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
-                                        "AssoYieldFit_noScale.pdf") {
+                                        "AssoYieldFit_noScale.pdf",
+                     TString path_config = "config.yaml") {
   gErrorIgnoreLevel = kWarning;
-  YAML::Node config = YAML::LoadFile("config.yaml");
+  YAML::Node config = YAML::LoadFile(path_config.Data());
   const double low_edge_deltaPhiToPi = config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
   const double up_edge_deltaPhiToPi = config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
   const int poly_order = config["poly_order"].as<int>();
@@ -231,9 +232,10 @@ int main(int argc, char** argv) {
   TString path_pdf = argc > 6 ? argv[6]
                               : "/home/szhu/work/alice/analysis/QA/test/"
                                 "AssoYieldFit_noScale.pdf";
+  TString path_config = argc > 7 ? argv[7] : "config.yaml";
 
   AssoYieldEtagap(path_input, path_input_mass, path_input_tf1, path_input_assoYield_tf1,
-                  path_output, path_pdf);
+                  path_output, path_pdf, path_config);
 
   return 0;
 }
