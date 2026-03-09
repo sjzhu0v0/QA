@@ -58,7 +58,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
                                   {0, 300});
   StrVar4Hist var_pt("fPTREF", "p_{T}", "GeV/c", 29, {0.2, 6});
   StrVar4Hist var_eta("fEtaREF", "#eta", "", 36, {-0.9, 0.9});
-  StrVar4Hist var_phi("fPhiREF", "#phi", "rad", 800, {-4 * M_PI, 4 * M_PI});
+  StrVar4Hist var_phi("fPhiREF", "#phi", "rad", 200, {0, 2 * M_PI});
   StrVar4Hist var_dcaxy("fDcaXY", "DCA_{XY}", "cm", 200, {-0.1, 0.1});
   StrVar4Hist var_dcaz("fDcaZ", "DCA_{XY}", "cm", 200, {-0.1, 0.1});
 
@@ -74,11 +74,23 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
         rdf2push.Histo2D(GetTH2DM(varX, varY, __VA_ARGS__), varX.fName, varY.fName));              \
   } while (0)
 
+#define obj2push_th3d(rdf2push, varX, varY, varZ, ...)                                             \
+  do {                                                                                             \
+    gRResultHandles.push_back(rdf2push.Histo3D(GetTH3DM(varX, varY, varZ, __VA_ARGS__),            \
+                                               varX.fName, varY.fName, varZ.fName));               \
+  } while (0)
+
   obj2push_th2d(rdf_PartTrigger, var_pt, var_phi, "", "");
   obj2push_th2d(rdf_PartTrigger, var_eta, var_phi, "", "");
   obj2push_th2d(rdf_PartTrigger, var_fPosZ, var_phi, "", "");
   obj2push_th2d(rdf_PartTrigger, var_dcaxy, var_phi, "", "");
-  obj2push_th2d(rdf_PartTrigger, var_dcaz, var_phi, "", "");
+  obj2push_th2d(rdf_PartTrigger, var_dcaxy, var_phi, "", "");
+
+  obj2push_th3d(rdf_PartTrigger, var_dcaz, var_phi, var_pt, "", "");
+  obj2push_th3d(rdf_PartTrigger, var_dcaz, var_phi, var_eta, "", "");
+  obj2push_th3d(rdf_PartTrigger, var_dcaxy, var_phi, var_pt, "", "");
+  obj2push_th3d(rdf_PartTrigger, var_dcaxy, var_phi, var_eta, "", "");
+
   obj2push_th2d(rdf_PartTrigger, var_NumContribCalib, var_phi, "", "");
   obj2push_th2d(rdf_PartTrigger, var_eta, var_fPosZ, "", "");
 

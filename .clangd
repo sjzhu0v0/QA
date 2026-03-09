@@ -3,4 +3,4 @@ CompileFlags:
     - -I/data/work/alice/Code/PairFlow/include
     - -I/home/sjzhu/env/include
     - -std=c++20
-    - -I/home/sjzhu/work/alice/analysis/QA/opt
+    - -I/home/sjzhu/work/alice/analysis/QA/
