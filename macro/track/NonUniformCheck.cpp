@@ -84,7 +84,6 @@ void Ref_BS(TString path_input_flowVecd = "../input.root",
   obj2push_th2d(rdf_PartTrigger, var_eta, var_phi, "", "");
   obj2push_th2d(rdf_PartTrigger, var_fPosZ, var_phi, "", "");
   obj2push_th2d(rdf_PartTrigger, var_dcaxy, var_phi, "", "");
-  obj2push_th2d(rdf_PartTrigger, var_dcaxy, var_phi, "", "");
 
   obj2push_th3d(rdf_PartTrigger, var_dcaz, var_phi, var_pt, "", "");
   obj2push_th3d(rdf_PartTrigger, var_dcaz, var_phi, var_eta, "", "");
