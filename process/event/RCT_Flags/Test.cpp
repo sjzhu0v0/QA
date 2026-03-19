@@ -1,7 +1,7 @@
 #include "MRootIO.h"
 #include "RCTSelectionFlags.h"
 
-typedef struct MCollision {
+struct MCollision {
   uint32_t RctRaw = 0;
 
   uint32_t rct_raw() const { return RctRaw; }
