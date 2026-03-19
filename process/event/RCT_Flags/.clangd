@@ -1,0 +1,7 @@
+CompileFlags:
+  Add: 
+    - -I/data/work/alice/Code/PairFlow/include
+    - -I/home/sjzhu/work/alice/o2/AliceO2/Common/Utils/include
+    - -I/home/sjzhu/work/alice/o2/AliceO2/GPU/Common
+    - -std=c++20
+    - -I/home/sjzhu/work/alice/analysis/QA/

@@ -17,7 +17,7 @@
 #ifndef COMMON_CCDB_RCTSELECTIONFLAGS_H_
 #define COMMON_CCDB_RCTSELECTIONFLAGS_H_
 
-#include <CommonUtils/EnumFlags.h>
+#include "CommonUtils/EnumFlags.h"
 
 #include <algorithm>
 #include <concepts>
