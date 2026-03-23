@@ -68,6 +68,23 @@ double GetStatistic24(vector<int> group) { // total statistic conuting after
   return statistic;
 }
 
+double GetStatistic24RCT(vector<int> group) { // total statistic conuting after
+                                              // DiElectron selection 5.5213720e+10
+  double statistic = 0;
+  for (int i = 0; i < group.size(); i++) {
+    int run = MALICE_RUN::map_run24[group[i]];
+    double statistic_temp = MALICE::EventNumberDiElectronRCT(
+        run, "/home/szhu/work/alice/analysis/InfoRun/"
+             "runinfo_LHC24_pass1_DiElectron.root:bc-selection-task/hCounterTVX");
+    if (statistic_temp < 0) {
+      cerr << "Run " << run << " not found\n";
+      exit(1);
+    }
+    statistic += statistic_temp;
+  }
+  return statistic;
+}
+
 double GroupingThreshold(double threshold_distance = 0.01, double threshold_statistic = 1.e10) {
   TMatrixD* ptr_distanceMatrix =
       MRootIO::GetObjectDiectly<TMatrixD>("/home/szhu/work/alice/analysis/QA/output/event/"
@@ -231,17 +248,15 @@ double GetLowStatistic(std::vector<std::vector<int>> vec_groups, double threshol
   return low_statistic;
 }
 
-void Grouping_24pass1_DiElectron(double min_threshold_distance = 0.003,
-                                 double max_threshold_distance = 0.009, int n_bins = 60) {
-  TMatrixD* ptr_distanceMatrix =
-      MRootIO::GetObjectDiectly<TMatrixD>("/home/szhu/work/alice/analysis/QA/output/event/"
-                                          "Grouping_24pass1_DiElectron/matrix.root:distanceMatrix");
+void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
+                          double max_threshold_distance = 0.009, int n_bins = 60) {
+  TMatrixD* ptr_distanceMatrix = MRootIO::GetObjectDiectly<TMatrixD>(
+      "/u/szhu/work/test/matrix_grouping_24cbt.root:distanceMatrix");
 
   TMatrixD& distanceMatrix = *ptr_distanceMatrix;
 
-  gPublisherCanvas = new MPublisherCanvas("/home/szhu/work/alice/analysis/QA/plot/event/grouping/"
-                                          "24pass1_DiElectron.pdf",
-                                          1, 1);
+  gPublisherCanvas = new MPublisherCanvas(
+      "/u/szhu/repository/ppJpsiFlow/event/run_grouping/plots_grouping_24pass1_rct.pdf", 1, 1);
   // plotting: distance between all the runs
   auto h_distance_all =
       new TH1D("h_distance", "Distance between all the runs; Distance;Counts", 200, 0, 0.02);
@@ -256,8 +271,8 @@ void Grouping_24pass1_DiElectron(double min_threshold_distance = 0.003,
   gPublisherCanvas->Draw(h_distance_all);
   gPad->SetLogy();
 
-  h_distance_all->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/grouping/"
-                         "distance_all.root");
+  h_distance_all->SaveAs("/u/szhu/repository/ppJpsiFlow/event/run_grouping/"
+                         "distance_rct.root");
 
   // double threshold_distance = 0.01;
   // std::vector<std::vector<int>> vec_groups =

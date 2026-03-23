@@ -34,6 +34,8 @@ def main():
     # 2. 创建 TH1D
     # Bin 从 1 到 n_files
     hist = ROOT.TH1D("h_cbt_mean", "CBT Mean per Run;Run ID;Mean Value", n_files, 0, n_files)
+    hist2 = ROOT.TH1D("h_cbt_good", "CBT good;Run ID;N", n_files, 0, n_files)
+    hist3 = ROOT.TH1D("h_cbt_all", "CBT good;Run ID;N", n_files, 0, n_files)
     
     # 准备画布以便后续可能的绘图操作（可选，仅用于生成图像）
     # canvas = ROOT.TCanvas("c1", "Mean Plot", 1200, 800)
@@ -45,6 +47,8 @@ def main():
         
         # 设置 X 轴标签为 Run ID
         hist.GetXaxis().SetBinLabel(bin_number, str(run_id))
+        hist2.GetXaxis().SetBinLabel(bin_number, str(run_id))
+        hist3.GetXaxis().SetBinLabel(bin_number, str(run_id))
         
         # 打开 ROOT 文件
         try:
@@ -62,9 +66,14 @@ def main():
             
             # 获取 Mean 值
             mean_val = h_cbt.GetMean()
+            total_val = h_cbt.Integral()
+            good_val = h_cbt.GetBinContent(2)
+
             
             # 填充到直方图
             hist.SetBinContent(bin_number, mean_val)
+            hist2.SetBinContent(bin_number, total_val)
+            hist3.SetBinContent(bin_number, good_val)
             
             print(f"[*] {filename}: Run {run_id}, Mean = {mean_val:.4f}")
             
@@ -77,6 +86,8 @@ def main():
     out_filename = "cbt_mean_results.root"
     output_file = ROOT.TFile(out_filename, "RECREATE")
     hist.Write()
+    hist2.Write()
+    hist3.Write()
     output_file.Close()
     
     print(f"\n[+] 处理完成！")
