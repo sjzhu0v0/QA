@@ -182,7 +182,7 @@ void CreateMatrixRun24() {
     int id_run = MALICE_RUN::map_run24[i_run];
     TString path = TString::Format(
         "/lustre/alice/users/szhu/job/JpsiFlowPair24/output/%d/"
-        "AnalysisResults.root:analysis-track-selection/TrackBarrel_CutPrimaryTrackLoose/Phi",
+        "AnalysisResults.root:analysis-track-selection/output/TrackBarrel_CutPrimaryTrackLoose/Phi",
         id_run);
     TH1* h1 = MRootIO::GetObjectDiectly<TH1>(path);
     h1->SetDirectory(0);
