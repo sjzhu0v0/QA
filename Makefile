@@ -19,7 +19,7 @@ all: \
 	macro/event_jpsi/JpsiAsso_BS.exe
 
 
-process/track/Phi.exe: process/track/Phi.cpp
+macro/track/Phi.exe: macro/track/Phi.cpp
 	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I/lustre/alice/users/szhu/work/o2/AliceO2/Common/Utils/include -I/lustre/alice/users/szhu/work/o2/AliceO2/GPU/Common
 
 process/track/TrackInfoMC.exe: process/track/TrackInfoMC.cpp
