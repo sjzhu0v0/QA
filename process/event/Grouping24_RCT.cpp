@@ -178,8 +178,8 @@ void CreateMatrixRun22(int tag_bin, TString name = "run22") {
 
 void CreateMatrixRun24() {
   vector<TH1*> vec_h1;
-  for (int i_run = 0; i_run < MALICE_RUN::map_run24.size(); i_run++) {
-    int id_run = MALICE_RUN::map_run24[i_run];
+  for (int i_run = 0; i_run < MALICE_RUN::map_run24_rct.size(); i_run++) {
+    int id_run = MALICE_RUN::map_run24_rct[i_run];
     TString path = TString::Format(
         "/lustre/alice/users/szhu/job/JpsiFlowPair24/output/%d/"
         "AnalysisResults.root:analysis-track-selection/output/TrackBarrel_CutPrimaryTrackLoose/Phi",
