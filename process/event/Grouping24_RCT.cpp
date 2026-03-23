@@ -14,7 +14,7 @@
 //     return TMath::Sqrt(distance);
 // }
 
-double euclideanDistance(TH1 *h1, TH1 *h2) {
+double euclideanDistance(TH1* h1, TH1* h2) {
   double distance = 0.0;
   for (int i = 1; i <= h1->GetNbinsX(); i++) {
     distance += TMath::Power(h1->GetBinContent(i) - h2->GetBinContent(i), 2);
@@ -22,8 +22,7 @@ double euclideanDistance(TH1 *h1, TH1 *h2) {
   return sqrt(distance);
 }
 
-void calculateAndSaveDistanceMatrix(const std::vector<TH1 *> &histograms,
-                                    TString filename) {
+void calculateAndSaveDistanceMatrix(const std::vector<TH1*>& histograms, TString filename) {
   size_t n = histograms.size();
   TMatrixD distanceMatrix(n, n);
 
@@ -42,20 +41,19 @@ void calculateAndSaveDistanceMatrix(const std::vector<TH1 *> &histograms,
   file.Close();
 }
 
-TMatrixD loadDistanceMatrix(const std::string &filename) {
+TMatrixD loadDistanceMatrix(const std::string& filename) {
   TFile file(filename.c_str(), "READ");
-  TMatrixD *distanceMatrix = nullptr;
+  TMatrixD* distanceMatrix = nullptr;
   file.GetObject("distanceMatrix", distanceMatrix);
   if (!distanceMatrix) {
-    std::cerr << "Error: Could not load distance matrix from file!"
-              << std::endl;
+    std::cerr << "Error: Could not load distance matrix from file!" << std::endl;
     exit(1);
   }
   file.Close();
   return *distanceMatrix;
 }
 
-map<int, int> ClusteringWithDistanceMatrix(const TMatrixD &distanceMatrix,
+map<int, int> ClusteringWithDistanceMatrix(const TMatrixD& distanceMatrix,
                                            double threshold_distance) {
   map<int, int> cluster_map;
   int dim_matrix = distanceMatrix.GetNrows();
@@ -94,8 +92,8 @@ map<int, int> ClusteringWithDistanceMatrix(const TMatrixD &distanceMatrix,
   return cluster_map;
 }
 
-std::vector<std::vector<int>>
-hierarchicalClustering(const TMatrixD &distanceMatrix, double maxDistance) {
+std::vector<std::vector<int>> hierarchicalClustering(const TMatrixD& distanceMatrix,
+                                                     double maxDistance) {
   size_t n = distanceMatrix.GetNrows();
   std::vector<std::vector<int>> clusters;
 
@@ -132,8 +130,7 @@ hierarchicalClustering(const TMatrixD &distanceMatrix, double maxDistance) {
 
     // 合并最佳簇对
     if (merged) {
-      clusters[bestI].insert(clusters[bestI].end(), clusters[bestJ].begin(),
-                             clusters[bestJ].end());
+      clusters[bestI].insert(clusters[bestI].end(), clusters[bestJ].begin(), clusters[bestJ].end());
       clusters.erase(clusters.begin() + bestJ);
     }
   } while (merged);
@@ -155,18 +152,18 @@ double GetStatistic(vector<int> group) {
 }
 
 void CreateMatrixRun22(int tag_bin, TString name = "run22") {
-  vector<TH1 *> vec_h1;
+  vector<TH1*> vec_h1;
   for (int i_run = 0; i_run < MALICE_RUN::map_run22.size(); i_run++) {
     int id_run = MALICE_RUN::map_run22[i_run];
-    TString path = TString::Format(
-        "/home/szhu/work/alice/analysis/REF/Grouping/data/%d.root", id_run);
-    TFile *f = new TFile(path);
-    TH1 *h1;
+    TString path =
+        TString::Format("/home/szhu/work/alice/analysis/REF/Grouping/data/%d.root", id_run);
+    TFile* f = new TFile(path);
+    TH1* h1;
     if (tag_bin == -1) {
-      TH2 *h2 = (TH2 *)f->Get("Phi_Pt");
+      TH2* h2 = (TH2*)f->Get("Phi_Pt");
       h1 = h2->ProjectionY("h1");
     } else {
-      h1 = (TH1 *)f->Get(TString::Format("silceY_Phi_Pt/sliceY_%d", tag_bin));
+      h1 = (TH1*)f->Get(TString::Format("silceY_Phi_Pt/sliceY_%d", tag_bin));
     }
     h1->SetDirectory(0);
     // cout << path << "\n";
@@ -175,24 +172,22 @@ void CreateMatrixRun22(int tag_bin, TString name = "run22") {
     f->Close();
   }
   TString path_output = TString::Format(
-      "/home/szhu/work/alice/analysis/REF/Grouping/output/matrix_%s_%d.root",
-      name.Data(), tag_bin);
+      "/home/szhu/work/alice/analysis/REF/Grouping/output/matrix_%s_%d.root", name.Data(), tag_bin);
   calculateAndSaveDistanceMatrix(vec_h1, path_output);
 }
 
 void CreateMatrixRun24() {
-  vector<TH1 *> vec_h1;
+  vector<TH1*> vec_h1;
   for (int i_run = 0; i_run < MALICE_RUN::map_run24.size(); i_run++) {
     int id_run = MALICE_RUN::map_run24[i_run];
-    TString path = TString::Format("/home/szhu/work/alice/analysis/QA/input/"
-                                   "event/phi_24pass1_DiElectro/%d/phi.root",
-                                   id_run);
-    TFile *f = new TFile(path);
-    TH1 *h1 = MRootIO::GetObjectDiectly<TH1>(f, "Phi");
+    TString path = TString::Format(
+        "/lustre/alice/users/szhu/job/JpsiFlowPair24/output/%d/"
+        "AnalysisResults.root:analysis-track-selection/TrackBarrel_CutPrimaryTrackLoose/Phi",
+        id_run);
+    TH1* h1 = MRootIO::GetObjectDiectly<TH1>(path);
     h1->SetDirectory(0);
     h1->Scale(1.0 / h1->Integral());
     vec_h1.push_back(h1);
-    f->Close();
   }
   TString path_output = "/home/szhu/work/alice/analysis/QA/output/event/"
                         "Grouping_24pass1_DiElectron/matrix.root";
@@ -208,8 +203,7 @@ void CreateMatrixRun22All() {
 
 double GroupingRun22(int tag_bin, double threshold_distance = 0.01) {
   TString path_matrix = TString::Format(
-      "/home/szhu/work/alice/analysis/REF/Grouping/output/matrix_run22_%d.root",
-      tag_bin);
+      "/home/szhu/work/alice/analysis/REF/Grouping/output/matrix_run22_%d.root", tag_bin);
   TMatrixD distanceMatrix = loadDistanceMatrix(path_matrix.Data());
   // map<int, int> cluster_map =
   //     ClusteringWithDistanceMatrix(distanceMatrix, threshold_distance);
@@ -246,11 +240,9 @@ double GroupingRun22(int tag_bin, double threshold_distance = 0.01) {
 
   for (size_t i = 0; i < vec_groups_withoutLowStat.size(); ++i) {
     std::cout << "Cluster " << i << ": [";
-    for (size_t j = 0; j < vec_groups[vec_groups_withoutLowStat[i]].size();
-         ++j) {
+    for (size_t j = 0; j < vec_groups[vec_groups_withoutLowStat[i]].size(); ++j) {
       // std::cout << vec_groups[vec_groups_withoutLowStat[i]][j];
-      std::cout
-          << MALICE_RUN::map_run22[vec_groups[vec_groups_withoutLowStat[i]][j]];
+      std::cout << MALICE_RUN::map_run22[vec_groups[vec_groups_withoutLowStat[i]][j]];
       if (j != vec_groups[vec_groups_withoutLowStat[i]].size() - 1)
         std::cout << ", ";
     }
@@ -258,10 +250,10 @@ double GroupingRun22(int tag_bin, double threshold_distance = 0.01) {
     double stat = GetStatistic(vec_groups[vec_groups_withoutLowStat[i]]);
     std::cout << " Statistic: " << stat << "\n";
   }
-  TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
-  TH1D *h_distance = new TH1D("h_distance", "Distance", 200, 0, 0.015);
-  h_distance->SetTitle(Form("Distance matrix for bin %d , threshold %.4f, %.0f",
-                            tag_bin, threshold_distance, low_statistic));
+  TCanvas* c1 = new TCanvas("c1", "c1", 800, 600);
+  TH1D* h_distance = new TH1D("h_distance", "Distance", 200, 0, 0.015);
+  h_distance->SetTitle(Form("Distance matrix for bin %d , threshold %.4f, %.0f", tag_bin,
+                            threshold_distance, low_statistic));
   for (int i = 0; i < distanceMatrix.GetNrows(); i++) {
     for (int j = i + 1; j < distanceMatrix.GetNcols(); j++) {
       h_distance->Fill(distanceMatrix[i][j]);
@@ -269,7 +261,7 @@ double GroupingRun22(int tag_bin, double threshold_distance = 0.01) {
   }
   h_distance->Scale(1.0 / h_distance->Integral());
 
-  TH1D *h_distance_incluster =
+  TH1D* h_distance_incluster =
       new TH1D("h_distance_incluster", "Distance in cluster", 200, 0, 0.015);
   for (size_t i = 0; i < vec_groups.size(); ++i) {
     for (size_t j = 0; j < vec_groups[i].size(); ++j) {
@@ -289,7 +281,7 @@ double GroupingRun22(int tag_bin, double threshold_distance = 0.01) {
   h_distance->Draw();
   h_distance_incluster->Draw("same");
 
-  TH1D *h1_distance_outcluster =
+  TH1D* h1_distance_outcluster =
       new TH1D("h1_distance_outcluster", "Distance out cluster", 200, 0, 0.015);
   for (int i_group = 0; i_group < vec_groups.size(); i_group++) {
     for (int i = 0; i < distanceMatrix.GetNrows(); i++) {
@@ -312,10 +304,9 @@ double GroupingRun22(int tag_bin, double threshold_distance = 0.01) {
   h1_distance_outcluster->Scale(1.0 / h1_distance_outcluster->Integral());
   h1_distance_outcluster->SetLineColor(kGreen);
   h1_distance_outcluster->Draw("same");
-  c1->SaveAs(TString::Format(
-      "/home/szhu/work/alice/analysis/REF/Grouping/output/plotting/"
-      "distance_%.4f.pdf",
-      threshold_distance));
+  c1->SaveAs(TString::Format("/home/szhu/work/alice/analysis/REF/Grouping/output/plotting/"
+                             "distance_%.4f.pdf",
+                             threshold_distance));
 
   // for (int i = 0; i < distanceMatrix.GetNrows(); i++) {
   //   for (int j = i + 1; j < distanceMatrix.GetNcols(); j++) {
