@@ -65,7 +65,7 @@ void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_output =
   //                                 {0, 300});
   // StrVar4Hist var_pt("fPTREF", "p_{T}", "GeV/c", 29, {0.2, 6});
   // StrVar4Hist var_eta("fEtaREF", "#eta", "", 36, {-0.9, 0.9});
-  StrVar4Hist var_phi("fPhiREF", "#phi", "rad", 200, {0, 2 * M_PI});
+  StrVar4Hist var_phi("fPhiREF", "#phi", "rad", 250, {0, 2 * M_PI});
   // StrVar4Hist var_dcaxy("fDcaXY", "DCA_{XY}", "cm", 200, {-0.1, 0.1});
   // StrVar4Hist var_dcaz("fDcaZ", "DCA_{XY}", "cm", 200, {-0.1, 0.1});
 
