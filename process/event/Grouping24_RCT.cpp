@@ -189,8 +189,7 @@ void CreateMatrixRun24() {
     h1->Scale(1.0 / h1->Integral());
     vec_h1.push_back(h1);
   }
-  TString path_output = "/home/szhu/work/alice/analysis/QA/output/event/"
-                        "Grouping_24pass1_DiElectron/matrix.root";
+  TString path_output = "/u/szhu/work/test/matrix_grouping_24cbt.root";
   calculateAndSaveDistanceMatrix(vec_h1, path_output);
 }
 
