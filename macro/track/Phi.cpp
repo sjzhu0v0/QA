@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
     path_input_flowVecd = argv[1];
   }
   if (argc > 2) {
-    path_output = argv[3];
+    path_output = argv[2];
   }
 
   Ref_BS(path_input_flowVecd, path_output);
