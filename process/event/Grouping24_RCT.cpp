@@ -184,7 +184,7 @@ void CreateMatrixRun24() {
         "/lustre/alice/users/szhu/job/JpsiFlowPair24/output/%d/"
         "AnalysisResults.root:analysis-track-selection/output/TrackBarrel_CutPrimaryTrackLoose/Phi",
         id_run);
-    TH1* h1 = MRootIO::GetObjectDiectly<TH1>(path);
+    TH1F* h1 = MRootIO::GetObjectDiectly<TH1F>(path);
     h1->SetDirectory(0);
     h1->Scale(1.0 / h1->Integral());
     vec_h1.push_back(h1);
