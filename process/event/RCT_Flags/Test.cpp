@@ -1,15 +1,6 @@
 #include "MRootIO.h"
 #include "RCTSelectionFlags.h"
 
-struct MCollision {
-  uint32_t RctRaw = 0;
-
-  uint32_t rct_raw() const { return RctRaw; }
-
-  bool rct_bit(int bit) const { return 1 & (RctRaw >> bit); }
-
-  void init(TTree* tree) { tree->SetBranchAddress("fRct", &RctRaw); }
-};
 
 using namespace o2::aod::rctsel;
 using namespace std;

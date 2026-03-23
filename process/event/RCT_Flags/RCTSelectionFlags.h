@@ -26,6 +26,14 @@
 #include <stdexcept>
 #include <string>
 
+struct MCollision {
+  uint32_t RctRaw = 0;
+
+  uint32_t rct_raw() const { return RctRaw; }
+
+  bool rct_bit(int bit) const { return 1 & (RctRaw >> bit); }
+};
+
 namespace o2::aod::rctsel
 {
 /*
