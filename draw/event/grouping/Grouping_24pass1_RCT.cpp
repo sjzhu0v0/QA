@@ -74,8 +74,7 @@ double GetStatistic24RCT(vector<int> group) { // total statistic conuting after
   for (int i = 0; i < group.size(); i++) {
     int run = MALICE_RUN::map_run24[group[i]];
     double statistic_temp = MALICE::EventNumberDiElectronRCT(
-        run, "/home/szhu/work/alice/analysis/InfoRun/"
-             "runinfo_LHC24_pass1_DiElectron.root:bc-selection-task/hCounterTVX");
+        run, "/u/szhu/repository/ppJpsiFlow/event/cbt_mean_results.root:h_cbt_good");
     if (statistic_temp < 0) {
       cerr << "Run " << run << " not found\n";
       exit(1);
@@ -251,7 +250,7 @@ double GetLowStatistic(std::vector<std::vector<int>> vec_groups, double threshol
 void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
                           double max_threshold_distance = 0.009, int n_bins = 60) {
   TMatrixD* ptr_distanceMatrix = MRootIO::GetObjectDiectly<TMatrixD>(
-      "/u/szhu/work/test/matrix_grouping_24cbt.root:distanceMatrix");
+      "/u/szhu/repository/ppJpsiFlow/event/run_grouping/matrix_grouping_24cbt.root:distanceMatrix");
 
   TMatrixD& distanceMatrix = *ptr_distanceMatrix;
 
@@ -401,7 +400,7 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
                             "Proportion of the largest group");
   gPublisherCanvas->DrawClone(g_fraction_main);
   gPad->SetGrid();
-  g_fraction_main->SaveAs("/home/szhu/work/alice/analysis/QA/plot/event/grouping/"
+  g_fraction_main->SaveAs("/u/szhu/repository/ppJpsiFlow/event/run_grouping/"
                           "proportion_main_vs_threshold_distance_fine.root");
 
   gPublisherCanvas->finalize();
