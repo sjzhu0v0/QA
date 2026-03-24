@@ -181,15 +181,14 @@ void CreateMatrixRun24() {
   for (int i_run = 0; i_run < MALICE_RUN::map_run24_rct.size(); i_run++) {
     int id_run = MALICE_RUN::map_run24_rct[i_run];
     TString path = TString::Format(
-        "/lustre/alice/users/szhu/job/JpsiFlowPair24/output/%d/"
-        "AnalysisResults.root:analysis-track-selection/output/TrackBarrel_CutPrimaryTrackLoose/Phi",
-        id_run);
-    TH1F* h1 = MRootIO::GetObjectSingle<TH1F>(path);
+        "/lustre/alice/users/szhu/work/ppJpsiFlow/grouping/phi/%d.root:fPhiREF", id_run);
+    TH1D* h1 = MRootIO::GetObjectSingle<TH1D>(path);
     h1->SetDirectory(0);
     h1->Scale(1.0 / h1->Integral());
     vec_h1.push_back(h1);
   }
-  TString path_output = "/u/szhu/repository/ppJpsiFlow/event/run_grouping/matrix_grouping_24cbt.root";
+  TString path_output =
+      "/u/szhu/repository/ppJpsiFlow/event/run_grouping/matrix_grouping_24cbt.root";
   calculateAndSaveDistanceMatrix(vec_h1, path_output);
 }
 
