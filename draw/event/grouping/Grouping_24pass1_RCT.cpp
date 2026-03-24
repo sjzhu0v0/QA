@@ -380,7 +380,7 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
          << ", maximum: " << h_statistic->GetMaximum()
          << ", Threshold distance: " << threshold_distance
          << ", Proportion of main cluster: " << fraction_main << endl;
-    if (abs(threshold_distance - 0.0049) <
+    if (abs(threshold_distance - 0.007) <
         (max_threshold_distance - min_threshold_distance) / (double)n_bins) {
       // print the first cluster
       cout << "First cluster: ";
