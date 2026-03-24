@@ -353,7 +353,7 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
 
     vector<double> statistics_cluster;
     for (size_t i = 0; i < vec_groups.size(); ++i) {
-      double stat = GetStatistic24(vec_groups[i]);
+      double stat = GetStatistic24RCT(vec_groups[i]);
       statistics_cluster.push_back(stat);
     }
 
