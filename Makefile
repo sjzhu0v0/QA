@@ -43,7 +43,6 @@ macro/event/MultQA_AllCut.exe: macro/event/MultQA_AllCut.cpp
 macro/event/MultREFRaw.exe: macro/event/MultREFRaw.cpp
 	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I/lustre/alice/users/szhu/work/o2/AliceO2/Common/Utils/include -I/lustre/alice/users/szhu/work/o2/AliceO2/GPU/Common
 
-
 macro/event_jpsi/JpsiAsso.exe: macro/event_jpsi/JpsiAsso.cpp
 	@g++ -o $@ $^ $(FLAGS_INCLUDE) $(FLAGS_ROOT) $(FLAGS_MINUIT) -I./ -L./opt -lMRootDict
 

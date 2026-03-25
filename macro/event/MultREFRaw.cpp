@@ -50,7 +50,6 @@ void MultREF(
                     return rctChecker(mCollision);
                   },
                   {"fRct"})
-
       /*   .DefineSlot("isntSelfDefinedPileup",
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
