@@ -4,6 +4,7 @@
 #include "MHead.h"
 #include "MHist.h"
 #include "MRootIO.h"
+#include <RCTSelectionFlags.h>
 #include <ROOT/RDataFrame.hxx>
 
 void MultREF(
@@ -15,14 +16,16 @@ void MultREF(
    /*  TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
-  TFile *file_flowVecd = TFile::Open(path_input_flowVecd);
-  TFile *fOutput = new TFile(path_output, "RECREATE");
+  TFile* file_flowVecd = TFile::Open(path_input_flowVecd);
+  TFile* fOutput = new TFile(path_output, "RECREATE");
 
   Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
   // Cut_MultTPC_NumContrib::init(path_pileup);
 
   // TTree *tree_flowVecd = (TTree *)file_flowVecd->Get("O2dqflowvecd");
-  TTree *tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
+  TTree* tree_flowVecd = MRootIO::OpenChain(file_flowVecd, "O2dqflowvecd");
+  TChain* tree_rct = MRootIO::OpenChain(path_input_flowVecd.Data(), "O2rctrawdq");
+  tree_flowVecd->AddFriend(tree_rct);
 
   vector<RResultHandle> gRResultHandlesFast;
   ROOT::RDataFrame rdf(*tree_flowVecd);
@@ -31,18 +34,23 @@ void MultREF(
       rdf.Define("map_trigger", MALICE::triggermapRVec, {"fSelection"})
           .Define("isntSPDPileup", MALICE::IsntSPDPileup, {"fSelection"})
           .Define("isntTPCPileup", MALICE::IsntTPCPileup, {"fSelection"})
-          .Define("isntSameBunchPileup", MALICE::IsntSameBunchPileup_NoSlot,
-                  {"fSelection"})
-          .Define("isntITSROFrameBorder", MALICE::IsntITSROFrameBorder,
-                  {"fSelection"})
-          .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder,
-                  {"fSelection"})
+          .Define("isntSameBunchPileup", MALICE::IsntSameBunchPileup_NoSlot, {"fSelection"})
+          .Define("isntITSROFrameBorder", MALICE::IsntITSROFrameBorder, {"fSelection"})
+          .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder, {"fSelection"})
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
           .Alias("fMultREF", "fPTREF_size")
           .Define("RunNumber", [] { return float(0.5); })
-          .DefineSlot("NumContribCalib",
-                      Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
+          .DefineSlot("NumContribCalib", Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
                       {"fNumContrib", "fPosZ"})
+          .Define("isCBT",
+                  [](const uint32_t& fRct) {
+                    thread_local o2::aod::rctsel::RCTFlagsChecker rctChecker{"CBT"};
+                    thread_local MCollision mCollision;
+                    mCollision.RctRaw = fRct;
+                    return rctChecker(mCollision);
+                  },
+                  {"fRct"})
+
       /*   .DefineSlot("isntSelfDefinedPileup",
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
@@ -51,39 +59,33 @@ void MultREF(
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
       rdf_witTrigger.Filter("isntTimeFrameBorder", "no Time Frame border");
-  auto rdf_isTriggerTVX =
-      rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX");
-  auto rdf_PartTrigger =
-      rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
-          .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
-          .Filter("isntTimeFrameBorder", "no Time Frame border")
+  auto rdf_isTriggerTVX = rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX");
+  auto rdf_PartTrigger = rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
+                             .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
+                             .Filter("isntTimeFrameBorder", "no Time Frame border")
+                             .Filter("isCBT")
       /*  .Filter("isntSelfDefinedPileup", "no self defined pileup") */;
 
   StrVar4Hist var_fPosX("fPosX", "fPosX", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosY("fPosY", "fPosY", "cm", 200, {-10, 10});
   StrVar4Hist var_fPosZ("fPosZ", "fPosZ", "cm", 200, {-10, 10});
   StrVar4Hist var_fNumContrib("fNumContrib", "fNumContrib", "", 300, {0, 300});
-  StrVar4Hist var_NumContribCalib("NumContribCalib", "NumContrib Calibrated",
-                                  "", 300, {0, 300});
+  StrVar4Hist var_NumContribCalib("NumContribCalib", "NumContrib Calibrated", "", 300, {0, 300});
   StrVar4Hist var_fMultTPC("fMultTPC", "fMultTPC", "", 600, {0, 600});
   StrVar4Hist var_fMultREF("fMultREF", "fMultREF", "", 100, {0, 100});
-  StrVar4Hist var_fMultFT0C("fMultFT0C", "fMultFT0C", "", 130,
-                            {-1000., 12000.});
-  StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.",
-                                 150, {0, 150});
+  StrVar4Hist var_fMultFT0C("fMultFT0C", "fMultFT0C", "", 130, {-1000., 12000.});
+  StrVar4Hist var_fMultNTracksPV("fMultNTracksPV", "fMultNTracksPV", "a.u.", 150, {0, 150});
 
-  vector<StrVar4Hist> vec_var_mult = {var_fNumContrib,    var_NumContribCalib,
-                                      var_fMultTPC,       var_fMultFT0C,
-                                      var_fMultNTracksPV, var_fMultREF};
+  vector<StrVar4Hist> vec_var_mult = {var_fNumContrib, var_NumContribCalib, var_fMultTPC,
+                                      var_fMultFT0C,   var_fMultNTracksPV,  var_fMultREF};
 
   vector<array<string, 2>> conditions = {
       {"isntSameBunchPileup || !isntSameBunchPileup", "NoSameBunchCut"},
       {"isntSameBunchPileup", "NoSameBunchPileup"},
       {"!isntSameBunchPileup", "AllSameBunchPileup"}};
 
-  for (const auto &condition : conditions) {
-    auto rdf_PartTrigger_cond =
-        rdf_PartTrigger.Filter(condition[0].c_str(), condition[1].c_str());
+  for (const auto& condition : conditions) {
+    auto rdf_PartTrigger_cond = rdf_PartTrigger.Filter(condition[0].c_str(), condition[1].c_str());
     TString tag_cond = condition[1];
     for (int i_mult = 0; i_mult < vec_var_mult.size(); i_mult++) {
       TString title = condition[0];
@@ -102,8 +104,7 @@ void MultREF(
         }
         TString title2d = title + ";" + title_x + ";" + title_y;
         gRResultHandlesFast.push_back(rdf_PartTrigger_cond.Histo2D(
-            GetTH2DModelWithTitle(vec_var_mult[i_mult], vec_var_mult[j_mult],
-                                  title2d, tag_cond),
+            GetTH2DModelWithTitle(vec_var_mult[i_mult], vec_var_mult[j_mult], title2d, tag_cond),
             vec_var_mult[i_mult].fName, vec_var_mult[j_mult].fName));
       }
     }
@@ -116,16 +117,14 @@ void MultREF(
   fOutput->Close();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   TString path_input_flowVecd = "../input.root";
   TString path_output = "output.root";
   int runNumber = 0;
-  TString path_calib =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
-  TString path_pileup =
-      "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-      "MultPileup_LHC22pass4_dqfilter.root:fit_func_upedge";
+  TString path_calib = "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+                       "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
+  TString path_pileup = "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
+                        "MultPileup_LHC22pass4_dqfilter.root:fit_func_upedge";
 
   if (argc > 1) {
     path_input_flowVecd = argv[1];

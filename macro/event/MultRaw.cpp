@@ -4,6 +4,7 @@
 #include "MHist.h"
 #include "MRootIO.h"
 #include <ROOT/RDataFrame.hxx>
+#include <RCTSelectionFlags.h>
 
 void MultRaw(TString path_input = "../input.root",
              TString path_output = "output.root", int runNumber = 0,
