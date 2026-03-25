@@ -2,7 +2,8 @@ DIR_BASE=/lustre/alice/users/szhu/work/Analysis/PairFlow
 PATH_INCLUDE=$(DIR_BASE)/include
 FLAGS_INCLUDE=-I$(DIR_BASE)/include
 FLAGS_ROOT=$(shell root-config --cflags --libs)
-FLAGS_OPT=-I/lustre/alice/users/szhu/opt/include -I./ -L./opt -lMRootDict  -L/lustre/alice/users/szhu/opt/lib64   -Wl,-rpath,/lustre/alice/users/szhu/opt/lib64   -lyaml-cpp -lRooFitCore -lRooFit
+FLAGS_OPT=-I/lustre/alice/users/szhu/opt/include -I./ -L./opt -lMRootDict  -L/lustre/alice/users/szhu/opt/lib64   -Wl,-rpath,/lustre/alice/users/szhu/opt/lib64   -lyaml-cpp -lRooFitCore -lRooFit -I/lustre/alice/users/szhu/work/o2/AliceO2/Common/Utils/include -I/lustre/alice/users/szhu/work/o2/AliceO2/GPU/Common
+
 FLAGS_MINUIT=-lMinuit
 
 # Output directory for executables
