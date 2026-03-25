@@ -1,3 +1,5 @@
+#include "TString.h"
+#include <string>
 #define MRDF
 #include "MALICE.h"
 #include "MCalibration.h"
@@ -50,10 +52,16 @@ void MultREF(
                     return rctChecker(mCollision);
                   },
                   {"fRct"})
+
       /*   .DefineSlot("isntSelfDefinedPileup",
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
       ;
+  TString path_output_tree = path_output;
+  path_output_tree.ReplaceAll(".root", "");
+  path_output_tree = path_output_tree + "_tree.root";
+
+  rdf_witTrigger.Snapshot("ExtraInfo", path_output_tree, {"NumContribCalib", "isCBT"});
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
