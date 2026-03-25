@@ -60,14 +60,14 @@ void MultRaw(TString path_input = "../input.root", TString path_output = "output
   //     0,
   //      150, 300, 0, 300},
   //     "fMultNTracksPV", "fMultTPC"));
-  // auto profile_fNumContribRun = rdf_fullTrigger.Profile1D(
-  //     {"fNumContribRun", "fNumContribRun;run; fNumContrib", 1, 0., 1.}, "RunNumber",
-  //     "fNumContrib");
-  // gRResultHandlesFast.push_back(profile_fNumContribRun);
-  // auto profile_fNumContribVtxZ = rdf_fullTrigger.Profile1D(
-  //     {"fNumContribfPosZ", "fNumContribVtxZ;fPosZ [cm]; fNumContrib", 10, -10, 10.}, "fPosZ",
-  //     "fNumContrib");
-  // gRResultHandlesFast.push_back(profile_fNumContribVtxZ);
+  auto profile_fNumContribRun = rdf_fullTrigger.Profile1D(
+      {"fNumContribRun", "fNumContribRun;run; fNumContrib", 1, 0., 1.}, "RunNumber",
+      "fNumContrib");
+  gRResultHandlesFast.push_back(profile_fNumContribRun);
+  auto profile_fNumContribVtxZ = rdf_fullTrigger.Profile1D(
+      {"fNumContribfPosZ", "fNumContribVtxZ;fPosZ [cm]; fNumContrib", 10, -10, 10.}, "fPosZ",
+      "fNumContrib");
+  gRResultHandlesFast.push_back(profile_fNumContribVtxZ);
   auto profile_fNumContribVtxZRun = rdf_fullTrigger.Profile2D(
       {"fNumContribfPosZRun", "fNumContribVtxZ;fPosZ [cm];Run;fNumContrib", 10, -10, 10., 1, 0.,
        1.},
@@ -75,7 +75,7 @@ void MultRaw(TString path_input = "../input.root", TString path_output = "output
   gRResultHandlesFast.push_back(profile_fNumContribVtxZRun);
   /* #endregion */
   RunGraphs(gRResultHandlesFast);
-  // profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
+  profile_fNumContribRun->GetXaxis()->SetBinLabel(1, Form("%d", runNumber));
   profile_fNumContribVtxZRun->GetYaxis()->SetBinLabel(1, Form("%d", runNumber));
   fOutput->cd();
   RResultWrite(gRResultHandlesFast);
