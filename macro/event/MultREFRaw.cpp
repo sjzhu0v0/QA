@@ -18,6 +18,7 @@ void MultREF(
    /*  TString path_pileup =
         " /home/szhu/work/alice/analysis/QA/output/event/"
         "MultCalibrationResult_LHC22pass4_dqfilter.root:fit_func_upedge" */) {
+  ROOT::DisableImplicitMT();
   TFile* file_flowVecd = TFile::Open(path_input_flowVecd);
   TFile* fOutput = new TFile(path_output, "RECREATE");
 
@@ -52,7 +53,6 @@ void MultREF(
                     return rctChecker(mCollision);
                   },
                   {"fRct"})
-
       /*   .DefineSlot("isntSelfDefinedPileup",
                     Cut_MultTPC_NumContrib::isInCutSlot,
                     {"NumContribCalib", "fMultTPC"}) */
