@@ -1,3 +1,4 @@
+#include "TString.h"
 #define MRDF
 #include "MALICE.h"
 #include "MCalibration.h"
@@ -6,17 +7,12 @@
 #include "MRootIO.h"
 #include <ROOT/RDataFrame.hxx>
 
-void MultCalib(
-    TString path_input = "../input.root", TString path_output = "output.root", int runNumber = 0,
-    TString path_calib = "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
-                         "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_",
-    TString name_tree_event = "O2reducedevent", TString name_tree_event_ext = "O2reextended") {
+void MultCalib(TString path_input = "../input.root", TString path_input_ext = "../input_ext.root",
+               TString path_output = "output.root", int runNumber = 1) {
   TFile* fOutput = new TFile(path_output, "RECREATE");
 
-  Calib_NumContrib_fPosZ_Run::GetHistCali(path_calib, runNumber);
-
-  TChain* tree_event = MRootIO::OpenChain(path_input, name_tree_event.Data());
-  TChain* tree_event_ext = MRootIO::OpenChain(path_input, name_tree_event_ext.Data());
+  TChain* tree_event = MRootIO::OpenChain(path_input, "O2dqflowvecd");
+  TChain* tree_event_ext = MRootIO::OpenChain(path_input_ext, "ExtraInfo");
 
   tree_event->AddFriend(tree_event_ext);
   vector<RResultHandle> gRResultHandlesFast;
@@ -31,8 +27,9 @@ void MultCalib(
           .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder, {"fSelection"})
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
           .Define("RunNumber", [] { return float(0.5); })
-          .DefineSlot("NumContribCalib", Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
-                      {"fNumContrib", "fPosZ"});
+      // .DefineSlot("NumContribCalib", Calib_NumContrib_fPosZ_Run::NumContribCalibratedFloat,
+      //             {"fNumContrib", "fPosZ"})
+      ;
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
   auto rdf_isntTimeFrameBorder =
@@ -41,7 +38,10 @@ void MultCalib(
   auto rdf_fullTrigger = rdf_witTrigger.Filter("isTriggerTVX", "is Trigger TVX")
                              .Filter("isntITSROFrameBorder", "no ITS RO Frame border")
                              .Filter("isntTimeFrameBorder", "no Time Frame border")
-                             .Filter("isntSameBunchPileup", "no same bunch pileup");
+                             .Filter("isntSameBunchPileup", "no same bunch pileup")
+                             .Filter("isCBT")
+      //;
+      ;
   if (is_interactive())
     ROOT::RDF::Experimental::AddProgressBar(rdf_fullTrigger);
 
@@ -87,12 +87,11 @@ void MultCalib(
 
 int main(int argc, char** argv) {
   TString path_input = "../input.root";
+  TString path_input_ext = "../input_ext.root";
   TString path_output = "output.root";
   TString path_calib = "/lustre/alice/users/szhu/work/Analysis/InfoRun/MultCalib/"
                        "MultCalibration_LHC22pass4_dqfilter.root:fNumContribfPosZRun_calib_";
   int runNumber = 0;
-  TString name_tree_event = "O2reducedevent";
-  TString name_tree_event_ext = "O2reextended";
 
   if (argc > 1) {
     path_input = argv[1];
@@ -101,18 +100,12 @@ int main(int argc, char** argv) {
     path_output = argv[2];
   }
   if (argc > 3) {
-    runNumber = atoi(argv[3]);
+    path_calib = argv[3];
   }
   if (argc > 4) {
-    path_calib = argv[4];
-  }
-  if (argc > 5) {
-    name_tree_event = argv[5];
-  }
-  if (argc > 6) {
-    name_tree_event_ext = argv[6];
+    runNumber = atoi(argv[4]);
   }
 
-  MultCalib(path_input, path_output, runNumber, path_calib, name_tree_event, name_tree_event_ext);
+  MultCalib(path_input, path_input_ext, path_output, runNumber);
   return 0;
 }
