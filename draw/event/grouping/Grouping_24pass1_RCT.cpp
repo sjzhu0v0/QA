@@ -55,7 +55,7 @@ double GetStatistic24(vector<int> group) { // total statistic conuting after
                                            // DiElectron selection 5.5213720e+10
   double statistic = 0;
   for (int i = 0; i < group.size(); i++) {
-    int run = MALICE_RUN::map_run24[group[i]];
+    int run = MALICE_RUN::map_run24_rct[group[i]];
     double statistic_temp = MALICE::EventNumberMinbias(
         run, "/home/szhu/work/alice/analysis/InfoRun/"
              "runinfo_LHC24_pass1_DiElectron.root:bc-selection-task/hCounterTVX");
@@ -72,7 +72,7 @@ double GetStatistic24RCT(vector<int> group) { // total statistic conuting after
                                               // DiElectron selection 5.5213720e+10
   double statistic = 0;
   for (int i = 0; i < group.size(); i++) {
-    int run = MALICE_RUN::map_run24[group[i]];
+    int run = MALICE_RUN::map_run24_rct[group[i]];
     double statistic_temp = MALICE::EventNumberDiElectronRCT(
         run, "/u/szhu/repository/ppJpsiFlow/event/cbt_mean_results.root:h_cbt_good");
     if (statistic_temp < 0) {
@@ -126,7 +126,7 @@ double GroupingThreshold(double threshold_distance = 0.01, double threshold_stat
     std::cout << "Cluster " << i << ": [";
     for (size_t j = 0; j < vec_groups[vec_groups_withoutLowStat[i]].size(); ++j) {
       // std::cout << vec_groups[vec_groups_withoutLowStat[i]][j];
-      std::cout << MALICE_RUN::map_run24[vec_groups[vec_groups_withoutLowStat[i]][j]];
+      std::cout << MALICE_RUN::map_run24_rct[vec_groups[vec_groups_withoutLowStat[i]][j]];
       if (j != vec_groups[vec_groups_withoutLowStat[i]].size() - 1)
         std::cout << ", ";
     }
@@ -385,7 +385,7 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
       // print the first cluster
       cout << "First cluster: ";
       for (size_t i = 0; i < vec_groups[h_statistic->GetMaximumBin() - 1].size(); ++i) {
-        cout << MALICE_RUN::map_run24[vec_groups[h_statistic->GetMaximumBin() - 1][i]];
+        cout << MALICE_RUN::map_run24_rct[vec_groups[h_statistic->GetMaximumBin() - 1][i]];
         if (i != vec_groups[h_statistic->GetMaximumBin() - 1].size() - 1)
           cout << ", ";
       }
@@ -540,7 +540,7 @@ void Grouping_24pass1_DiElectron_Detailed(double threshold_distance = 0.0045) {
   // print the first cluster
   cout << "First cluster: ";
   for (size_t i = 0; i < vec_groups[h_statistic->GetMaximumBin() - 1].size(); ++i) {
-    cout << MALICE_RUN::map_run24[vec_groups[h_statistic->GetMaximumBin() - 1][i]];
+    cout << MALICE_RUN::map_run24_rct[vec_groups[h_statistic->GetMaximumBin() - 1][i]];
     if (i != vec_groups[h_statistic->GetMaximumBin() - 1].size() - 1)
       cout << ", ";
   }
@@ -553,7 +553,7 @@ void Grouping_24pass1_DiElectron_Detailed(double threshold_distance = 0.0045) {
   cout << "proportion" << h_statistic->GetMaximum() / integral_temp << endl;
 
   for (size_t i = 0; i < vec_groups[h_statistic->GetMaximumBin() - 1].size(); ++i) {
-    cout << MALICE_RUN::map_run24[vec_groups[h_statistic->GetMaximumBin() - 1][i]];
+    cout << MALICE_RUN::map_run24_rct[vec_groups[h_statistic->GetMaximumBin() - 1][i]];
     if (i != vec_groups[h_statistic->GetMaximumBin() - 1].size() - 1)
       cout << ", ";
   }
