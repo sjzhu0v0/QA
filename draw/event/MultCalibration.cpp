@@ -2,12 +2,12 @@
 #include "MRootIO.h"
 #include "TProfile2D.h"
 
-void MultCalibration(TString path = "/home/szhu/work/alice/analysis/QA/input/event/"
-                                    "MultRaw_LHC22pass4_dqfilter.root",
-                     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event/"
-                                           "MultCalibration_LHC22pass4_dqfilter.root",
-                     TString path_plot = "/home/szhu/work/alice/analysis/QA/plot/event/",
-                     TString tag_period = "LHC24pass1", double mult_target = 35.0) {
+void MultCalibration(
+    TString path = "/data/work/alice/Code/QA/input/event/MultRaw_flowVec_24pass1_clusterRct.root",
+    TString path_output = "~/work/alice/analysis/QA/output/event/"
+                          "MultCalibration_LHC24pass1_clusterRCT.root",
+    TString path_plot = "~/work/alice/analysis/QA/plot/event/",
+    TString tag_period = "LHC24pass1_clusterRCT", double mult_target = 35.0) {
   // fNumContribfPosZ
   gROOT->SetBatch(true);
   MRootGraphic::StyleCommon();

@@ -1,3 +1,4 @@
+#include "TString.h"
 #define MRDF
 #include "MALICE.h"
 #include "MCalibration.h"
@@ -8,11 +9,12 @@
 #include <RCTSelectionFlags.h>
 #include <ROOT/RDataFrame.hxx>
 
-void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_output = "output.root") {
+void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_input_ext = "",
+            TString path_output = "output.root") {
   TFile* fOutput = new TFile(path_output, "RECREATE");
 
   TChain* tree_flowVecd = MRootIO::OpenChain(path_input_flowVecd.Data(), "O2dqflowvecd");
-  TChain* tree_mult = MRootIO::OpenChain(path_input_flowVecd.Data(), "O2rctrawdq");
+  TChain* tree_mult = MRootIO::OpenChain(path_input_ext.Data(), "ExtraInfo");
   cout << "Input file: " << path_input_flowVecd << endl;
   cout << "Output file: " << path_output << endl;
 
@@ -29,14 +31,14 @@ void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_output =
           .Define("isntTimeFrameBorder", MALICE::IsntTimeFrameBorder, {"fSelection"})
           .Define("isTriggerTVX", MALICE::IsTriggerTVX, {"fSelection"})
           .Alias("fMultREF", "fPTREF_size")
-          .Define("isCBT",
-                  [](const uint32_t& fRct) {
-                    thread_local o2::aod::rctsel::RCTFlagsChecker rctChecker{"CBT"};
-                    thread_local MCollision mCollision;
-                    mCollision.RctRaw = fRct;
-                    return rctChecker(mCollision);
-                  },
-                  {"fRct"})
+          // .Define("isCBT",
+          //         [](const uint32_t& fRct) {
+          //           thread_local o2::aod::rctsel::RCTFlagsChecker rctChecker{"CBT"};
+          //           thread_local MCollision mCollision;
+          //           mCollision.RctRaw = fRct;
+          //           return rctChecker(mCollision);
+          //         },
+          //         {"fRct"})
           .Define("RunNumber", [] { return float(0.5); });
   auto rdf_isntITSROFrameBorder =
       rdf_witTrigger.Filter("isntITSROFrameBorder", "no ITS RO Frame border");
@@ -61,8 +63,8 @@ void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_output =
     ROOT::RDF::Experimental::AddProgressBar(rdf);
 
   StrVar4Hist var_fPosZ("fPosZ", "#it{V}_{Z}", "cm", 40, {-10, 10});
-  // StrVar4Hist var_NumContribCalib("NumContribCalib", "N_{vtx contrib} Calibrated", "", 300,
-  //                                 {0, 300});
+  StrVar4Hist var_NumContribCalib("NumContribCalib", "N_{vtx contrib} Calibrated", "", 300,
+                                  {0, 300});
   StrVar4Hist var_pt("fPTREF", "p_{T}", "GeV/c", 29, {0.2, 6});
   StrVar4Hist var_eta("fEtaREF", "#eta", "", 36, {-0.9, 0.9});
   StrVar4Hist var_phi("fPhiREF", "#phi", "rad", 250, {0, 2 * M_PI});
@@ -87,9 +89,9 @@ void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_output =
                                                varX.fName, varY.fName, varZ.fName));               \
   } while (0)
 
-  // obj2push_th2d(rdf_PartTrigger, var_pt, var_phi, "", "");
-  // obj2push_th2d(rdf_PartTrigger, var_eta, var_phi, "", "");
-  // obj2push_th2d(rdf_PartTrigger, var_fPosZ, var_phi, "", "");
+  obj2push_th2d(rdf_PartTrigger, var_pt, var_phi, "", "");
+  obj2push_th2d(rdf_PartTrigger, var_eta, var_phi, "", "");
+  obj2push_th2d(rdf_PartTrigger, var_fPosZ, var_phi, "", "");
   // obj2push_th2d(rdf_PartTrigger, var_dcaxy, var_phi, "", "");
   //
   // obj2push_th3d(rdf_PartTrigger, var_dcaz, var_phi, var_pt, "", "");
@@ -97,8 +99,8 @@ void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_output =
   // obj2push_th3d(rdf_PartTrigger, var_dcaxy, var_phi, var_pt, "", "");
   // obj2push_th3d(rdf_PartTrigger, var_dcaxy, var_phi, var_eta, "", "");
   //
-  // obj2push_th2d(rdf_PartTrigger, var_NumContribCalib, var_phi, "", "");
-  // obj2push_th2d(rdf_PartTrigger, var_eta, var_fPosZ, "", "");
+  obj2push_th2d(rdf_PartTrigger, var_NumContribCalib, var_phi, "", "");
+  obj2push_th2d(rdf_PartTrigger, var_eta, var_fPosZ, "", "");
 
   gRResultHandles.push_back(rdf_PartTrigger.Histo1D(GetTH1DM(var_phi, "", ""), var_phi.fName));
 
@@ -111,16 +113,20 @@ void Ref_BS(TString path_input_flowVecd = "../input.root", TString path_output =
 
 int main(int argc, char** argv) {
   TString path_input_flowVecd = "../input.root";
+  TString path_input_ext = "../input.root";
   TString path_output = "output.root";
 
   if (argc > 1) {
     path_input_flowVecd = argv[1];
   }
   if (argc > 2) {
-    path_output = argv[2];
+    path_input_ext = argv[2];
+  }
+  if (argc > 3) {
+    path_output = argv[3];
   }
 
-  Ref_BS(path_input_flowVecd, path_output);
+  Ref_BS(path_input_flowVecd, path_input_ext, path_output);
 
   return 0;
 }
