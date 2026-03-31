@@ -392,7 +392,7 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
         if (iRunCluster != vec_groups[iCluster].size() - 1)
           outFile << ",";
       }
-      cout << endl;
+      outFile << endl;
     }
   }
   TGraph* g_fraction_main = new TGraph(n_bins, &vec_threshold_distance[0], &vec_fraction_main[0]);
