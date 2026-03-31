@@ -387,6 +387,9 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
             << ", Threshold distance: " << threshold_distance
             << ", Proportion of main cluster: " << fraction_main << endl;
     for (int iCluster = 0; iCluster < h_statistic->GetXaxis()->GetNbins(); iCluster++) {
+      outFile << "proportion of " << iCluster
+              << "th cluster:" << h_statistic->GetBinContent(iCluster + 1) / h_statistic->Integral()
+              << endl;
       for (int iRunCluster = 0; iRunCluster < vec_groups[iCluster].size(); iRunCluster++) {
         outFile << MALICE_RUN::map_run24_rct[vec_groups[iCluster][iRunCluster]];
         if (iRunCluster != vec_groups[iCluster].size() - 1)
