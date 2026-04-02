@@ -75,8 +75,9 @@ double GetStatistic24RCT(vector<int> group) { // total statistic conuting after
   double statistic = 0;
   for (int i = 0; i < group.size(); i++) {
     int run = MALICE_RUN::map_run24_rct[group[i]];
-    double statistic_temp = MALICE::EventNumberDiElectronRCT(
-        run, "/u/szhu/repository/ppJpsiFlow/event/cbt_mean_results.root:h_cbt_good");
+    double statistic_temp =
+        MALICE::EventNumberDiElectronRCT(run, "/lustre/alice/users/tcheng/szhu/work/repository/"
+                                              "EventInfo/cbt_mean_results.root:h_cbt_good");
     if (statistic_temp < 0) {
       cerr << "Run " << run << " not found\n";
       exit(1);
