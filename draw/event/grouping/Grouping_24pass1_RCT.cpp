@@ -251,13 +251,15 @@ double GetLowStatistic(std::vector<std::vector<int>> vec_groups, double threshol
 
 void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
                           double max_threshold_distance = 0.009, int n_bins = 60) {
-  TMatrixD* ptr_distanceMatrix = MRootIO::GetObjectDiectly<TMatrixD>(
-      "/u/szhu/repository/ppJpsiFlow/event/run_grouping/matrix_grouping_24cbt.root:distanceMatrix");
+  TMatrixD* ptr_distanceMatrix =
+      MRootIO::GetObjectDiectly<TMatrixD>("/lustre/alice/users/tcheng/szhu/work/repository/"
+                                          "Grouping/matrix_grouping_24cbt.root:distanceMatrix");
 
   TMatrixD& distanceMatrix = *ptr_distanceMatrix;
-  ofstream outFile("/u/szhu/repository/ppJpsiFlow/event/run_grouping/cluster_info.txt");
+  ofstream outFile("/lustre/alice/users/tcheng/szhu/work/repository/Grouping/cluster_info.txt");
   gPublisherCanvas = new MPublisherCanvas(
-      "/u/szhu/repository/ppJpsiFlow/event/run_grouping/plots_grouping_24pass1_rct.pdf", 1, 1);
+      "/lustre/alice/users/tcheng/szhu/work/repository/Grouping/plots_grouping_24pass1_rct.pdf", 1,
+      1);
   // plotting: distance between all the runs
   auto h_distance_all =
       new TH1D("h_distance", "Distance between all the runs; Distance;Counts", 200, 0, 0.02);
@@ -272,7 +274,7 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
   gPublisherCanvas->Draw(h_distance_all);
   gPad->SetLogy();
 
-  h_distance_all->SaveAs("/u/szhu/repository/ppJpsiFlow/event/run_grouping/"
+  h_distance_all->SaveAs("/lustre/alice/users/tcheng/szhu/work/repository/Grouping/"
                          "distance_rct.root");
 
   // double threshold_distance = 0.01;
@@ -406,7 +408,7 @@ void Grouping_24pass1_RCT(double min_threshold_distance = 0.003,
                             "Proportion of the largest group");
   gPublisherCanvas->DrawClone(g_fraction_main);
   gPad->SetGrid();
-  g_fraction_main->SaveAs("/u/szhu/repository/ppJpsiFlow/event/run_grouping/"
+  g_fraction_main->SaveAs("/lustre/alice/users/tcheng/szhu/work/repository/Grouping/"
                           "proportion_main_vs_threshold_distance_fine.root");
 
   gPublisherCanvas->finalize();
