@@ -188,7 +188,7 @@ void CreateMatrixRun24() {
     vec_h1.push_back(h1);
   }
   TString path_output =
-      "/u/szhu/repository/ppJpsiFlow/event/run_grouping/matrix_grouping_24cbt.root";
+      "/lustre/alice/users/tcheng/szhu/work/repository/Grouping/matrix_grouping_24cbt.root";
   calculateAndSaveDistanceMatrix(vec_h1, path_output);
 }
 
