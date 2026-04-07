@@ -131,13 +131,37 @@ class StrVar4Hist:
         # 【核心修改】使用 numpy 解析含 pi 的字符串列表
         # dtype='f8' 告诉 numpy 将其转换为 float64
         # 它可以自动识别 'pi', '2*pi', 'pi/2' 等标准数学表达式
-        try:
-            processed_bins = np.array(raw_bins, dtype="f8", copy=False).tolist()
-        except Exception as e:
-            raise ValueError(
-                f"无法解析 bins 配置，请检查数学表达式格式: {raw_bins}. 错误: {e}"
-            )
+        processed_bins = []
 
+        for val in raw_bins:
+            if isinstance(val, str):
+                # 1. 去除所有空格
+                clean_val = val.replace(" ", "")
+
+                # 2. 检查是否包含 'pi'
+                if "pi" in clean_val:
+                    # 移除 'pi'，只保留系数部分
+                    # 例如: "-0.5*pi" -> "-0.5*"
+                    # 例如: "1.5pi" -> "1.5"
+                    coeff_str = clean_val.replace("pi", "")
+
+                    # 处理末尾可能残留的乘号 (如 "-0.5*" -> "-0.5")
+                    coeff_str = coeff_str.strip("*")
+
+                    # 如果系数为空（比如用户只写了 "pi"），默认为 1
+                    if not coeff_str:
+                        coeff = 1.0
+                    else:
+                        coeff = float(coeff_str)
+
+                    # 3. 直接相乘
+                    processed_bins.append(coeff * ROOT.TMath.Pi())
+                else:
+                    # 如果不包含 pi，尝试直接转为 float
+                    processed_bins.append(float(val))
+            else:
+                # 如果本来就是数字，直接加入
+                processed_bins.append(val)
         return cls(name, title, unit, nbins, processed_bins)
 
 
