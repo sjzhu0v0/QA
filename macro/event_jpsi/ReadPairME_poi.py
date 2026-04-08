@@ -243,7 +243,7 @@ def build_rdf_with_variables(tree_input: ROOT.TTree, toy_index: int) -> ROOT.RDa
     rdf_AllVar = (
         rdf_base.Define("DeltaPhi", "GetDeltaPhi(jpsi_phi, ref_phi)")
         .Define("DeltaEta", "jpsi_eta - ref_eta")
-        .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
+        .Define("nITSCluster", "countSetBits_uint8(ref_ITSClusterMap)")
         .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt, ref_dcaz)")
         .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt, ref_dcaxy)")
         .Define("NumContribCalib", "MultFromIndex(iMult)")
