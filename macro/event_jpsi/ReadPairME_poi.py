@@ -1,0 +1,414 @@
+#!/usr/bin/env python3
+import sys
+import yaml
+import numpy as np
+import ROOT
+from array import array
+from functools import reduce
+
+# Global list to collect histogram handles
+gRResultHandles = []
+
+# Declare efficient functional random number generator in C++
+ROOT.gInterpreter.Declare(
+    """
+#include <cstdint>
+
+// SplitMix64: fast, high-quality, seedable PRNG (public domain)
+inline uint64_t splitmix64(uint64_t x) {
+    x += 0x9e3779b97f4a7c15ULL;
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+    return x ^ (x >> 31);
+}
+
+// Generate deterministic random number in [0,1) from r_event, toyIndex, and global seed
+inline double functionalRandom(double r_event, uint64_t toyIndex, uint64_t globalSeed = 0) {
+    // Clamp r_event to [0, 1 - ε] to avoid overflow
+    if (r_event >= 1.0) r_event = 0.999999999999999; // just below 1.0
+    uint64_t base = static_cast<uint64_t>(r_event * (1ULL << 53));
+    uint64_t s = base ^ (toyIndex + 0x9e3779b97f4a7c15ULL) ^ globalSeed;
+    uint64_t z = splitmix64(s);
+    return (z >> 11) * 0x1.0p-53; // use top 53 bits for double precision
+}
+
+int countSetBits_uint8(uint8_t x) {
+    int count = 0;
+    while (x) {
+        count += x & 1;
+        x >>= 1;
+    }
+    return count;
+}
+
+float nDCA2Dev(float pt, float dca) {
+    double dev_dca = 0.00179344 + 0.000924651 * pow(abs(pt), -1.4062);
+    return abs(dca) / dev_dca;
+}
+
+#include <vector>
+const std::vector<float> vec_mult = {2.5, 6.5, 9.5, 12.5, 16., 22.5, 25.5, 32., 42., 200.};
+
+float MultFromIndex(int index) {
+    return vec_mult[index];
+}
+
+#include "TRandom3.h"
+gRandom->SetSeed(0);
+float PosZFromIndex(int index) {
+    return (float) (gRandom->Uniform(-10.+2.*index,2.*index));
+}
+
+float GetDeltaPhi(float phi1, float phi2) {
+    float delta_phi = phi1 - phi2;
+    int n = 0;
+    while (delta_phi > 1.5 * M_PI && n < 10) {
+        n++;
+        delta_phi -= 2 * M_PI;
+    }
+    while (delta_phi < -0.5 * M_PI && n < 10) {
+        n++;
+        delta_phi += 2 * M_PI;
+    }
+    if (n >= 10)
+        delta_phi = -999.;
+    return delta_phi;
+}
+
+"""
+)
+
+
+def RResultWrite(result_handles, output_file):
+    """Write histograms, handling duplicate names by appending _0, _1, ..."""
+    output_file.cd()
+    written_names = {}
+
+    for handle in result_handles:
+        try:
+            h = handle.GetPtr()
+        except Exception as e:
+            print(f"Warning: Could not retrieve histogram from handle: {e}")
+            continue
+
+        if not hasattr(h, "GetName"):
+            continue
+        name = h.GetName()
+
+        if name in written_names:
+            written_names[name] += 1
+            new_name = f"{name}_{written_names[name]}"
+            h.SetName(new_name)
+            print(f"Renaming duplicate histogram to: {new_name}")
+        else:
+            written_names[name] = 0
+
+        h.Write()
+
+
+def get_nested_node(data, path, separator="/"):
+    if not path:
+        return data
+    keys = path.split(separator)
+    return reduce(lambda current_dict, key: current_dict[key], keys, data)
+
+
+class StrVar4Hist:
+    # ... __init__ 保持不变 ...
+    def __init__(self, name, title, unit, nbins, bins):
+        self.fName = name
+        self.fTitle = title
+        self.fUnit = unit
+        self.fNbins = nbins
+
+        if len(bins) != nbins + 1 and len(bins) != 2:
+            raise ValueError("bins size is not correct")
+
+        if len(bins) == 2:
+            start, stop = bins[0], bins[1]
+            self.fBins = [start + i * (stop - start) / nbins for i in range(nbins + 1)]
+        else:
+            self.fBins = list(bins)
+
+    @classmethod
+    def from_config(cls, config, str_subnode=None):
+        target_config = get_nested_node(config, str_subnode)
+
+        # ... 提取其他参数 ...
+        name = target_config["name"]
+        title = target_config["title"]
+        unit = target_config["unit"]
+        nbins = target_config["nbins"]
+        raw_bins = target_config["bins"]
+
+        # 【核心修改】使用 numpy 解析含 pi 的字符串列表
+        # dtype='f8' 告诉 numpy 将其转换为 float64
+        # 它可以自动识别 'pi', '2*pi', 'pi/2' 等标准数学表达式
+        processed_bins = []
+
+        for val in raw_bins:
+            if isinstance(val, str):
+                # 1. 去除所有空格
+                clean_val = val.replace(" ", "")
+
+                # 2. 检查是否包含 'pi'
+                if "pi" in clean_val:
+                    # 移除 'pi'，只保留系数部分
+                    # 例如: "-0.5*pi" -> "-0.5*"
+                    # 例如: "1.5pi" -> "1.5"
+                    coeff_str = clean_val.replace("pi", "")
+
+                    # 处理末尾可能残留的乘号 (如 "-0.5*" -> "-0.5")
+                    coeff_str = coeff_str.strip("*")
+
+                    # 如果系数为空（比如用户只写了 "pi"），默认为 1
+                    if not coeff_str:
+                        coeff = 1.0
+                    else:
+                        coeff = float(coeff_str)
+
+                    # 3. 直接相乘
+                    processed_bins.append(coeff * ROOT.TMath.Pi())
+                else:
+                    # 如果不包含 pi，尝试直接转为 float
+                    processed_bins.append(float(val))
+            else:
+                # 如果本来就是数字，直接加入
+                processed_bins.append(val)
+        return cls(name, title, unit, nbins, processed_bins)
+
+
+def load_config(path_config: str) -> dict:
+    """Load and return configuration from YAML file."""
+    with open(path_config, "r") as f:
+        return yaml.safe_load(f)
+
+
+def open_input_root_file(path_input: str) -> ROOT.TFile:
+    """Open input ROOT file and return it."""
+    file_flowVecd = ROOT.TFile.Open(path_input)
+    if not file_flowVecd or file_flowVecd.IsZombie():
+        raise RuntimeError(f"Cannot open input file: {path_input}")
+    return file_flowVecd
+
+
+def get_input_tree(file_flowVecd: ROOT.TFile) -> ROOT.TTree:
+    """Get the first TTree from the ROOT file."""
+    for key in file_flowVecd.GetListOfKeys():
+        if key.GetClassName() == "TTree":
+            tree = file_flowVecd.Get(key.GetName())
+            if tree:
+                return tree
+    raise RuntimeError("No TTree found in input file")
+
+
+def parse_histogram_variables(hist_cfg: dict) -> tuple:
+    """Parse histogram variables from configuration."""
+    var_fPosZ = StrVar4Hist.from_config(hist_cfg, str_subnode="fPosZ")
+    var_NumContribCalibBinned = StrVar4Hist.from_config(
+        hist_cfg, str_subnode="NumContribCalibBinned"
+    )
+    var_MassJpsiCandidate = StrVar4Hist.from_config(
+        hist_cfg, str_subnode="MassJpsiCandidate"
+    )
+    var_PtJpsiCandidate = StrVar4Hist.from_config(
+        hist_cfg, str_subnode="PtJpsiCandidate"
+    )
+    var_DeltaEtaUS = StrVar4Hist.from_config(hist_cfg, str_subnode="DeltaEtaUS")
+    var_DeltaPhiUS = StrVar4Hist.from_config(hist_cfg, str_subnode="DeltaPhiUS")
+
+    vec_var = [
+        var_DeltaEtaUS,
+        var_DeltaPhiUS,
+        var_fPosZ,
+        var_MassJpsiCandidate,
+        var_PtJpsiCandidate,
+        var_NumContribCalibBinned,
+    ]
+
+    vec_var2 = [
+        var_fPosZ,
+        var_MassJpsiCandidate,
+        var_PtJpsiCandidate,
+        var_NumContribCalibBinned,
+    ]
+
+    return vec_var, vec_var2
+
+
+def build_rdf_with_variables(tree_input: ROOT.TTree, toy_index: int) -> ROOT.RDataFrame:
+    """Build RDataFrame with all defined columns."""
+    rdf_base = ROOT.RDataFrame(tree_input)
+
+    rdf_AllVar = (
+        rdf_base.Define("DeltaPhi", "GetDeltaPhi(jpsi_phi, ref_phi)")
+        .Define("DeltaEta", "jpsi_eta - ref_eta")
+        .Define("nITSCluster", "countSetBits_uint8(ref_itsClusterMap)")
+        .Define("nDcaZ2Dev", "nDCA2Dev(ref_pt, ref_dcaz)")
+        .Define("nDcaXY2Dev", "nDCA2Dev(ref_pt, ref_dcaxy)")
+        .Define("NumContribCalib", "MultFromIndex(iMult)")
+        .Define("fPosZ", "PosZFromIndex(iVtxZ)")
+    )
+
+    return rdf_AllVar
+
+
+def get_cuts_from_config(config: dict) -> list:
+    """Read cuts from config and return list of (cut_name, cut_expr) tuples."""
+    cuts_config = config.get("cuts", {})
+    if not cuts_config:
+        print("Warning: no 'cuts' section in config. Using default inclusive cut.")
+        return [("inclusive", "true")]
+    return list(cuts_config.items())
+
+
+def declare_same_jpsi_filter(cut_name: str) -> None:
+    """Declare the isSameJpsi filter function for a given cut."""
+    ROOT.gInterpreter.Declare(
+        f"""
+bool isSameJpsi{cut_name}(float tag)
+{{
+    static float tag_old = -1.;
+    bool aaa = (tag_old == tag);
+    tag_old = tag;
+    return aaa;
+}};
+"""
+    )
+
+
+def book_histogram_for_cut(
+    rdf_filtered: ROOT.RDataFrame,
+    vec_var: list,
+    cut_name: str,
+    result_handles: list,
+) -> ROOT.RDataFrame:
+    """Book histogram for a given cut and return filtered RDataFrame."""
+    hist_name = "_".join(v.fName for v in vec_var) + "_" + cut_name
+    axis_titles = (
+        ";".join(
+            v.fTitle + (" (" + v.fUnit + ")" if v.fUnit else "") for v in vec_var
+        )
+        + ";"
+    )
+    full_title = f"{hist_name};{axis_titles}"
+
+    nbins_list = [v.fNbins for v in vec_var]
+    edges_list = [v.fBins for v in vec_var]
+    edge_arrays = [array("d", edges) for edges in edges_list]
+
+    thnd_model = ROOT.RDF.THnDModel(
+        hist_name, full_title, len(vec_var), nbins_list, edge_arrays
+    )
+
+    column_names = [v.fName for v in vec_var]
+    hist_handle = rdf_filtered.HistoND(thnd_model, column_names)
+    result_handles.append(hist_handle)
+
+    return rdf_filtered
+
+
+def book_histogram_for_cut2(
+    rdf_filtered: ROOT.RDataFrame,
+    vec_var2: list,
+    cut_name: str,
+    result_handles: list,
+) -> None:
+    """Book histogram for non-same Jpsi pairs for a given cut."""
+    rdf_filtered2 = rdf_filtered.Filter("!isSameJpsi")
+
+    hist_name2 = "_".join(v.fName for v in vec_var2) + "_" + cut_name
+    axis_titles2 = (
+        ";".join(
+            v.fTitle + (" (" + v.fUnit + ")" if v.fUnit else "") for v in vec_var2
+        )
+        + ";"
+    )
+    full_title2 = f"{hist_name2};{axis_titles2}"
+
+    nbins_list2 = [v.fNbins for v in vec_var2]
+    edges_list2 = [v.fBins for v in vec_var2]
+    edge_arrays2 = [array("d", edges) for edges in edges_list2]
+
+    thnd_model2 = ROOT.RDF.THnDModel(
+        hist_name2, full_title2, len(vec_var2), nbins_list2, edge_arrays2
+    )
+    column_names2 = [v.fName for v in vec_var2]
+    hist_handle2 = rdf_filtered2.HistoND(thnd_model2, column_names2)
+    result_handles.append(hist_handle2)
+
+
+def process_cuts_and_book_histograms(
+    rdf_AllVar: ROOT.RDataFrame,
+    config: dict,
+    vec_var: list,
+    vec_var2: list,
+    result_handles: list,
+) -> None:
+    """Process all cuts and book histograms."""
+    cut_items = get_cuts_from_config(config)
+
+    for cut_name, cut_expr in cut_items:
+        print(f"Applying cut '{cut_name}': {cut_expr}")
+        declare_same_jpsi_filter(cut_name)
+
+        rdf_filtered = rdf_AllVar.Filter(cut_expr, cut_name).Define(
+            "isSameJpsi", f"isSameJpsi{cut_name}(jpsi_mass)"
+        )
+
+        book_histogram_for_cut(rdf_filtered, vec_var, cut_name, result_handles)
+        book_histogram_for_cut2(rdf_filtered, vec_var2, cut_name, result_handles)
+
+
+def EventMixingReadingPair(
+    path_input_flowVecd: str, path_output: str, path_config: str, toy_index: int
+):
+    global gRResultHandles
+    gRResultHandles.clear()
+
+    # Load configuration
+    config = load_config(path_config)
+
+    # Open input file and get tree
+    file_flowVecd = open_input_root_file(path_input_flowVecd)
+    tree_input = get_input_tree(file_flowVecd)
+
+    # Parse histogram variables
+    hist_cfg = config["hist_binning"]
+    vec_var, vec_var2 = parse_histogram_variables(hist_cfg)
+
+    # Build RDataFrame with all variables
+    rdf_AllVar = build_rdf_with_variables(tree_input, toy_index)
+
+    # Process cuts and book histograms
+    process_cuts_and_book_histograms(rdf_AllVar, config, vec_var, vec_var2, gRResultHandles)
+
+    # Execute all graphs
+    ROOT.RDF.RunGraphs(gRResultHandles)
+
+    # Write all results
+    output_file = ROOT.TFile(path_output, "RECREATE")
+    RResultWrite(gRResultHandles, output_file)
+    output_file.Close()
+    print(f"Output written to: {path_output}")
+
+
+def main():
+    # Parse command-line arguments: now accept optional toy_index (default=0)
+    if len(sys.argv) < 4:
+        print(
+            "Usage: python script.py <input.root> <output.root> <config.yaml> [toy_index]"
+        )
+        print("Example: python analysis.py data.root results.root my_config.yaml 42")
+        sys.exit(1)
+
+    path_input = sys.argv[1]
+    path_output = sys.argv[2]
+    path_config = sys.argv[3]
+    toy_index = int(sys.argv[4]) if len(sys.argv) >= 5 else 0
+
+    EventMixingReadingPair(path_input, path_output, path_config, toy_index)
+
+
+if __name__ == "__main__":
+    main()
