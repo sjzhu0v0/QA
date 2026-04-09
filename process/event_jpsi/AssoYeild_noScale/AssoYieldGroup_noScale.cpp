@@ -161,7 +161,7 @@ void AssoYieldGroup_noScale(
 int main(int argc, char **argv) {
   if (argc < 1) {
     cerr << "Usage: ./AssoYieldGroup_noScale [path_input] [path_output] "
-            "[path_pdf]"
+            "[path_pdf] [path_config]"
          << endl;
     return 1;
   }
@@ -170,9 +170,12 @@ int main(int argc, char **argv) {
   } else if (argc == 4) {
     AssoYieldGroup_noScale(TString(argv[1]), TString(argv[2]),
                            TString(argv[3]));
+  } else if (argc == 5) {
+    AssoYieldGroup_noScale(TString(argv[1]), TString(argv[2]),
+                           TString(argv[3]), TString(argv[4]));
   } else {
     cerr << "Usage: ./AssoYieldGroup_noScale [path_input] [path_output] "
-            "[path_pdf]"
+            "[path_pdf] [path_config]"
          << endl;
     return 1;
   }

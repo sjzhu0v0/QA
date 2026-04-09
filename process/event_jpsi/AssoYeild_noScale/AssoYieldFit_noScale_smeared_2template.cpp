@@ -228,7 +228,7 @@ int main(int argc, char** argv) {
   TString path_pdf = argc > 6 ? argv[6]
                               : "/home/szhu/work/alice/analysis/QA/test/"
                                 "AssoYieldFit_noScale.pdf";
-  TString path_config = argc > 7 ? argv[7] : "config.yaml";
+  TString path_config = argc > 7 ? argv[7] : "config_new.yaml";
 
   AssoYieldEtagap(path_input, path_input_mass, path_input_tf1, path_input_assoYield_tf1,
                   path_output, path_pdf, path_config);

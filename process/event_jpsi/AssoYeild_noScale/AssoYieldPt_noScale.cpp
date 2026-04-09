@@ -13,8 +13,9 @@ void AssoYieldPt(TString input_se_pr =
                                        "MixEventReading.root:DeltaEtaUS_"
                                        "DeltaPhiUS_PosZUS_MassUS_PtUS_NumContribCalibUS",
                  TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                                       "AssoYieldPt") {
-  YAML::Node config = YAML::LoadFile("config.yaml");
+                                       "AssoYieldPt",
+                 TString path_config = "config_new.yaml") {
+  YAML::Node config = YAML::LoadFile(path_config.Data());
 
   auto hist_se_pr = MRootIO::GetObjectDiectly<THnD>(input_se_pr);
   auto hist_se_raw = MRootIO::GetObjectDiectly<THnD>(input_se_raw);
@@ -208,6 +209,7 @@ int main(int argc, char** argv) {
                              "PosZUS_"
                              "MassUS_PtUS_NumContribCalibUS";
   TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/AssoYieldQA";
+  TString path_config = "config_new.yaml";
 
   if (argc > 1) {
     path_input_se_pr = argv[1];
@@ -221,7 +223,11 @@ int main(int argc, char** argv) {
   if (argc > 4) {
     path_output = argv[4];
   }
-  AssoYieldPt(path_input_se_pr, path_input_se_raw, path_input_me_pr, path_output);
+  if (argc > 5) {
+    path_config = argv[5];
+  }
+  AssoYieldPt(path_input_se_pr, path_input_se_raw, path_input_me_pr, path_output,
+              path_config);
 
   return 0;
 }
