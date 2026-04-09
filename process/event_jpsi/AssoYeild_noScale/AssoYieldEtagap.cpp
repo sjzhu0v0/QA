@@ -5,24 +5,79 @@
 #include "MRootIO.h"
 #include "TApplication.h"
 #include "yaml-cpp/yaml.h"
+#include <algorithm>
+
+// Helper function to parse StrVar4Hist from YAML config
+StrVar4Hist ParseStrVar4Hist(const YAML::Node& config) {
+    TString name = config["name"].as<std::string>().c_str();
+    TString title = config["title"].as<std::string>().c_str();
+    TString unit = config["unit"].as<std::string>().c_str();
+    int nbins = config["nbins"].as<int>();
+    
+    YAML::Node bins_node = config["bins"];
+    std::vector<double> bins;
+    
+    for (const auto& bin_node : bins_node) {
+        if (bin_node.IsScalar()) {
+            std::string val_str = bin_node.as<std::string>();
+            // Check if string contains "pi"
+            if (val_str.find("pi") != std::string::npos) {
+                // Remove spaces
+                val_str.erase(std::remove(val_str.begin(), val_str.end(), ' '), val_str.end());
+                // Remove "pi" and handle coefficient
+                size_t pi_pos = val_str.find("pi");
+                std::string coeff_str = val_str;
+                coeff_str.erase(pi_pos, 2); // remove "pi"
+                // Remove trailing '*' if exists
+                if (!coeff_str.empty() && coeff_str.back() == '*') {
+                    coeff_str.pop_back();
+                }
+                
+                double coeff = coeff_str.empty() ? 1.0 : std::stod(coeff_str);
+                bins.push_back(coeff * M_PI);
+            } else {
+                bins.push_back(std::stod(val_str));
+            }
+        } else {
+            bins.push_back(bin_node.as<double>());
+        }
+    }
+    
+    return StrVar4Hist(name, title, unit, nbins, bins);
+}
 
 void AssoYieldEtagap(
     TString path_input = "/home/szhu/work/alice/analysis/QA/test/"
                          "AssoYieldGroupEtagap_NoScale.root",
     TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
-                          "AssoYieldFit_noScale.root") {
+                          "AssoYieldFit_noScale.root",
+    TString path_config = "config_new.yaml") {
   gErrorIgnoreLevel = kWarning;
-  YAML::Node config = YAML::LoadFile("config.yaml");
-  // int n_rebin_mass_assoYield =
-  //     config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
-  const double low_edge_deltaPhiToPi =
-      config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
-  const double up_edge_deltaPhiToPi =
-      config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
-
+  YAML::Node config = YAML::LoadFile(path_config);
+  
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
 
+  YAML::Node hist_config = config["hist_binning"];
+  
+  StrVar4Hist var_fPosZ = ParseStrVar4Hist(hist_config["fPosZ"]);
+  StrVar4Hist var_NumContribCalibBinned = ParseStrVar4Hist(hist_config["NumContribCalibBinned"]);
+  StrVar4Hist var_MassJpsiCandidate = ParseStrVar4Hist(hist_config["MassJpsiCandidate"]);
+  StrVar4Hist var_PtJpsiCandidate = ParseStrVar4Hist(hist_config["PtJpsiCandidate"]);
+  StrVar4Hist var_DeltaEtaUS = ParseStrVar4Hist(hist_config["DeltaEtaUS"]);
+  StrVar4Hist var_DeltaPhiUS = ParseStrVar4Hist(hist_config["DeltaPhiUS"]);
+  
+  // Calculate EtaGap binning based on DeltaEtaUS configuration
+  int n_bins_deltaEta_assoYield = var_DeltaEtaUS.fNbins;
+  double min_deltaEta = var_DeltaEtaUS.fBins[0];
+  double max_deltaEta = var_DeltaEtaUS.fBins.back();
+  double bin_width_etaGap = (max_deltaEta - min_deltaEta) / n_bins_deltaEta_assoYield;
+  int n_bins_etaGap = n_bins_deltaEta_assoYield / 2 - 2;
+  std::vector<double> etaGap_bins = {-1.0 * bin_width_etaGap, 
+                                      (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap};
+  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", n_bins_etaGap, etaGap_bins);
+  
+  // strAny_ptV2 structure for custom pt V2 binning (kept hardcoded due to complex structure)
   struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
                                       {2},
@@ -75,36 +130,8 @@ void AssoYieldEtagap(
 
     vector<int> operator[](int index) { return bins[index]; }
   } strAny_ptV2;
-
-  StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
-  StrVar4Hist var_NumContribCalibBinned(
-      "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
-                                    {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
-  int n_bins_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
-  double min_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
-  double max_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
-  double bin_width_etaGap = (max_deltaEta_assoYield - min_deltaEta_assoYield) /
-                            (double)n_bins_deltaEta_assoYield;
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
-                             n_bins_deltaEta_assoYield,
-                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
-  int n_bins_deltaPhi_assoYield =
-      config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
-  StrVar4Hist var_DeltaPhiUS(
-      "DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", n_bins_deltaPhi_assoYield,
-      {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
-  StrVar4Hist var_EtaGap(
-      "EtaGap", "#Delta#eta_{gap}", "", n_bins_deltaEta_assoYield / 2 - 2,
-      {-1. * bin_width_etaGap,
-       (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap});
-  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
-                           {0., 1.});
+  
+  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins, {0., 1.});
   int n_rebin_mass_assoYield =
       config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
   MIndexHist indexHistMass(var_MassJpsiCandidate, 1, n_rebin_mass_assoYield);
@@ -173,18 +200,18 @@ void AssoYieldEtagap(
             assoYield_high.MH1DGetBin(i_deltaEta, iPtV2));
       }
 
+      double low_edge_deltaPhi = var_DeltaPhiUS.fBins[0];
+      double up_edge_deltaPhi = var_DeltaPhiUS.fBins.back();
+      
       TF1 func_modulation(
           "f1_modulation", "[a0]+2*([a1]*cos(x)+[a2]*cos(2*x)+[a3]*cos(3*x))",
-          low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI);
+          low_edge_deltaPhi, up_edge_deltaPhi);
       assoYield_sub_EtaGap.currentObject().fHisto->Fit(
-          &func_modulation, "QR", "", low_edge_deltaPhiToPi * M_PI,
-          up_edge_deltaPhiToPi * M_PI);
+          &func_modulation, "QR", "", low_edge_deltaPhi, up_edge_deltaPhi);
       assoYield_low_EtaGap.currentObject().fHisto->Fit(
-          &func_modulation, "QR", "", low_edge_deltaPhiToPi * M_PI,
-          up_edge_deltaPhiToPi * M_PI);
+          &func_modulation, "QR", "", low_edge_deltaPhi, up_edge_deltaPhi);
       assoYield_high_EtaGap.currentObject().fHisto->Fit(
-          &func_modulation, "QR", "", low_edge_deltaPhiToPi * M_PI,
-          up_edge_deltaPhiToPi * M_PI);
+          &func_modulation, "QR", "", low_edge_deltaPhi, up_edge_deltaPhi);
     }
   }
 
@@ -264,8 +291,9 @@ int main(int argc, char **argv) {
   TString path_output = argc > 2 ? argv[2]
                                  : "/home/szhu/work/alice/analysis/QA/test/"
                                    "AssoYieldFit_noScale.root";
+  TString path_config = argc > 3 ? argv[3] : "config_new.yaml";
 
-  AssoYieldEtagap(path_input, path_output);
+  AssoYieldEtagap(path_input, path_output, path_config);
 
   return 0;
 }

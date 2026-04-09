@@ -18,15 +18,11 @@ void AssoYieldEtagap(
                           "AssoYieldFit_noScale.root",
     TString path_pdf = "/home/szhu/work/alice/analysis/QA/test/"
                        "AssoYieldFit_noScale.pdf",
-    TString path_config = "config.yaml") {
+    TString path_config = "config_new.yaml") {
   gErrorIgnoreLevel = kWarning;
   YAML::Node config = YAML::LoadFile(path_config.Data());
-  const double low_edge_deltaPhiToPi =
-      config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
-  const double up_edge_deltaPhiToPi =
-      config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
-  const int poly_order =
-      config["poly_order"].as<int>();
+  YAML::Node hist_config = config["hist_binning"];
+  const int poly_order = config["poly_order"].as<int>();
 
   TFile *file_input = new TFile(path_input);
   TFile *file_input_tf1 = new TFile(path_input_tf1);
@@ -85,30 +81,23 @@ void AssoYieldEtagap(
     vector<int> operator[](int index) { return bins[index]; }
   } strAny_ptV2;
 
-  StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
-  StrVar4Hist var_NumContribCalibBinned(
-      "NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-      {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90,
-                                    {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
-  int n_bins_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
-  double min_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
-  double max_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
-                             n_bins_deltaEta_assoYield,
-                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
-  int n_bins_deltaPhi_assoYield =
-      config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
-  StrVar4Hist var_DeltaPhiUS(
-      "DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "", n_bins_deltaPhi_assoYield,
-      {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
-  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", 6, {-0.4, 2.});
-  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins,
-                           {0., 1.});
+  StrVar4Hist var_fPosZ = ParseStrVar4Hist(hist_config["fPosZ"]);
+  StrVar4Hist var_NumContribCalibBinned = ParseStrVar4Hist(hist_config["NumContribCalibBinned"]);
+  StrVar4Hist var_MassJpsiCandidate = ParseStrVar4Hist(hist_config["MassJpsiCandidate"]);
+  StrVar4Hist var_PtJpsiCandidate = ParseStrVar4Hist(hist_config["PtJpsiCandidate"]);
+  StrVar4Hist var_DeltaEtaUS = ParseStrVar4Hist(hist_config["DeltaEtaUS"]);
+  StrVar4Hist var_DeltaPhiUS = ParseStrVar4Hist(hist_config["DeltaPhiUS"]);
+  
+  // Calculate EtaGap binning based on DeltaEtaUS configuration
+  int n_bins_deltaEta_assoYield = var_DeltaEtaUS.fNbins;
+  double min_deltaEta = var_DeltaEtaUS.fBins[0];
+  double max_deltaEta = var_DeltaEtaUS.fBins.back();
+  double bin_width_etaGap = (max_deltaEta - min_deltaEta) / n_bins_deltaEta_assoYield;
+  int n_bins_etaGap = n_bins_deltaEta_assoYield / 2 - 2;
+  std::vector<double> etaGap_bins = {-1.0 * bin_width_etaGap, 
+                                      (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap};
+  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", n_bins_etaGap, etaGap_bins);
+  StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins, {0., 1.});
 
   int n_rebin_mass_assoYield =
       config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
