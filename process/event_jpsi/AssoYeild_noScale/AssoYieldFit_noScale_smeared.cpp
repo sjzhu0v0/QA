@@ -20,7 +20,7 @@ void AssoYieldEtagap(
                        "AssoYieldFit_noScale.pdf",
     TString path_config = "config_new.yaml") {
   gErrorIgnoreLevel = kWarning;
-  YAML::Node config = YAML::LoadFile(path_config);
+  YAML::Node config = YAML::LoadFile(path_config.Data());
   YAML::Node hist_config = config["hist_binning"];
 
   TFile *file_input = new TFile(path_input);

@@ -18,7 +18,7 @@ void AssoYieldGroup_noScale(
   gROOT->SetBatch(kTRUE);
   gErrorIgnoreLevel = kWarning;
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
-  YAML::Node config = YAML::LoadFile(path_config);
+  YAML::Node config = YAML::LoadFile(path_config.Data());
   YAML::Node hist_config = config["hist_binning"];
   int n_rebin_mass_assoYield = config["hist_binning"]["n_rebin_mass_assoYield"].as<int>();
 

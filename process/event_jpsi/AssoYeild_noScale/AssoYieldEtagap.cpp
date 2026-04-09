@@ -53,7 +53,7 @@ void AssoYieldEtagap(
                           "AssoYieldFit_noScale.root",
     TString path_config = "config_new.yaml") {
   gErrorIgnoreLevel = kWarning;
-  YAML::Node config = YAML::LoadFile(path_config);
+  YAML::Node config = YAML::LoadFile(path_config.Data());
   
   TFile *file_input = new TFile(path_input);
   TFile *file_output = new TFile(path_output, "RECREATE");
