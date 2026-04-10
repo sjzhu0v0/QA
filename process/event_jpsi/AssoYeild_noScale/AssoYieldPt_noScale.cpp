@@ -26,14 +26,6 @@ void AssoYieldPt(TString input_se_pr =
   MHnTool hnTool_se_pr(hist_se_pr);
   MHnTool hnTool_se_raw(hist_se_raw);
   int nbins_posz_raw = hnTool_se_raw.GetNbins(0);
-  if (nbins_posz_raw == 200)
-    hnTool_se_raw.Rebin(0, 25); // Rebin PosZ
-  else if (nbins_posz_raw == 8) {
-    // Do nothing, already rebinned
-  } else {
-    cerr << "Error: Unexpected number of bins for PosZ: " << nbins_posz_raw << endl;
-    exit(1);
-  }
   MHnTool hnTool_me_pr(hist_me_pr);
 
   AssocYieldHelper_v2 assoYield(&hnTool_se_pr, &hnTool_me_pr, &hnTool_se_raw);
