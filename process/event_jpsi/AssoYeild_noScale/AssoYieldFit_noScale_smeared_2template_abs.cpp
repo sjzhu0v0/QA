@@ -128,10 +128,10 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
   fitterPoly_mass.initializeBasis(poly_order);
 
   MHGroupTool1D assoYield_lowMult(
-      file_input, "MassUS_AssoYield_lowMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
+      file_input, "jpsi_mass_AssoYield_lowMult_DeltaEta_%d_DeltaPhi_%d_ptV2_%d",
       {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {n_rebin_deltaEta_assoYield, 1, 1});
   MHGroupTool1D assoYield_highMult(
-      file_input, "MassUS_AssoYield_highMult_DeltaEtaUS_%d_DeltaPhiUS_%d_ptV2_%d",
+      file_input, "jpsi_mass_AssoYield_highMult_DeltaEta_%d_DeltaPhi_%d_ptV2_%d",
       {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {n_rebin_deltaEta_assoYield, 1, 1});
   MFitterPoly fitterPoly_asso(assoYield_highMult.GetHist(vector<int>{1, 1, 1}), 1.88, 4.32);
   fitterPoly_asso.initializeBasis(poly_order);
