@@ -107,13 +107,13 @@ void AssoYieldEtagap(
   MIndexAny indexAnyPtV2Jpsi(strAny_ptV2, 1);
   gDirectory = nullptr;
   MHGroupTool1D assoYield_sub(
-      file_input, "DeltaPhiUS_AssoYield_sub_DeltaEtaUS_%d_ptV2_%d",
+      file_input, "DeltaPhi_AssoYield_sub_DeltaEta_%d_ptV2_%d",
       {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
   MHGroupTool1D assoYield_low(
-      file_input, "DeltaPhiUS_AssoYield_low_DeltaEtaUS_%d_ptV2_%d",
+      file_input, "DeltaPhi_AssoYield_low_DeltaEta_%d_ptV2_%d",
       {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
   MHGroupTool1D assoYield_high(
-      file_input, "DeltaPhiUS_AssoYield_high_DeltaEtaUS_%d_ptV2_%d",
+      file_input, "DeltaPhi_AssoYield_high_DeltaEta_%d_ptV2_%d",
       {var_DeltaEtaUS, var_PtV2Jpsi}, {indexHistDeltaEtaUS, 1});
 
   MHist1D assoYield_sub_int(indexHistDeltaPhiUS, "AssoYield_sub_int");
