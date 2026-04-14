@@ -1,3 +1,4 @@
+#include "MHelper.h"
 #include "MHist.h"
 #include "MRootGraphic.h"
 #include "MRootIO.h"
@@ -201,24 +202,32 @@ std::pair<double, double> compute_V2_and_error(const TFitResultPtr& result_sub,
   return {v2, sv2};
 }
 
-void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                                          "JpsiAssocYield_24apass1.root",
-                     TString path_hist_ref = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                                             "JpsiAssocYield_24apass1.root:hist",
-                     TString path_hist_ref_new =
-                         "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                         "JpsiAssocYield_24apass1.root:hist_new",
-                     TString str_binning = "11,13,15,34",
-                     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                                           "AssoYieldEtagap.root",
-                     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                                        "AssoYieldEtagap") {
+void AssoYieldEtagap(
+    TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                         "JpsiAssocYield_24apass1.root",
+    TString str_binning = "11,13,15,34", TString path_config = "config_hist_read_5.yaml",
+    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                          "V2JpsiAbs.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                       "V2JpsiAbs") {
   gErrorIgnoreLevel = kWarning;
   TFile* file_input = new TFile(path_input);
   TFile* file_output = new TFile(path_output, "RECREATE");
-  YAML::Node config = YAML::LoadFile("config.yaml");
-  const double low_edge_deltaPhiToPi = config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
-  const double up_edge_deltaPhiToPi = config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
+  YAML::Node config = YAML::LoadFile(path_config.Data());
+  YAML::Node hist_config = config["hist_binning"];
+
+  StrVar4Hist var_DeltaEtaUS = ParseStrVar4Hist(hist_config["DeltaEtaUS"]);
+  StrVar4Hist var_DeltaPhiUS = ParseStrVar4Hist(hist_config["AbsDeltaPhiUS"]);
+
+  // Calculate EtaGap binning based on DeltaEtaUS configuration
+  int n_bins_deltaEta_assoYield = var_DeltaEtaUS.fNbins;
+  double min_deltaEta = var_DeltaEtaUS.fBins[0];
+  double max_deltaEta = var_DeltaEtaUS.fBins.back();
+  double bin_width_etaGap = (max_deltaEta - min_deltaEta) / n_bins_deltaEta_assoYield;
+  int n_bins_etaGap = n_bins_deltaEta_assoYield / 2 - 2;
+  std::vector<double> etaGap_bins = {-1.0 * bin_width_etaGap,
+                                     (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap};
+  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", n_bins_etaGap, etaGap_bins);
 
   struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
@@ -273,29 +282,6 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     vector<int> operator[](int index) { return bins[index]; }
   } strAny_ptV2;
 
-  StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
-  StrVar4Hist var_NumContribCalibBinned("NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-                                        {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90, {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
-  int n_bins_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
-  double min_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
-  double max_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
-  double bin_width_etaGap =
-      (max_deltaEta_assoYield - min_deltaEta_assoYield) / (double)n_bins_deltaEta_assoYield;
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
-                             n_bins_deltaEta_assoYield,
-                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
-  int n_bins_deltaPhi_assoYield = config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
-                             n_bins_deltaPhi_assoYield,
-                             {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
-  StrVar4Hist var_EtaGap(
-      "EtaGap", "#Delta#eta_{gap}", "", n_bins_deltaEta_assoYield / 2 - 2,
-      {-1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins, {0., 1.});
 
   // selected bins for ptV2
@@ -320,7 +306,6 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
   MRootGraphic::StyleHistCommon(assocYield_highMult_ptInt);
   MRootGraphic::StyleHistCommon(assocYield_lowMult_ptInt);
   MRootGraphic::StyleHistCommon(assocYield_sub_ptInt);
-  // MRootGraphic::StyleCommon();
   c_assocYield->cd(1);
   assocYield_highMult_ptInt->SetTitle("Associated yield in high mult.");
   assocYield_highMult_ptInt->GetYaxis()->SetTitle("Associated yield per J/#psi");
@@ -340,9 +325,6 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
   gPublisherCanvas = new MPublisherCanvas(path_pdf + ".pdf", 3, 1);
 
 #define MH1DGetBin(...) GetHist(vector<int>{__VA_ARGS__})
-
-  auto v2REF_etaGap = MRootIO::GetObjectDiectly<TH1D>(path_hist_ref);
-  auto v2REF_etaGap_new = MRootIO::GetObjectDiectly<TH1D>(path_hist_ref_new);
 
   file_output->cd();
 
@@ -382,16 +364,11 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     cout << i << ", ";
   cout << endl;
 
+  // Only V2 (raw), no v2 (normalized by v2_ref)
   auto V2_pT_etaGap =
       new TH2D("V2Jpsi_pT_etaGap",
                "V2Jpsi_pT_etaGap;p_{T} "
                "(GeV/c);#Delta#eta;V_{2}^{J/#psi}",
-               vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
-               -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
-  auto v2_pT_etaGap =
-      new TH2D("v2Jpsi_pT_etaGap",
-               "v2Jpsi_pT_etaGap;p_{T} "
-               "(GeV/c);#Delta#eta;v_{2}^{J/#psi}",
                vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
                -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
 
@@ -401,17 +378,11 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
                "(GeV/c);#Delta#eta;V_{2}^{J/#psi}",
                vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
                -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
-  auto v2_pT_etaGap_new =
-      new TH2D("v2Jpsi_pT_etaGap_new",
-               "v2Jpsi_pT_etaGap;p_{T} "
-               "(GeV/c);#Delta#eta;v_{2}^{J/#psi}",
-               vec_binning_pt.size() - 1, vec_binning_pt.data(), n_bins_deltaEta_assoYield / 2 - 2,
-               -1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap);
   gDirectory = nullptr;
 
-  int iPt_v2_pT_etaGap = 0;
+  int iPt_V2_pT_etaGap = 0;
   for (auto iPt : vec_binning_sel) {
-    iPt_v2_pT_etaGap++;
+    iPt_V2_pT_etaGap++;
     for (auto iEtagap : indexEtagap) {
       auto h_sub = DeltaPhi_sub.MH1DGetBin(iEtagap, iPt);
       auto h_high = DeltaPhi_high.MH1DGetBin(iEtagap, iPt);
@@ -419,111 +390,46 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
       auto f_sub = (TF1*)(h_sub->GetFunction("f1_modulation"));
       auto f_high = (TF1*)(h_high->GetFunction("f1_modulation"));
       auto f_low = (TF1*)(h_low->GetFunction("f1_modulation"));
-      // gPublisherCanvas->Draw(f_sub)->Draw(f_low)->Draw(f_high);
       auto result_sub = h_sub->Fit(f_sub, "S Q N R");
       auto result_low = h_low->Fit(f_low, "S Q N R");
       auto result_high = h_high->Fit(f_high, "S Q N R");
       auto [val_V2, err_V2] = compute_V2_and_error(result_sub, result_low, f_low);
-      V2_pT_etaGap->SetBinContent(iPt_v2_pT_etaGap, iEtagap, val_V2);
-      V2_pT_etaGap->SetBinError(iPt_v2_pT_etaGap, iEtagap, err_V2);
-      double val_v2REF = v2REF_etaGap->GetBinContent(iEtagap);
-      double err_v2REF = v2REF_etaGap->GetBinError(iEtagap);
-
-      double v2Jpsi = val_V2 / val_v2REF;
-      double err_v2Jpsi = std::sqrt((err_V2 * err_V2) / (val_v2REF * val_v2REF) +
-                                    (val_V2 * val_V2) * (err_v2REF * err_v2REF) /
-                                        (val_v2REF * val_v2REF * val_v2REF * val_v2REF));
-      v2_pT_etaGap->SetBinContent(iPt_v2_pT_etaGap, iEtagap, v2Jpsi);
-      v2_pT_etaGap->SetBinError(iPt_v2_pT_etaGap, iEtagap, err_v2Jpsi);
+      V2_pT_etaGap->SetBinContent(iPt_V2_pT_etaGap, iEtagap, val_V2);
+      V2_pT_etaGap->SetBinError(iPt_V2_pT_etaGap, iEtagap, err_V2);
 
       double a0prime, a2prime, ratio;
       double err_a0prime, err_a2prime, err_ratio;
       ComputePrimeErrorsWithFullCov(result_high, result_low, a0prime, err_a0prime, a2prime,
                                     err_a2prime, ratio, err_ratio);
 
-      V2_pT_etaGap_new->SetBinContent(iPt_v2_pT_etaGap, iEtagap, ratio);
-      V2_pT_etaGap_new->SetBinError(iPt_v2_pT_etaGap, iEtagap, err_ratio);
-
-      double v2_ref_new, err_v2_ref_new;
-      v2_ref_new = v2REF_etaGap_new->GetBinContent(iEtagap);
-      err_v2_ref_new = v2REF_etaGap_new->GetBinError(iEtagap);
-
-      double v2_poi_new;
-      double err_v2_poi_new;
-
-      if (iEtagap <= 5) {
-        v2_poi_new = 0;
-        err_v2_poi_new = 0;
-      } else {
-        v2_poi_new = ratio / v2_ref_new;
-        err_v2_poi_new =
-            err_ratio * err_ratio / v2_ref_new / v2_ref_new +
-            (err_v2_ref_new * ratio / v2_ref_new) * (err_v2_ref_new * ratio / v2_ref_new);
-        err_v2_poi_new = sqrt(err_v2_poi_new);
-      }
-
-      v2_pT_etaGap_new->SetBinContent(iPt_v2_pT_etaGap, iEtagap, v2_poi_new);
-      v2_pT_etaGap_new->SetBinError(iPt_v2_pT_etaGap, iEtagap, err_v2_poi_new);
+      V2_pT_etaGap_new->SetBinContent(iPt_V2_pT_etaGap, iEtagap, ratio);
+      V2_pT_etaGap_new->SetBinError(iPt_V2_pT_etaGap, iEtagap, err_ratio);
     }
   }
 
   file_output->cd();
-  for (int i = 1; i <= v2_pT_etaGap->GetNbinsX(); ++i) {
-    auto h_proj = v2_pT_etaGap->ProjectionY(TString::Format("v2Jpsi_etaGap_pTbin%d", i), i, i);
-    MRootGraphic::StyleHistCommon(h_proj);
-    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+  for (int i = 1; i <= V2_pT_etaGap->GetNbinsX(); ++i) {
     auto H_proj = V2_pT_etaGap->ProjectionY(TString::Format("V2Jpsi_etaGap_pTbin%d", i), i, i);
     MRootGraphic::StyleHistCommon(H_proj);
     H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
   }
-  for (int i = 1; i <= v2_pT_etaGap->GetNbinsY(); ++i) {
-    auto h_proj = v2_pT_etaGap->ProjectionX(TString::Format("v2Jpsi_pT_etaGapbin%d", i), i, i);
-    MRootGraphic::StyleHistCommon(h_proj);
-    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+  for (int i = 1; i <= V2_pT_etaGap->GetNbinsY(); ++i) {
     auto H_proj = V2_pT_etaGap->ProjectionX(TString::Format("V2Jpsi_pT_etaGapbin%d", i), i, i);
     MRootGraphic::StyleHistCommon(H_proj);
     H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
   }
-  for (int i = 1; i <= v2_pT_etaGap_new->GetNbinsX(); ++i) {
-    auto h_proj =
-        v2_pT_etaGap_new->ProjectionY(TString::Format("v2Jpsi_new_etaGap_pTbin%d", i), i, i);
-    MRootGraphic::StyleHistCommon(h_proj);
-    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+  for (int i = 1; i <= V2_pT_etaGap_new->GetNbinsX(); ++i) {
     auto H_proj =
         V2_pT_etaGap_new->ProjectionY(TString::Format("V2Jpsi_new_etaGap_pTbin%d", i), i, i);
     MRootGraphic::StyleHistCommon(H_proj);
     H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
   }
-  for (int i = 1; i <= v2_pT_etaGap_new->GetNbinsY(); ++i) {
-    auto h_proj =
-        v2_pT_etaGap_new->ProjectionX(TString::Format("v2Jpsi_new_pT_etaGapbin%d", i), i, i);
-    MRootGraphic::StyleHistCommon(h_proj);
-    h_proj->GetYaxis()->SetTitle("v_{2}^{J/#psi}");
+  for (int i = 1; i <= V2_pT_etaGap_new->GetNbinsY(); ++i) {
     auto H_proj =
         V2_pT_etaGap_new->ProjectionX(TString::Format("V2Jpsi_new_pT_etaGapbin%d", i), i, i);
     MRootGraphic::StyleHistCommon(H_proj);
     H_proj->GetYaxis()->SetTitle("V_{2}^{J/#psi}");
   }
-
-  TCanvas* c_v2_pT_etaGap = new TCanvas("c_v2_pT_etaGap", "c_v2_pT_etaGap", 1200, 1200);
-  c_v2_pT_etaGap->Divide(2, 2);
-
-  for (int i = 1; i <= 4; ++i) {
-    c_v2_pT_etaGap->cd(i);
-    auto h = (TH1D*)file_output->Get(TString::Format("v2Jpsi_pT_etaGapbin%d", i * 2));
-    double etaGap = (-1. + (i * 2 - 1)) * bin_width_etaGap;
-    h->SetTitle(TString::Format("v_{2}^{J/#psi} at #Delta#eta = %.2f", etaGap));
-    h->Draw();
-  }
-  c_v2_pT_etaGap->SaveAs(path_pdf + "_v2Jpsi_etaGap.pdf");
-
-  TCanvas* c_v2_pT_etaGap1p2 = new TCanvas("c_v2_pT_etaGap1p2", "c_v2_pT_etaGap1p2", 600, 600);
-  c_v2_pT_etaGap1p2->cd();
-  auto h_v2_etaGap1p2 = (TH1D*)file_output->Get("v2Jpsi_pT_etaGapbin8");
-  // h_v2_etaGap1p2->GetYaxis()->SetRangeUser();
-  h_v2_etaGap1p2->SetTitle("v_{2}^{J/#psi} at #Delta#eta = 1.2");
-  h_v2_etaGap1p2->Draw();
-  c_v2_pT_etaGap1p2->SaveAs(path_pdf + "_v2_pT_etaGap1p2.pdf");
 
   TCanvas* c_V2_pT_etaGap = new TCanvas("c_V2_pT_etaGap", "c_V2_pT_etaGap", 1200, 1200);
   c_V2_pT_etaGap->Divide(2, 2);
@@ -534,6 +440,7 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     h->SetTitle(TString::Format("V_{2}^{J/#psi} at #Delta#eta = %.2f", etaGap));
     h->Draw();
   }
+  c_V2_pT_etaGap->SaveAs(path_pdf + "_V2Jpsi_etaGap.pdf");
 
   // file_output->ls();
 
@@ -543,6 +450,19 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
 }
 
 int main(int argc, char** argv) {
-  AssoYieldEtagap(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  gROOT->SetBatch(kTRUE);
+  TString path_input = argc > 1 ? argv[1]
+                                : "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                                  "JpsiAssocYield_24apass1.root";
+  TString str_binning = argc > 2 ? argv[2] : "11,13,15,34";
+  TString path_config = argc > 3 ? argv[3] : "config_hist_read_5.yaml";
+  TString path_output = argc > 4 ? argv[4]
+                                 : "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                                   "V2JpsiAbs.root";
+  TString path_pdf = argc > 5 ? argv[5]
+                              : "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                                "V2JpsiAbs";
+
+  AssoYieldEtagap(path_input, str_binning, path_config, path_output, path_pdf);
   return 0;
 }

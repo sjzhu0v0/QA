@@ -1,3 +1,4 @@
+#include "MHelper.h"
 #include "MHist.h"
 #include "MRootGraphic.h"
 #include "MRootIO.h"
@@ -201,24 +202,36 @@ std::pair<double, double> compute_V2_and_error(const TFitResultPtr& result_sub,
   return {v2, sv2};
 }
 
-void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                                          "JpsiAssocYield_24apass1.root",
-                     TString path_hist_ref = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                                             "JpsiAssocYield_24apass1.root:hist",
-                     TString path_hist_ref_new =
-                         "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                         "JpsiAssocYield_24apass1.root:hist_new",
-                     TString str_binning = "11,13,15,34",
-                     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                                           "AssoYieldEtagap.root",
-                     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                                        "AssoYieldEtagap") {
+void AssoYieldEtagap(
+    TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                         "JpsiAssocYield_24apass1.root",
+    TString path_hist_ref = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                            "JpsiAssocYield_24apass1.root:hist",
+    TString path_hist_ref_new = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                                "JpsiAssocYield_24apass1.root:hist_new",
+    TString str_binning = "11,13,15,34", TString path_config = "config_hist_read_5.yaml",
+    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                          "AssoYieldEtagap.root",
+    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                       "AssoYieldEtagap") {
   gErrorIgnoreLevel = kWarning;
   TFile* file_input = new TFile(path_input);
   TFile* file_output = new TFile(path_output, "RECREATE");
-  YAML::Node config = YAML::LoadFile("config.yaml");
-  const double low_edge_deltaPhiToPi = config["hist_binning"]["low_edge_deltaPhiToPi"].as<double>();
-  const double up_edge_deltaPhiToPi = config["hist_binning"]["up_edge_deltaPhiToPi"].as<double>();
+  YAML::Node config = YAML::LoadFile(path_config.Data());
+  YAML::Node hist_config = config["hist_binning"];
+
+  StrVar4Hist var_DeltaEtaUS = ParseStrVar4Hist(hist_config["DeltaEtaUS"]);
+  StrVar4Hist var_DeltaPhiUS = ParseStrVar4Hist(hist_config["AbsDeltaPhiUS"]);
+
+  // Calculate EtaGap binning based on DeltaEtaUS configuration
+  int n_bins_deltaEta_assoYield = var_DeltaEtaUS.fNbins;
+  double min_deltaEta = var_DeltaEtaUS.fBins[0];
+  double max_deltaEta = var_DeltaEtaUS.fBins.back();
+  double bin_width_etaGap = (max_deltaEta - min_deltaEta) / n_bins_deltaEta_assoYield;
+  int n_bins_etaGap = n_bins_deltaEta_assoYield / 2 - 2;
+  std::vector<double> etaGap_bins = {-1.0 * bin_width_etaGap,
+                                     (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap};
+  StrVar4Hist var_EtaGap("EtaGap", "#Delta#eta_{gap}", "", n_bins_etaGap, etaGap_bins);
 
   struct StrAny_ptV2 {
     const vector<vector<int>> bins = {{1},
@@ -273,29 +286,6 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
     vector<int> operator[](int index) { return bins[index]; }
   } strAny_ptV2;
 
-  StrVar4Hist var_fPosZ("PosZUS", "#it{V}_{Z}", "cm", 8, {-10, 10});
-  StrVar4Hist var_NumContribCalibBinned("NumContribCalibUS", "N_{vtx contrib} Calibrated", "", 10,
-                                        {0, 7, 12, 17, 22, 29, 37, 46, 57, 73, 300});
-  StrVar4Hist var_MassJpsiCandidate("MassUS", "M_{ee}", "GeV^{2}/c^{4}", 90, {1.8, 5.4});
-  StrVar4Hist var_PtJpsiCandidate("PtUS", "p_{T}", "GeV/c", 10, {0., 10.});
-  int n_bins_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["n_bins"].as<int>();
-  double min_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["min"].as<double>();
-  double max_deltaEta_assoYield =
-      config["hist_binning"]["binning_deltaEta_assoYield"]["max"].as<double>();
-  double bin_width_etaGap =
-      (max_deltaEta_assoYield - min_deltaEta_assoYield) / (double)n_bins_deltaEta_assoYield;
-  StrVar4Hist var_DeltaEtaUS("DeltaEtaUS", "#Delta#eta_{J/#psi, track}", "",
-                             n_bins_deltaEta_assoYield,
-                             {min_deltaEta_assoYield, max_deltaEta_assoYield});
-  int n_bins_deltaPhi_assoYield = config["hist_binning"]["n_bins_deltaPhi_assoYield"].as<int>();
-  StrVar4Hist var_DeltaPhiUS("DeltaPhiUS", "#Delta#phi_{J/#psi, track}", "",
-                             n_bins_deltaPhi_assoYield,
-                             {low_edge_deltaPhiToPi * M_PI, up_edge_deltaPhiToPi * M_PI});
-  StrVar4Hist var_EtaGap(
-      "EtaGap", "#Delta#eta_{gap}", "", n_bins_deltaEta_assoYield / 2 - 2,
-      {-1. * bin_width_etaGap, (n_bins_deltaEta_assoYield / 2 - 3) * bin_width_etaGap});
   StrVar4Hist var_PtV2Jpsi("PtV2Jpsi", "p_{T}", "GeV/c", strAny_ptV2.fNbins, {0., 1.});
 
   // selected bins for ptV2
@@ -543,6 +533,26 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/inp
 }
 
 int main(int argc, char** argv) {
-  AssoYieldEtagap(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  gROOT->SetBatch(kTRUE);
+  TString path_input = argc > 1 ? argv[1]
+                                : "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                                  "JpsiAssocYield_24apass1.root";
+  TString path_hist_ref = argc > 2 ? argv[2]
+                                   : "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                                     "JpsiAssocYield_24apass1.root:hist";
+  TString path_hist_ref_new = argc > 3 ? argv[3]
+                                       : "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                                         "JpsiAssocYield_24apass1.root:hist_new";
+  TString str_binning = argc > 4 ? argv[4] : "11,13,15,34";
+  TString path_config = argc > 5 ? argv[5] : "config_hist_read_5.yaml";
+  TString path_output = argc > 6 ? argv[6]
+                                 : "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                                   "AssoYieldEtagap.root";
+  TString path_pdf = argc > 7 ? argv[7]
+                              : "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                                "AssoYieldEtagap";
+
+  AssoYieldEtagap(path_input, path_hist_ref, path_hist_ref_new, str_binning, path_config,
+                  path_output, path_pdf);
   return 0;
 }

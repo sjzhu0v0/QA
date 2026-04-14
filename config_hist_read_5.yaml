@@ -1,0 +1,53 @@
+hist_binning:
+  fPosZ:
+    name: "fPosZ"
+    title: "#it{V}_{Z}"
+    unit: "cm"
+    nbins: 10
+    bins: [-10, 10]
+
+  NumContribCalibBinned:
+    name: "NumContribCalib"
+    title: "N_{vtx contrib} Calibrated"
+    unit: ""
+    nbins: 10
+    bins: [0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300]
+
+  MassJpsiCandidate:
+    name: "jpsi_mass"
+    title: "M_{ee}"
+    unit: "GeV^{2}/c^{4}"
+    nbins: 45
+    bins: [1.8, 5.4]
+
+  PtJpsiCandidate:
+    name: "jpsi_pt"
+    title: "p_{T}"
+    unit: "GeV/c"
+    nbins: 10
+    bins: [0.0, 5.0]
+
+  DeltaEtaUS:
+    name: "DeltaEta"
+    title: "#Delta#eta_{J/#psi, track}"
+    unit: ""
+    nbins: 20
+    bins: [-2.0, 2.0]
+
+  AbsDeltaPhiUS:
+    name: "DeltaPhi"
+    title: "|#Delta#phi_{J/#psi, track}|"
+    unit: ""
+    nbins: 16
+    bins: ["0 * pi", "1. * pi"]
+
+  DeltaPhiUS:
+    name: "DeltaPhi"
+    title: "#Delta#phi_{J/#psi, track}"
+    unit: ""
+    nbins: 32
+    bins: ["-0.5 * pi", "1.5 * pi"]
+
+  n_rebin_deltaEta_assoYield: 1
+  n_rebin_mass_assoYield: 1
+poly_order: 5
