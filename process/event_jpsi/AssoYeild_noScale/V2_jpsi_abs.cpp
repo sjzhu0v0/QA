@@ -202,14 +202,14 @@ std::pair<double, double> compute_V2_and_error(const TFitResultPtr& result_sub,
   return {v2, sv2};
 }
 
-void AssoYieldEtagap(
-    TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
-                         "JpsiAssocYield_24apass1.root",
-    TString str_binning = "11,13,15,34", TString path_config = "config_hist_read_5.yaml",
-    TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
-                          "V2JpsiAbs.root",
-    TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
-                       "V2JpsiAbs") {
+void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/input/event_jpsi/"
+                                          "JpsiAssocYield_24apass1.root",
+                     TString str_binning = "11,13,15,34",
+                     TString path_config = "config_hist_read_5.yaml",
+                     TString path_output = "/home/szhu/work/alice/analysis/QA/output/event_jpsi/"
+                                           "V2JpsiAbs.root",
+                     TString path_pdf = "/home/szhu/work/alice/analysis/QA/plot/event_jpsi/"
+                                        "V2JpsiAbs") {
   gErrorIgnoreLevel = kWarning;
   TFile* file_input = new TFile(path_input);
   TFile* file_output = new TFile(path_output, "RECREATE");
@@ -288,11 +288,11 @@ void AssoYieldEtagap(
   // 10, 12, 14, 16, 18
   // 10, 12, 14, 33
 
-  MHGroupTool1D DeltaPhi_sub(file_input, "DeltaPhiUS_AssoYield_sub_int_EtaGap_%d_ptV2_%d",
+  MHGroupTool1D DeltaPhi_sub(file_input, "DeltaPhi_AssoYield_sub_int_EtaGap_%d_ptV2_%d",
                              {var_EtaGap, var_PtV2Jpsi}, {1, 1});
-  MHGroupTool1D DeltaPhi_low(file_input, "DeltaPhiUS_AssoYield_low_int_EtaGap_%d_ptV2_%d",
+  MHGroupTool1D DeltaPhi_low(file_input, "DeltaPhi_AssoYield_low_int_EtaGap_%d_ptV2_%d",
                              {var_EtaGap, var_PtV2Jpsi}, {1, 1});
-  MHGroupTool1D DeltaPhi_high(file_input, "DeltaPhiUS_AssoYield_high_int_EtaGap_%d_ptV2_%d",
+  MHGroupTool1D DeltaPhi_high(file_input, "DeltaPhi_AssoYield_high_int_EtaGap_%d_ptV2_%d",
                               {var_EtaGap, var_PtV2Jpsi}, {1, 1});
 
   gStyle->SetOptStat(0);
