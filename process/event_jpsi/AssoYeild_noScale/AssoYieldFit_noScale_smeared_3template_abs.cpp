@@ -12,8 +12,7 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
                          "/home/szhu/work/alice/analysis/QA/input/jpsi/"
                          "JpsiMass_LHC24_apass1_DiElectron.root:PosZUSSingle_MassUSSingle_"
                          "PtUSSingle_NumContribCalibUSSingle",
-                     TString path_input_tf1 = "",
-                     TString path_input_tf1_assoYield_lowMult = "",
+                     TString path_input_tf1 = "", TString path_input_tf1_assoYield_lowMult = "",
                      TString path_input_tf1_assoYield_highMult = "",
                      TString path_output = "/home/szhu/work/alice/analysis/QA/test/"
                                            "AssoYieldFit_noScale.root",
@@ -138,8 +137,11 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
   MHGroupTool1D assoYield_highMult(
       file_input, "jpsi_mass_AssoYield_highMult_DeltaEta_%d_DeltaPhi_%d_ptV2_%d",
       {var_DeltaEtaUS, var_DeltaPhiUS, var_PtV2Jpsi}, {n_rebin_deltaEta_assoYield, 1, 1});
-  MFitterPoly fitterPoly_asso(assoYield_highMult.GetHist(vector<int>{1, 1, 1}), 1.88, 4.32);
-  fitterPoly_asso.initializeBasis(poly_order);
+
+  MFitterPoly fitterPoly_asso_high(assoYield_highMult.GetHist(vector<int>{1, 1, 1}), 1.88, 4.32);
+  fitterPoly_asso_high.initializeBasis(poly_order);
+  MFitterPoly fitterPoly_asso_low(assoYield_highMult.GetHist(vector<int>{1, 1, 1}), 1.88, 4.32);
+  fitterPoly_asso_low.initializeBasis(poly_order);
 
   gDirectory = nullptr;
   MHist1D h1_assoYield_sub(indexHistDeltaPhiUS, "AssoYield_sub");
@@ -189,6 +191,8 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
     fitterPoly_mass.fitWithSignal();
     double nsignal_lowMult = fitterPoly_mass.fNSignal;
 
+    fitterPoly_asso_high.inputSignal(signal_tf1_assoYield_highMult);
+    fitterPoly_asso_low.inputSignal(signal_tf1_assoYield_lowMult);
     for (auto i_deltaEta : indexHistDeltaEtaUS)
       for (auto i_deltaPhi : indexHistDeltaPhiUS) {
         auto assoYield_lowMult_diff =
@@ -196,15 +200,13 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
         auto assoYield_highMult_diff =
             assoYield_highMult.GetHist(vector<int>{i_deltaEta, i_deltaPhi, iPtV2});
 
-        fitterPoly_asso.inputSignal(signal_tf1_assoYield_highMult);
-        fitterPoly_asso.setHisto(assoYield_highMult_diff);
-        fitterPoly_asso.fitWithSignal();
-        double nyield_highmult = fitterPoly_asso.fNSignal;
+        fitterPoly_asso_high.setHisto(assoYield_highMult_diff);
+        fitterPoly_asso_high.fitWithSignal();
+        double nyield_highmult = fitterPoly_asso_high.fNSignal;
 
-        fitterPoly_asso.inputSignal(signal_tf1_assoYield_lowMult);
-        fitterPoly_asso.setHisto(assoYield_lowMult_diff);
-        fitterPoly_asso.fitWithSignal();
-        double nyield_lowmult = fitterPoly_asso.fNSignal;
+        fitterPoly_asso_low.setHisto(assoYield_lowMult_diff);
+        fitterPoly_asso_low.fitWithSignal();
+        double nyield_lowmult = fitterPoly_asso_low.fNSignal;
 
         double normalized_nyield_highmult = nyield_highmult / nsignal_highMult;
         double normalized_nyield_lowmult = nyield_lowmult / nsignal_lowMult;
@@ -238,9 +240,8 @@ int main(int argc, char** argv) {
                                 "AssoYieldFit_noScale.pdf";
   TString path_config = argc > 8 ? argv[8] : "config_new.yaml";
 
-  AssoYieldEtagap(path_input, path_input_mass, path_input_tf1,
-                  path_input_assoYield_lowMult_tf1, path_input_assoYield_highMult_tf1,
-                  path_output, path_pdf, path_config);
+  AssoYieldEtagap(path_input, path_input_mass, path_input_tf1, path_input_assoYield_lowMult_tf1,
+                  path_input_assoYield_highMult_tf1, path_output, path_pdf, path_config);
 
   return 0;
 }
