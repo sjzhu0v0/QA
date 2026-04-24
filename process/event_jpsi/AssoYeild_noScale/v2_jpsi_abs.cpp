@@ -292,11 +292,11 @@ void AssoYieldEtagap(
   // 10, 12, 14, 16, 18
   // 10, 12, 14, 33
 
-  MHGroupTool1D DeltaPhi_sub(file_input, "DeltaPhiUS_AssoYield_sub_int_EtaGap_%d_ptV2_%d",
+  MHGroupTool1D DeltaPhi_sub(file_input, "DeltaPhi_AssoYield_sub_int_EtaGap_%d_ptV2_%d",
                              {var_EtaGap, var_PtV2Jpsi}, {1, 1});
-  MHGroupTool1D DeltaPhi_low(file_input, "DeltaPhiUS_AssoYield_low_int_EtaGap_%d_ptV2_%d",
+  MHGroupTool1D DeltaPhi_low(file_input, "DeltaPhi_AssoYield_low_int_EtaGap_%d_ptV2_%d",
                              {var_EtaGap, var_PtV2Jpsi}, {1, 1});
-  MHGroupTool1D DeltaPhi_high(file_input, "DeltaPhiUS_AssoYield_high_int_EtaGap_%d_ptV2_%d",
+  MHGroupTool1D DeltaPhi_high(file_input, "DeltaPhi_AssoYield_high_int_EtaGap_%d_ptV2_%d",
                               {var_EtaGap, var_PtV2Jpsi}, {1, 1});
 
   gStyle->SetOptStat(0);
