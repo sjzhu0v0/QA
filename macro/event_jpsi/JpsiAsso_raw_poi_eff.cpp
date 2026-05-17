@@ -248,7 +248,6 @@ void JpsiAssoRawPoiEff(TString path_input_flow,
   vector<StrVar4Hist> pair_vars = {var_deta, var_dphi, var_posz, var_mass, var_pt, var_mult};
   vector<StrVar4Hist> single_vars = {var_posz, var_mass, var_pt, var_mult};
 
-  vector<std::shared_ptr<THnD>> histograms;
   for (auto it = config["cuts"].begin(); it != config["cuts"].end(); ++it) {
     const std::string cut_name = it->first.as<std::string>();
     if (only_cut != "" && cut_name != only_cut.Data())
@@ -272,50 +271,36 @@ void JpsiAssoRawPoiEff(TString path_input_flow,
                     },
                     {"jpsi_pt", "jpsi_eta"});
     auto model = GetTHnDModelWithTitle(pair_vars, "", cut_name.c_str());
-    auto hist = get<0>(model).GetHistogram();
-    selected.Foreach(
-        [hist](const RVec<float>& deta, const RVec<float>& dphi, const RVec<float>& posz,
-               const RVec<float>& mass, const RVec<float>& pt, const RVec<float>& mult,
-               const RVec<float>& weight) {
-          double values[6];
-          for (size_t i = 0; i < deta.size(); ++i) {
-            values[0] = deta[i];
-            values[1] = dphi[i];
-            values[2] = posz[i];
-            values[3] = mass[i];
-            values[4] = pt[i];
-            values[5] = mult[i];
-            hist->Fill(values, weight[i]);
-          }
-        },
-        {"DeltaEta", "AbsDeltaPhi", "fPosZ", "jpsi_mass", "jpsi_pt",
-         "NumContribCalib", "jpsi_eff_weight"});
-    histograms.push_back(hist);
+    auto vec_columns = get<1>(model);
+    vec_columns.push_back("jpsi_eff_weight");
+    gRResultHandles.push_back(
+        selected.HistoND(get<0>(model), vec_columns));
 
+    auto selected_single =
+        selected
+            .Define("single_mask",
+                    [](const RVec<int>& idx) {
+                      RVec<bool> out(idx.size(), false);
+                      for (size_t i = 0; i < idx.size(); ++i)
+                        out[i] = i == 0 || idx[i] != idx[i - 1];
+                      return out;
+                    },
+                    {"jpsi_idx"})
+            .Redefine("fPosZ", "fPosZ[single_mask]")
+            .Redefine("jpsi_mass", "jpsi_mass[single_mask]")
+            .Redefine("jpsi_pt", "jpsi_pt[single_mask]")
+            .Redefine("NumContribCalib", "NumContribCalib[single_mask]")
+            .Redefine("jpsi_eff_weight", "jpsi_eff_weight[single_mask]");
     auto single_model = GetTHnDModelWithTitle(single_vars, "Single", cut_name.c_str());
-    auto single_hist = get<0>(single_model).GetHistogram();
-    selected.Foreach(
-        [single_hist](const RVec<int>& jpsi_idx, const RVec<float>& posz,
-                      const RVec<float>& mass, const RVec<float>& pt, const RVec<float>& mult,
-                      const RVec<float>& weight) {
-          double values[4];
-          for (size_t i = 0; i < mass.size(); ++i) {
-            if (i > 0 && jpsi_idx[i] == jpsi_idx[i - 1])
-              continue;
-            values[0] = posz[i];
-            values[1] = mass[i];
-            values[2] = pt[i];
-            values[3] = mult[i];
-            single_hist->Fill(values, weight[i]);
-          }
-        },
-        {"jpsi_idx", "fPosZ", "jpsi_mass", "jpsi_pt", "NumContribCalib", "jpsi_eff_weight"});
-    histograms.push_back(single_hist);
+    auto vec_columns_single = get<1>(single_model);
+    vec_columns_single.push_back("jpsi_eff_weight");
+    gRResultHandles.push_back(
+        selected_single.HistoND(get<0>(single_model), vec_columns_single));
   }
 
+  ROOT::RDF::RunGraphs(gRResultHandles);
   TFile output(path_output, "RECREATE");
-  for (auto& hist : histograms)
-    hist->Write();
+  RResultWrite(gRResultHandles);
   output.Close();
 }
 
