@@ -64,8 +64,7 @@ float GetEfficiencyWeight(float pt, float eta, const std::string& setup) {
     return 1.f;
   const int pt_bin = hist->GetXaxis()->FindFixBin(pt);
   const int eta_bin = hist->GetYaxis()->FindFixBin(eta);
-  if (pt_bin < 1 || pt_bin > hist->GetNbinsX() || eta_bin < 1 ||
-      eta_bin > hist->GetNbinsY())
+  if (pt_bin < 1 || pt_bin > hist->GetNbinsX() || eta_bin < 1 || eta_bin > hist->GetNbinsY())
     return 0.f;
   const float eff = hist->GetBinContent(pt_bin, eta_bin);
   return eff > 0.f ? 1.f / eff : 0.f;
@@ -97,9 +96,7 @@ void LoadEfficiency(const YAML::Node& config) {
 }
 
 std::string EfficiencySetupForCut(const std::string& cut) {
-  return cut == "default" || cut == "pid1" || cut == "pid2" || cut == "pid3"
-             ? cut
-             : "default";
+  return cut == "default" || cut == "pid1" || cut == "pid2" || cut == "pid3" ? cut : "default";
 }
 
 int FindMixBin(double value, const std::vector<double>& bins) {
@@ -158,21 +155,22 @@ bool PassCut(const HistSet& hist, float e1_nsig_el, float e1_nsig_pi, float e1_n
     auto formula = std::make_unique<TFormula>(hist.cut_name.c_str(), hist.cut_expr.c_str());
     it = formulas.emplace(hist.cut_name, std::move(formula)).first;
   }
-  double values[] = {e1_nsig_el,      e1_nsig_pi,      e1_nsig_pr,      e2_nsig_el,
-                     e2_nsig_pi,      e2_nsig_pr,      ref_ITSChi2NCl,  ref_TPCNClsFound,
-                     static_cast<double>(nITSCluster), nDcaZ2Dev,      nDcaXY2Dev,
-                     ref_pt,           fPosZ};
+  double values[] = {e1_nsig_el,     e1_nsig_pi,       e1_nsig_pr,
+                     e2_nsig_el,     e2_nsig_pi,       e2_nsig_pr,
+                     ref_ITSChi2NCl, ref_TPCNClsFound, static_cast<double>(nITSCluster),
+                     nDcaZ2Dev,      nDcaXY2Dev,       ref_pt,
+                     fPosZ};
   return it->second->EvalPar(values) != 0.;
 }
 
 std::string FormulaExpr(const std::string& expr) {
   std::string out = expr;
   const std::vector<std::pair<std::string, std::string>> replacements = {
-      {"e1_nsig_el", "x[0]"},      {"e1_nsig_pi", "x[1]"},      {"e1_nsig_pr", "x[2]"},
-      {"e2_nsig_el", "x[3]"},      {"e2_nsig_pi", "x[4]"},      {"e2_nsig_pr", "x[5]"},
-      {"ref_ITSChi2NCl", "x[6]"},  {"ref_TPCNClsFound", "x[7]"}, {"nITSCluster", "x[8]"},
-      {"nDcaZ2Dev", "x[9]"},       {"nDcaXY2Dev", "x[10]"},      {"ref_pt", "x[11]"},
-      {"fPosZ", "x[12]"},          {"abs(", "TMath::Abs("}};
+      {"e1_nsig_el", "x[0]"},     {"e1_nsig_pi", "x[1]"},       {"e1_nsig_pr", "x[2]"},
+      {"e2_nsig_el", "x[3]"},     {"e2_nsig_pi", "x[4]"},       {"e2_nsig_pr", "x[5]"},
+      {"ref_ITSChi2NCl", "x[6]"}, {"ref_TPCNClsFound", "x[7]"}, {"nITSCluster", "x[8]"},
+      {"nDcaZ2Dev", "x[9]"},      {"nDcaXY2Dev", "x[10]"},      {"ref_pt", "x[11]"},
+      {"fPosZ", "x[12]"},         {"abs(", "TMath::Abs("}};
   for (const auto& [from, to] : replacements) {
     size_t pos = 0;
     while ((pos = out.find(from, pos)) != std::string::npos) {
@@ -184,8 +182,7 @@ std::string FormulaExpr(const std::string& expr) {
 }
 } // namespace
 
-vector<pair<ULong64_t, ULong64_t>> MixEvent(unsigned int, const int id,
-                                             const ULong64_t& event_id) {
+vector<pair<ULong64_t, ULong64_t>> MixEvent(unsigned int, const int id, const ULong64_t& event_id) {
   return MixVec<pair<ULong64_t, ULong64_t>, ULong64_t>(
       id, event_id, [](const ULong64_t& a, const ULong64_t& b) { return make_pair(a, b); }, 100);
 }
@@ -195,7 +192,7 @@ void EventMixingIndexGen(TString path_input_flow, TString path_input_extra,
   ROOT::DisableImplicitMT();
   StrVar4Hist var_posz_mix("fPosZ", "#it{V}_{Z}", "cm", 10, {-10, 10});
   StrVar4Hist var_mult_mix("NumContribCalib", "N_{vtx contrib} Calibrated", "", 10,
-                          {0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300});
+                           {0, 5, 8, 11, 14, 18, 23, 28, 36, 48, 300});
   const auto bins_mix_numContrib = var_mult_mix.fBins;
   const auto bins_mix_posZ = var_posz_mix.fBins;
 
@@ -220,25 +217,23 @@ void EventMixingIndexGen(TString path_input_flow, TString path_input_extra,
                   {"EventData"})
           .Filter("isEventGood", "Event is good");
 
-
   auto rdf_PartTriggerWithJpsiWithEventWithEventMixing =
-      df
-          .Define("IndexMixing_NumContribCalib",
-                  [bins_mix_numContrib](double numContrib) {
-                    int index = -1;
-                    for (int i = 0; i < bins_mix_numContrib.size() - 1; i++) {
-                      if (numContrib >= bins_mix_numContrib[i] &&
-                          numContrib < bins_mix_numContrib[i + 1]) {
-                        index = i;
-                        break;
-                      }
+      df.Define("IndexMixing_NumContribCalib",
+                [bins_mix_numContrib](double numContrib) {
+                  int index = -1;
+                  for (int i = 0; i < bins_mix_numContrib.size() - 1; i++) {
+                    if (numContrib >= bins_mix_numContrib[i] &&
+                        numContrib < bins_mix_numContrib[i + 1]) {
+                      index = i;
+                      break;
                     }
-                    if (index == -1) {
-                      return -1; // Invalid index
-                    }
-                    return int(index);
-                  },
-                  {"NumContribCalib"})
+                  }
+                  if (index == -1) {
+                    return -1; // Invalid index
+                  }
+                  return int(index);
+                },
+                {"NumContribCalib"})
           .Filter("IndexMixing_NumContribCalib>=0", "valid NumContribCalib index")
           .Define("IndexMixing_PosZ",
                   [bins_mix_posZ](float posZ) {
@@ -265,8 +260,8 @@ void EventMixingIndexGen(TString path_input_flow, TString path_input_extra,
                   },
                   {"IndexMixing_NumContribCalib", "IndexMixing_PosZ"})
           .DefineSlot("MixedEvent", MixEvent, {"IndexMixing", "rdfentry_"});
-
-  ROOT::RDF::Experimental::AddProgressBar(rdf_PartTriggerWithJpsiWithEventWithEventMixing);
+  if (is_interactive())
+    ROOT::RDF::Experimental::AddProgressBar(rdf_PartTriggerWithJpsiWithEventWithEventMixing);
   rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
       "EventMixing", path_output_index,
       {"MixedEvent", "IndexMixing_NumContribCalib", "IndexMixing_PosZ"});
@@ -277,6 +272,7 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
                               TString only_cut = "") {
   YAML::Node config = YAML::LoadFile(path_config.Data());
   LoadEfficiency(config);
+  cout << "start filling" << endl;
 
   auto var_posz = ParseStrVar4Hist(config["hist_binning"]["fPosZ"]);
   auto var_mult = ParseStrVar4Hist(config["hist_binning"]["NumContribCalibBinned"]);
@@ -292,10 +288,8 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
     const std::string cut_name = it->first.as<std::string>();
     if (only_cut != "" && cut_name != only_cut.Data())
       continue;
-    hist_sets.push_back({cut_name,
-                         FormulaExpr(it->second.as<std::string>()),
-                         EfficiencySetupForCut(cut_name),
-                         MakeTHnD(pair_vars, "", cut_name.c_str()),
+    hist_sets.push_back({cut_name, FormulaExpr(it->second.as<std::string>()),
+                         EfficiencySetupForCut(cut_name), MakeTHnD(pair_vars, "", cut_name.c_str()),
                          MakeTHnD(single_vars, "Single", cut_name.c_str())});
   }
 
@@ -305,7 +299,7 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
 
   TTreeReader pairs_reader(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> mixed_events(pairs_reader,
-                                                                               "MixedEvent");
+                                                                              "MixedEvent");
   TTreeReaderValue<int> i_mult(pairs_reader, "IndexMixing_NumContribCalib");
   TTreeReaderValue<int> i_posz(pairs_reader, "IndexMixing_PosZ");
 
@@ -346,16 +340,18 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
           const float n_dcaz = NDca2Dev(fPTREF[i_ref], fDcaZ[i_ref]);
           const float n_dcaxy = NDca2Dev(fPTREF[i_ref], fDcaXY[i_ref]);
           const double pair_values[] = {fEta[i_jpsi] - fEtaREF[i_ref],
-                                        AbsDeltaPhi(fPhi[i_jpsi], fPhiREF[i_ref]), posz_value,
-                                        fMass[i_jpsi], fPT[i_jpsi], mult_value};
+                                        AbsDeltaPhi(fPhi[i_jpsi], fPhiREF[i_ref]),
+                                        posz_value,
+                                        fMass[i_jpsi],
+                                        fPT[i_jpsi],
+                                        mult_value};
           const double single_values[] = {posz_value, fMass[i_jpsi], fPT[i_jpsi], mult_value};
           for (size_t i_hist = 0; i_hist < hist_sets.size(); ++i_hist) {
             auto& hist = hist_sets[i_hist];
-            if (!PassCut(hist, fTPCNSigmaEl1[i_jpsi], fTPCNSigmaPi1[i_jpsi],
-                         fTPCNSigmaPr1[i_jpsi], fTPCNSigmaEl2[i_jpsi],
-                         fTPCNSigmaPi2[i_jpsi], fTPCNSigmaPr2[i_jpsi], fITSChi2NCl[i_ref],
-                         fTPCNClsFound[i_ref], n_its, n_dcaz, n_dcaxy, fPTREF[i_ref],
-                         posz_value))
+            if (!PassCut(hist, fTPCNSigmaEl1[i_jpsi], fTPCNSigmaPi1[i_jpsi], fTPCNSigmaPr1[i_jpsi],
+                         fTPCNSigmaEl2[i_jpsi], fTPCNSigmaPi2[i_jpsi], fTPCNSigmaPr2[i_jpsi],
+                         fITSChi2NCl[i_ref], fTPCNClsFound[i_ref], n_its, n_dcaz, n_dcaxy,
+                         fPTREF[i_ref], posz_value))
               continue;
             const float cut_weight =
                 GetEfficiencyWeight(fPT[i_jpsi], fEta[i_jpsi], hist.efficiency_setup);
@@ -378,9 +374,8 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
   output.Close();
 }
 
-void JpsiAssoMEPoiEff(TString path_input_flow, TString path_input_extra,
-                     TString path_output_hist, TString path_output_index,
-                     TString path_config, TString only_cut = "") {
+void JpsiAssoMEPoiEff(TString path_input_flow, TString path_input_extra, TString path_output_hist,
+                      TString path_output_index, TString path_config, TString only_cut = "") {
   EventMixingIndexGen(path_input_flow, path_input_extra, path_output_index);
   FillMixedEventHistograms(path_input_flow, path_output_index, path_output_hist, path_config,
                            only_cut);
