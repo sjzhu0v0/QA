@@ -266,11 +266,10 @@ void EventMixingIndexGen(TString path_input_flow, TString path_input_extra,
                   {"IndexMixing_NumContribCalib", "IndexMixing_PosZ"})
           .DefineSlot("MixedEvent", MixEvent, {"IndexMixing", "rdfentry_"});
 
+  ROOT::RDF::Experimental::AddProgressBar(rdf_PartTriggerWithJpsiWithEventWithEventMixing);
   rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
       "EventMixing", path_output_index,
       {"MixedEvent", "IndexMixing_NumContribCalib", "IndexMixing_PosZ"});
-  if (is_interactive())
-    ROOT::RDF::Experimental::AddProgressBar(rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 }
 
 void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
