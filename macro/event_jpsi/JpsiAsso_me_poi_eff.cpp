@@ -218,23 +218,59 @@ void EventMixingIndexGen(TString path_input_flow, TString path_input_extra,
                    "fPT", "fEta", "fPhi", "fMass", "fSign", "fPTREF", "fEtaREF", "fPhiREF"})
           .Define("isEventGood", [](const EventData& event) { return event.isGood(); },
                   {"EventData"})
-          .Filter("isEventGood", "Event is good")
+          .Filter("isEventGood", "Event is good");
+
+
+  auto rdf_PartTriggerWithJpsiWithEventWithEventMixing =
+      df
           .Define("IndexMixing_NumContribCalib",
-                  [bins_mix_numContrib](double value) { return FindMixBin(value, bins_mix_numContrib); },
+                  [bins_mix_numContrib](double numContrib) {
+                    int index = -1;
+                    for (int i = 0; i < bins_mix_numContrib.size() - 1; i++) {
+                      if (numContrib >= bins_mix_numContrib[i] &&
+                          numContrib < bins_mix_numContrib[i + 1]) {
+                        index = i;
+                        break;
+                      }
+                    }
+                    if (index == -1) {
+                      return -1; // Invalid index
+                    }
+                    return int(index);
+                  },
                   {"NumContribCalib"})
-          .Filter("IndexMixing_NumContribCalib>=0")
+          .Filter("IndexMixing_NumContribCalib>=0", "valid NumContribCalib index")
           .Define("IndexMixing_PosZ",
-                  [bins_mix_posZ](float value) { return FindMixBin(value, bins_mix_posZ); },
+                  [bins_mix_posZ](float posZ) {
+                    int index = -1;
+                    for (int i = 0; i < bins_mix_posZ.size() - 1; i++) {
+                      if (posZ >= bins_mix_posZ[i] && posZ < bins_mix_posZ[i + 1]) {
+                        index = i;
+                        break;
+                      }
+                    }
+                    if (index == -1) {
+                      return -1; // Invalid index
+                    }
+                    return int(index);
+                  },
                   {"fPosZ"})
-          .Filter("IndexMixing_PosZ>=0")
+          .Filter("IndexMixing_PosZ>=0", "valid PosZ index")
           .Define("IndexMixing",
-                  [bins_mix_posZ](int mult, int posz) {
-                    return posz + mult * static_cast<int>(bins_mix_posZ.size());
+                  [bins_mix_posZ](int indexNumContrib, int indexPosZ) {
+                    if (indexNumContrib < 0 || indexPosZ < 0) {
+                      return -1; // Invalid index
+                    }
+                    return int(indexPosZ + indexNumContrib * bins_mix_posZ.size());
                   },
                   {"IndexMixing_NumContribCalib", "IndexMixing_PosZ"})
           .DefineSlot("MixedEvent", MixEvent, {"IndexMixing", "rdfentry_"});
-  df.Snapshot("EventMixing", path_output_index,
-              {"MixedEvent", "IndexMixing_NumContribCalib", "IndexMixing_PosZ"});
+
+  rdf_PartTriggerWithJpsiWithEventWithEventMixing.Snapshot(
+      "EventMixing", path_output_index,
+      {"MixedEvent", "IndexMixing_NumContribCalib", "IndexMixing_PosZ"});
+  if (is_interactive())
+    ROOT::RDF::Experimental::AddProgressBar(rdf_PartTriggerWithJpsiWithEventWithEventMixing);
 }
 
 void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
