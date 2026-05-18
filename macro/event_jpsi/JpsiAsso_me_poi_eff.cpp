@@ -11,6 +11,7 @@
 #include <TFormula.h>
 #include <TH2D.h>
 #include <THn.h>
+#include <TStopwatch.h>
 #include <TTreeReader.h>
 #include <TTreeReaderArray.h>
 #include <TTreeReaderValue.h>
@@ -143,6 +144,16 @@ struct HistSet {
   std::unique_ptr<THnD> single_hist;
 };
 
+struct FillStats {
+  Long64_t index_entries_total = 0;
+  Long64_t index_entries_processed = 0;
+  Long64_t mixed_event_pairs = 0;
+  Long64_t jpsi_candidates = 0;
+  Long64_t ref_tracks = 0;
+  Long64_t pair_fills = 0;
+  Long64_t single_fills = 0;
+};
+
 bool PassCut(const HistSet& hist, float e1_nsig_el, float e1_nsig_pi, float e1_nsig_pr,
              float e2_nsig_el, float e2_nsig_pi, float e2_nsig_pr, float ref_ITSChi2NCl,
              float ref_TPCNClsFound, int nITSCluster, float nDcaZ2Dev, float nDcaXY2Dev,
@@ -267,9 +278,10 @@ void EventMixingIndexGen(TString path_input_flow, TString path_input_extra,
       {"MixedEvent", "IndexMixing_NumContribCalib", "IndexMixing_PosZ"});
 }
 
-void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
-                              TString path_output_hist, TString path_config,
-                              TString only_cut = "") {
+FillStats FillMixedEventHistogramsImpl(TString path_input_flow, TString path_input_index,
+                                       TString path_output_hist, TString path_config,
+                                       TString only_cut, Long64_t max_index_entries,
+                                       bool write_output) {
   YAML::Node config = YAML::LoadFile(path_config.Data());
   LoadEfficiency(config);
   cout << "start filling" << endl;
@@ -296,6 +308,8 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
   TChain* tree_a = MRootIO::OpenChain(path_input_flow.Data(), "O2dqflowvecd");
   TChain* tree_b = MRootIO::OpenChain(path_input_flow.Data(), "O2dqflowvecd");
   TChain* tree_index = MRootIO::OpenChain(path_input_index.Data(), "EventMixing");
+  FillStats stats;
+  stats.index_entries_total = tree_index->GetEntries();
 
   TTreeReader pairs_reader(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> mixed_events(pairs_reader,
@@ -328,14 +342,20 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
   const auto& mult_bins = var_mult.fBins;
   const auto& posz_bins = var_posz.fBins;
   while (pairs_reader.Next()) {
+    if (max_index_entries >= 0 && stats.index_entries_processed >= max_index_entries)
+      break;
+    ++stats.index_entries_processed;
     const float mult_value = MixBinCenter(mult_bins, *i_mult);
     const float posz_value = MixBinCenter(posz_bins, *i_posz);
     for (const auto& [event_a, event_b] : *mixed_events) {
+      ++stats.mixed_event_pairs;
       reader_a.SetEntry(event_a);
       reader_b.SetEntry(event_b);
       for (int i_jpsi = 0; i_jpsi < fPT.GetSize(); ++i_jpsi) {
+        ++stats.jpsi_candidates;
         std::vector<bool> single_filled(hist_sets.size(), false);
         for (int i_ref = 0; i_ref < fPTREF.GetSize(); ++i_ref) {
+          ++stats.ref_tracks;
           const int n_its = CountSetBits(fITSClusterMap[i_ref]);
           const float n_dcaz = NDca2Dev(fPTREF[i_ref], fDcaZ[i_ref]);
           const float n_dcaxy = NDca2Dev(fPTREF[i_ref], fDcaXY[i_ref]);
@@ -356,9 +376,11 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
             const float cut_weight =
                 GetEfficiencyWeight(fPT[i_jpsi], fEta[i_jpsi], hist.efficiency_setup);
             hist.pair_hist->Fill(pair_values, cut_weight);
+            ++stats.pair_fills;
             if (!single_filled[i_hist]) {
               hist.single_hist->Fill(single_values, cut_weight);
               single_filled[i_hist] = true;
+              ++stats.single_fills;
             }
           }
         }
@@ -366,12 +388,52 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
     }
   }
 
-  TFile output(path_output_hist, "RECREATE");
-  for (auto& hist : hist_sets) {
-    hist.pair_hist->Write();
-    hist.single_hist->Write();
+  if (write_output) {
+    TFile output(path_output_hist, "RECREATE");
+    for (auto& hist : hist_sets) {
+      hist.pair_hist->Write();
+      hist.single_hist->Write();
+    }
+    output.Close();
   }
-  output.Close();
+  return stats;
+}
+
+void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
+                              TString path_output_hist, TString path_config,
+                              TString only_cut = "") {
+  FillMixedEventHistogramsImpl(path_input_flow, path_input_index, path_output_hist, path_config,
+                               only_cut, -1, true);
+}
+
+void EstimateMixedEventHistogramFillTime(TString path_input_flow, TString path_input_index,
+                                         TString path_config, Long64_t sample_index_entries = 1000,
+                                         TString only_cut = "") {
+  if (sample_index_entries <= 0)
+    throw std::invalid_argument("sample_index_entries must be positive");
+
+  TStopwatch timer;
+  timer.Start();
+  const FillStats stats = FillMixedEventHistogramsImpl(
+      path_input_flow, path_input_index, "", path_config, only_cut, sample_index_entries, false);
+  timer.Stop();
+
+  if (stats.index_entries_processed == 0)
+    throw std::runtime_error("no index entries were processed");
+
+  const double elapsed_s = timer.RealTime();
+  const double scale = static_cast<double>(stats.index_entries_total) / stats.index_entries_processed;
+  const double estimated_total_s = elapsed_s * scale;
+  cout << "sampled index entries: " << stats.index_entries_processed << " / "
+       << stats.index_entries_total << endl;
+  cout << "mixed event pairs: " << stats.mixed_event_pairs << endl;
+  cout << "J/psi candidates: " << stats.jpsi_candidates << endl;
+  cout << "reference tracks visited: " << stats.ref_tracks << endl;
+  cout << "pair histogram fills: " << stats.pair_fills << endl;
+  cout << "single histogram fills: " << stats.single_fills << endl;
+  cout << "sample wall time [s]: " << elapsed_s << endl;
+  cout << "estimated full histogram fill wall time [s]: " << estimated_total_s << endl;
+  cout << "estimated full histogram fill wall time [min]: " << estimated_total_s / 60. << endl;
 }
 
 void JpsiAssoMEPoiEff(TString path_input_flow, TString path_input_extra, TString path_output_hist,
