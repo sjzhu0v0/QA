@@ -2,7 +2,7 @@
 #include "JpsiAsso_me_poi_eff.cpp"
 #undef main
 
-#include <TStopwatch.h>
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <fstream>
@@ -13,6 +13,7 @@
 struct FillTimeStats {
   Long64_t index_entries_total = 0;
   Long64_t index_entries_processed = 0;
+  Long64_t index_entries_measured = 0;
   Long64_t mixed_event_pairs = 0;
   Long64_t jpsi_candidates = 0;
   Long64_t ref_tracks = 0;
@@ -25,6 +26,30 @@ struct ProcessMemoryStats {
   long minor_page_faults = 0;
   long major_page_faults = 0;
 };
+
+struct RefTrackCache {
+  float pt = 0.f;
+  float eta = 0.f;
+  float phi = 0.f;
+  float its_chi2_ncl = 0.f;
+  float tpc_ncls_found = 0.f;
+  int n_its = 0;
+  float n_dcaz = 0.f;
+  float n_dcaxy = 0.f;
+};
+
+FillTimeStats SubtractStats(const FillTimeStats& end, const FillTimeStats& begin) {
+  FillTimeStats delta;
+  delta.index_entries_total = end.index_entries_total;
+  delta.index_entries_processed = end.index_entries_processed - begin.index_entries_processed;
+  delta.index_entries_measured = end.index_entries_measured - begin.index_entries_measured;
+  delta.mixed_event_pairs = end.mixed_event_pairs - begin.mixed_event_pairs;
+  delta.jpsi_candidates = end.jpsi_candidates - begin.jpsi_candidates;
+  delta.ref_tracks = end.ref_tracks - begin.ref_tracks;
+  delta.pair_fills = end.pair_fills - begin.pair_fills;
+  delta.single_fills = end.single_fills - begin.single_fills;
+  return delta;
+}
 
 ProcessMemoryStats ReadProcessMemoryStats() {
   ProcessMemoryStats stats;
@@ -50,15 +75,33 @@ void PrintProgress(Long64_t index_entries_processed, Long64_t index_entries_tota
                    double elapsed_s, double last_elapsed_s, const ProcessMemoryStats& memory,
                    const ProcessMemoryStats& last_memory) {
   const double interval_s = elapsed_s - last_elapsed_s;
+  const Long64_t interval_index_entries =
+      stats.index_entries_processed - last_stats.index_entries_processed;
+  const Long64_t interval_mixed_event_pairs =
+      stats.mixed_event_pairs - last_stats.mixed_event_pairs;
+  const Long64_t interval_jpsi_candidates =
+      stats.jpsi_candidates - last_stats.jpsi_candidates;
   const Long64_t interval_pair_fills = stats.pair_fills - last_stats.pair_fills;
   const Long64_t interval_ref_tracks = stats.ref_tracks - last_stats.ref_tracks;
+  const Long64_t interval_single_fills = stats.single_fills - last_stats.single_fills;
   const double pair_fill_rate = interval_s > 0. ? interval_pair_fills / interval_s : 0.;
   const double ref_track_rate = interval_s > 0. ? interval_ref_tracks / interval_s : 0.;
+  const double fills_per_ref_track =
+      interval_ref_tracks > 0 ? static_cast<double>(interval_pair_fills) / interval_ref_tracks : 0.;
+  const double ref_tracks_per_index_entry =
+      interval_index_entries > 0 ? static_cast<double>(interval_ref_tracks) / interval_index_entries : 0.;
 
   cout << "progress: " << index_entries_processed << " / " << index_entries_total
        << " index entries"
        << ", pair fills/s: " << pair_fill_rate
        << ", ref tracks/s: " << ref_track_rate
+       << ", mixed event pairs delta: " << interval_mixed_event_pairs
+       << ", J/psi candidates delta: " << interval_jpsi_candidates
+       << ", ref tracks delta: " << interval_ref_tracks
+       << ", pair fills delta: " << interval_pair_fills
+       << ", single fills delta: " << interval_single_fills
+       << ", pair fills/ref track: " << fills_per_ref_track
+       << ", ref tracks/index entry: " << ref_tracks_per_index_entry
        << ", RSS [MB]: " << memory.rss_mb
        << ", delta RSS [MB]: " << memory.rss_mb - last_memory.rss_mb
        << ", minor faults delta: " << memory.minor_page_faults - last_memory.minor_page_faults
@@ -69,9 +112,14 @@ void PrintProgress(Long64_t index_entries_processed, Long64_t index_entries_tota
 FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString path_input_index,
                                             TString path_config, Long64_t sample_index_entries,
                                             TString only_cut = "",
-                                            Long64_t report_every_index_entries = 100) {
+                                            Long64_t report_every_index_entries = 100,
+                                            Long64_t warmup_index_entries = 0,
+                                            double* measured_elapsed_s = nullptr,
+                                            FillTimeStats* measured_stats = nullptr) {
   if (sample_index_entries <= 0)
     throw std::invalid_argument("sample_index_entries must be positive");
+  if (warmup_index_entries < 0)
+    throw std::invalid_argument("warmup_index_entries must be non-negative");
 
   YAML::Node config = YAML::LoadFile(path_config.Data());
   LoadEfficiency(config);
@@ -101,9 +149,12 @@ FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString pat
 
   FillTimeStats stats;
   stats.index_entries_total = tree_index->GetEntries();
+  FillTimeStats stats_before_measured_region;
   FillTimeStats last_report_stats;
   ProcessMemoryStats last_memory = ReadProcessMemoryStats();
   const auto progress_start = std::chrono::steady_clock::now();
+  auto measured_start = progress_start;
+  bool measured_region_started = warmup_index_entries == 0;
   double last_report_elapsed_s = 0.;
 
   TTreeReader pairs_reader(tree_index);
@@ -136,24 +187,56 @@ FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString pat
 
   const auto& mult_bins = var_mult.fBins;
   const auto& posz_bins = var_posz.fBins;
-  while (pairs_reader.Next() && stats.index_entries_processed < sample_index_entries) {
+  bool has_last_a = false;
+  bool has_last_b = false;
+  ULong64_t last_a = 0;
+  ULong64_t last_b = 0;
+  std::vector<char> single_filled(hist_sets.size(), 0);
+  std::vector<RefTrackCache> ref_cache;
+  const Long64_t target_index_entries = warmup_index_entries + sample_index_entries;
+  while (pairs_reader.Next() && stats.index_entries_processed < target_index_entries) {
     ++stats.index_entries_processed;
+    if (!measured_region_started && stats.index_entries_processed > warmup_index_entries) {
+      stats_before_measured_region = stats;
+      --stats_before_measured_region.index_entries_processed;
+      measured_start = std::chrono::steady_clock::now();
+      measured_region_started = true;
+    }
+    if (stats.index_entries_processed > warmup_index_entries)
+      ++stats.index_entries_measured;
     const float mult_value = MixBinCenter(mult_bins, *i_mult);
     const float posz_value = MixBinCenter(posz_bins, *i_posz);
     for (const auto& [event_a, event_b] : *mixed_events) {
       ++stats.mixed_event_pairs;
-      reader_a.SetEntry(event_a);
-      reader_b.SetEntry(event_b);
+      if (!has_last_a || event_a != last_a) {
+        reader_a.SetEntry(event_a);
+        last_a = event_a;
+        has_last_a = true;
+      }
+      if (!has_last_b || event_b != last_b) {
+        reader_b.SetEntry(event_b);
+        last_b = event_b;
+        has_last_b = true;
+        ref_cache.clear();
+        ref_cache.reserve(fPTREF.GetSize());
+        for (int i_ref = 0; i_ref < fPTREF.GetSize(); ++i_ref) {
+          ref_cache.push_back({fPTREF[i_ref],
+                               fEtaREF[i_ref],
+                               fPhiREF[i_ref],
+                               fITSChi2NCl[i_ref],
+                               fTPCNClsFound[i_ref],
+                               CountSetBits(fITSClusterMap[i_ref]),
+                               NDca2Dev(fPTREF[i_ref], fDcaZ[i_ref]),
+                               NDca2Dev(fPTREF[i_ref], fDcaXY[i_ref])});
+        }
+      }
       for (int i_jpsi = 0; i_jpsi < fPT.GetSize(); ++i_jpsi) {
         ++stats.jpsi_candidates;
-        std::vector<bool> single_filled(hist_sets.size(), false);
-        for (int i_ref = 0; i_ref < fPTREF.GetSize(); ++i_ref) {
+        std::fill(single_filled.begin(), single_filled.end(), 0);
+        for (const auto& ref : ref_cache) {
           ++stats.ref_tracks;
-          const int n_its = CountSetBits(fITSClusterMap[i_ref]);
-          const float n_dcaz = NDca2Dev(fPTREF[i_ref], fDcaZ[i_ref]);
-          const float n_dcaxy = NDca2Dev(fPTREF[i_ref], fDcaXY[i_ref]);
-          const double pair_values[] = {fEta[i_jpsi] - fEtaREF[i_ref],
-                                        AbsDeltaPhi(fPhi[i_jpsi], fPhiREF[i_ref]),
+          const double pair_values[] = {fEta[i_jpsi] - ref.eta,
+                                        AbsDeltaPhi(fPhi[i_jpsi], ref.phi),
                                         posz_value,
                                         fMass[i_jpsi],
                                         fPT[i_jpsi],
@@ -163,8 +246,8 @@ FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString pat
             auto& hist = hist_sets[i_hist];
             if (!PassCut(hist, fTPCNSigmaEl1[i_jpsi], fTPCNSigmaPi1[i_jpsi], fTPCNSigmaPr1[i_jpsi],
                          fTPCNSigmaEl2[i_jpsi], fTPCNSigmaPi2[i_jpsi], fTPCNSigmaPr2[i_jpsi],
-                         fITSChi2NCl[i_ref], fTPCNClsFound[i_ref], n_its, n_dcaz, n_dcaxy,
-                         fPTREF[i_ref], posz_value))
+                         ref.its_chi2_ncl, ref.tpc_ncls_found, ref.n_its, ref.n_dcaz,
+                         ref.n_dcaxy, ref.pt, posz_value))
               continue;
             const float cut_weight =
                 GetEfficiencyWeight(fPT[i_jpsi], fEta[i_jpsi], hist.efficiency_setup);
@@ -192,34 +275,44 @@ FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString pat
       last_report_elapsed_s = elapsed_s;
     }
   }
+  if (measured_elapsed_s != nullptr) {
+    const auto measured_end = std::chrono::steady_clock::now();
+    *measured_elapsed_s =
+        measured_region_started ? std::chrono::duration<double>(measured_end - measured_start).count()
+                                : 0.;
+  }
+  if (measured_stats != nullptr)
+    *measured_stats = SubtractStats(stats, stats_before_measured_region);
   return stats;
 }
 
 void EstimateJpsiAssoMEPoiEffFillTime(TString path_input_flow, TString path_input_index,
                                       TString path_config, Long64_t sample_index_entries = 1000,
                                       TString only_cut = "",
-                                      Long64_t report_every_index_entries = 100) {
-  TStopwatch timer;
-  timer.Start();
+                                      Long64_t report_every_index_entries = 100,
+                                      Long64_t warmup_index_entries = 0) {
+  double measured_elapsed_s = 0.;
+  FillTimeStats measured_stats;
   const FillTimeStats stats = SampleMixedEventHistogramFill(
       path_input_flow, path_input_index, path_config, sample_index_entries, only_cut,
-      report_every_index_entries);
-  timer.Stop();
+      report_every_index_entries, warmup_index_entries, &measured_elapsed_s, &measured_stats);
 
-  if (stats.index_entries_processed == 0)
-    throw std::runtime_error("no index entries were processed");
+  if (measured_stats.index_entries_measured == 0)
+    throw std::runtime_error("no measured index entries were processed");
 
-  const double elapsed_s = timer.RealTime();
-  const double scale = static_cast<double>(stats.index_entries_total) / stats.index_entries_processed;
-  const double estimated_total_s = elapsed_s * scale;
-  cout << "sampled index entries: " << stats.index_entries_processed << " / "
+  const double scale =
+      static_cast<double>(stats.index_entries_total) / measured_stats.index_entries_measured;
+  const double estimated_total_s = measured_elapsed_s * scale;
+  cout << "warm-up index entries: " << warmup_index_entries << endl;
+  cout << "sampled index entries: " << measured_stats.index_entries_measured << " / "
        << stats.index_entries_total << endl;
-  cout << "mixed event pairs: " << stats.mixed_event_pairs << endl;
-  cout << "J/psi candidates: " << stats.jpsi_candidates << endl;
-  cout << "reference tracks visited: " << stats.ref_tracks << endl;
-  cout << "pair histogram fills: " << stats.pair_fills << endl;
-  cout << "single histogram fills: " << stats.single_fills << endl;
-  cout << "sample wall time [s]: " << elapsed_s << endl;
+  cout << "processed index entries total: " << stats.index_entries_processed << endl;
+  cout << "mixed event pairs: " << measured_stats.mixed_event_pairs << endl;
+  cout << "J/psi candidates: " << measured_stats.jpsi_candidates << endl;
+  cout << "reference tracks visited: " << measured_stats.ref_tracks << endl;
+  cout << "pair histogram fills: " << measured_stats.pair_fills << endl;
+  cout << "single histogram fills: " << measured_stats.single_fills << endl;
+  cout << "measured sample wall time [s]: " << measured_elapsed_s << endl;
   cout << "estimated full histogram fill wall time [s]: " << estimated_total_s << endl;
   cout << "estimated full histogram fill wall time [min]: " << estimated_total_s / 60. << endl;
 }
@@ -231,6 +324,7 @@ int main(int argc, char** argv) {
   Long64_t sample_index_entries = 1000;
   TString only_cut = "";
   Long64_t report_every_index_entries = 100;
+  Long64_t warmup_index_entries = 0;
   if (argc > 1)
     path_input_flow = argv[1];
   if (argc > 2)
@@ -243,7 +337,10 @@ int main(int argc, char** argv) {
     only_cut = argv[5];
   if (argc > 6)
     report_every_index_entries = std::atoll(argv[6]);
+  if (argc > 7)
+    warmup_index_entries = std::atoll(argv[7]);
   EstimateJpsiAssoMEPoiEffFillTime(path_input_flow, path_input_index, path_config,
-                                   sample_index_entries, only_cut, report_every_index_entries);
+                                   sample_index_entries, only_cut, report_every_index_entries,
+                                   warmup_index_entries);
   return 0;
 }
