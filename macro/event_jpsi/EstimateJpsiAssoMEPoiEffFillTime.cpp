@@ -3,7 +3,12 @@
 #undef main
 
 #include <TStopwatch.h>
+#include <chrono>
 #include <cstdlib>
+#include <fstream>
+#include <sstream>
+#include <sys/resource.h>
+#include <unistd.h>
 
 struct FillTimeStats {
   Long64_t index_entries_total = 0;
@@ -15,9 +20,56 @@ struct FillTimeStats {
   Long64_t single_fills = 0;
 };
 
+struct ProcessMemoryStats {
+  double rss_mb = 0.;
+  long minor_page_faults = 0;
+  long major_page_faults = 0;
+};
+
+ProcessMemoryStats ReadProcessMemoryStats() {
+  ProcessMemoryStats stats;
+
+  std::ifstream statm("/proc/self/statm");
+  long total_pages = 0;
+  long resident_pages = 0;
+  if (statm >> total_pages >> resident_pages) {
+    const long page_size = sysconf(_SC_PAGESIZE);
+    stats.rss_mb = static_cast<double>(resident_pages) * page_size / 1024. / 1024.;
+  }
+
+  rusage usage {};
+  if (getrusage(RUSAGE_SELF, &usage) == 0) {
+    stats.minor_page_faults = usage.ru_minflt;
+    stats.major_page_faults = usage.ru_majflt;
+  }
+  return stats;
+}
+
+void PrintProgress(Long64_t index_entries_processed, Long64_t index_entries_total,
+                   const FillTimeStats& stats, const FillTimeStats& last_stats,
+                   double elapsed_s, double last_elapsed_s, const ProcessMemoryStats& memory,
+                   const ProcessMemoryStats& last_memory) {
+  const double interval_s = elapsed_s - last_elapsed_s;
+  const Long64_t interval_pair_fills = stats.pair_fills - last_stats.pair_fills;
+  const Long64_t interval_ref_tracks = stats.ref_tracks - last_stats.ref_tracks;
+  const double pair_fill_rate = interval_s > 0. ? interval_pair_fills / interval_s : 0.;
+  const double ref_track_rate = interval_s > 0. ? interval_ref_tracks / interval_s : 0.;
+
+  cout << "progress: " << index_entries_processed << " / " << index_entries_total
+       << " index entries"
+       << ", pair fills/s: " << pair_fill_rate
+       << ", ref tracks/s: " << ref_track_rate
+       << ", RSS [MB]: " << memory.rss_mb
+       << ", delta RSS [MB]: " << memory.rss_mb - last_memory.rss_mb
+       << ", minor faults delta: " << memory.minor_page_faults - last_memory.minor_page_faults
+       << ", major faults delta: " << memory.major_page_faults - last_memory.major_page_faults
+       << endl;
+}
+
 FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString path_input_index,
                                             TString path_config, Long64_t sample_index_entries,
-                                            TString only_cut = "") {
+                                            TString only_cut = "",
+                                            Long64_t report_every_index_entries = 100) {
   if (sample_index_entries <= 0)
     throw std::invalid_argument("sample_index_entries must be positive");
 
@@ -49,6 +101,10 @@ FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString pat
 
   FillTimeStats stats;
   stats.index_entries_total = tree_index->GetEntries();
+  FillTimeStats last_report_stats;
+  ProcessMemoryStats last_memory = ReadProcessMemoryStats();
+  const auto progress_start = std::chrono::steady_clock::now();
+  double last_report_elapsed_s = 0.;
 
   TTreeReader pairs_reader(tree_index);
   TTreeReaderValue<std::vector<std::pair<ULong64_t, ULong64_t>>> mixed_events(pairs_reader,
@@ -123,17 +179,31 @@ FillTimeStats SampleMixedEventHistogramFill(TString path_input_flow, TString pat
         }
       }
     }
+
+    if (report_every_index_entries > 0 &&
+        stats.index_entries_processed % report_every_index_entries == 0) {
+      const double elapsed_s =
+          std::chrono::duration<double>(std::chrono::steady_clock::now() - progress_start).count();
+      const ProcessMemoryStats memory = ReadProcessMemoryStats();
+      PrintProgress(stats.index_entries_processed, stats.index_entries_total, stats,
+                    last_report_stats, elapsed_s, last_report_elapsed_s, memory, last_memory);
+      last_report_stats = stats;
+      last_memory = memory;
+      last_report_elapsed_s = elapsed_s;
+    }
   }
   return stats;
 }
 
 void EstimateJpsiAssoMEPoiEffFillTime(TString path_input_flow, TString path_input_index,
                                       TString path_config, Long64_t sample_index_entries = 1000,
-                                      TString only_cut = "") {
+                                      TString only_cut = "",
+                                      Long64_t report_every_index_entries = 100) {
   TStopwatch timer;
   timer.Start();
   const FillTimeStats stats = SampleMixedEventHistogramFill(
-      path_input_flow, path_input_index, path_config, sample_index_entries, only_cut);
+      path_input_flow, path_input_index, path_config, sample_index_entries, only_cut,
+      report_every_index_entries);
   timer.Stop();
 
   if (stats.index_entries_processed == 0)
@@ -160,6 +230,7 @@ int main(int argc, char** argv) {
   TString path_config = "config.yaml";
   Long64_t sample_index_entries = 1000;
   TString only_cut = "";
+  Long64_t report_every_index_entries = 100;
   if (argc > 1)
     path_input_flow = argv[1];
   if (argc > 2)
@@ -170,7 +241,9 @@ int main(int argc, char** argv) {
     sample_index_entries = std::atoll(argv[4]);
   if (argc > 5)
     only_cut = argv[5];
+  if (argc > 6)
+    report_every_index_entries = std::atoll(argv[6]);
   EstimateJpsiAssoMEPoiEffFillTime(path_input_flow, path_input_index, path_config,
-                                   sample_index_entries, only_cut);
+                                   sample_index_entries, only_cut, report_every_index_entries);
   return 0;
 }
