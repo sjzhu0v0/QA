@@ -14,8 +14,11 @@
 #include <TTreeReader.h>
 #include <TTreeReaderArray.h>
 #include <TTreeReaderValue.h>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <iomanip>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -109,6 +112,35 @@ int FindMixBin(double value, const std::vector<double>& bins) {
 
 float MixBinCenter(const std::vector<double>& bins, int index) {
   return static_cast<float>(0.5 * (bins[index] + bins[index + 1]));
+}
+
+void PrintProgressBar(Long64_t processed, Long64_t total,
+                      const std::chrono::steady_clock::time_point& start_time,
+                      bool force = false) {
+  static auto last_print = std::chrono::steady_clock::time_point{};
+  const auto now = std::chrono::steady_clock::now();
+  if (!force && last_print != std::chrono::steady_clock::time_point{} &&
+      std::chrono::duration<double>(now - last_print).count() < 1.)
+    return;
+  last_print = now;
+
+  const double fraction =
+      total > 0 ? static_cast<double>(processed) / static_cast<double>(total) : 1.;
+  const int bar_width = 40;
+  const int filled = static_cast<int>(fraction * bar_width);
+  const double elapsed_s = std::chrono::duration<double>(now - start_time).count();
+  const double rate = elapsed_s > 0. ? processed / elapsed_s : 0.;
+  const double eta_s = rate > 0. && total > processed ? (total - processed) / rate : 0.;
+
+  std::cout << "\r[";
+  for (int i = 0; i < bar_width; ++i)
+    std::cout << (i < filled ? '=' : (i == filled ? '>' : ' '));
+  std::cout << "] " << std::setw(6) << std::fixed << std::setprecision(2) << fraction * 100.
+            << "% (" << processed << "/" << total << " index entries)"
+            << " elapsed " << std::setprecision(1) << elapsed_s << "s"
+            << " eta " << eta_s << "s" << std::flush;
+  if (force)
+    std::cout << std::endl;
 }
 
 std::unique_ptr<THnD> MakeTHnD(const std::vector<StrVar4Hist>& vars, const TString& title,
@@ -327,7 +359,13 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
 
   const auto& mult_bins = var_mult.fBins;
   const auto& posz_bins = var_posz.fBins;
+  const Long64_t total_index_entries = tree_index->GetEntries();
+  Long64_t processed_index_entries = 0;
+  const auto progress_start = std::chrono::steady_clock::now();
+  PrintProgressBar(processed_index_entries, total_index_entries, progress_start);
   while (pairs_reader.Next()) {
+    ++processed_index_entries;
+    PrintProgressBar(processed_index_entries, total_index_entries, progress_start);
     const float mult_value = MixBinCenter(mult_bins, *i_mult);
     const float posz_value = MixBinCenter(posz_bins, *i_posz);
     for (const auto& [event_a, event_b] : *mixed_events) {
@@ -365,6 +403,7 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
       }
     }
   }
+  PrintProgressBar(processed_index_entries, total_index_entries, progress_start, true);
 
   TFile output(path_output_hist, "RECREATE");
   for (auto& hist : hist_sets) {
