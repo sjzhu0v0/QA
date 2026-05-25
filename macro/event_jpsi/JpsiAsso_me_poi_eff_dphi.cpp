@@ -73,6 +73,15 @@ float GetEfficiencyWeight(float pt, float eta, const std::string& setup) {
   return eff > 0.f ? 1.f / eff : 0.f;
 }
 
+bool UseEfficiencyCorrection(const YAML::Node& config, bool unit_efficiency) {
+  if (unit_efficiency)
+    return false;
+  const auto eff_config = config["efficiency_correction"];
+  if (eff_config && eff_config["enabled"] && !eff_config["enabled"].as<bool>())
+    return false;
+  return true;
+}
+
 void LoadEfficiency(const YAML::Node& config) {
   const std::string path = config["efficiency_correction"]["file"].as<std::string>();
   auto file = TFile::Open(path.c_str());
@@ -100,6 +109,13 @@ void LoadEfficiency(const YAML::Node& config) {
 
 std::string EfficiencySetupForCut(const std::string& cut) {
   return cut == "default" || cut == "pid1" || cut == "pid2" || cut == "pid3" ? cut : "default";
+}
+
+bool ParseBoolArg(const char* value) {
+  const std::string text(value);
+  return text == "1" || text == "true" || text == "True" || text == "TRUE" ||
+         text == "yes" || text == "on" || text == "unit_efficiency" ||
+         text == "unit-efficiency" || text == "no_eff" || text == "no-eff";
 }
 
 int FindMixBin(double value, const std::vector<double>& bins) {
@@ -301,9 +317,11 @@ void EventMixingIndexGen(TString path_input_flow, TString path_input_extra,
 
 void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
                               TString path_output_hist, TString path_config,
-                              TString only_cut = "") {
+                              TString only_cut = "", bool unit_efficiency = false) {
   YAML::Node config = YAML::LoadFile(path_config.Data());
-  LoadEfficiency(config);
+  const bool use_efficiency_correction = UseEfficiencyCorrection(config, unit_efficiency);
+  if (use_efficiency_correction)
+    LoadEfficiency(config);
   cout << "start filling" << endl;
 
   auto var_posz = ParseStrVar4Hist(config["hist_binning"]["fPosZ"]);
@@ -391,8 +409,10 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
                          fITSChi2NCl[i_ref], fTPCNClsFound[i_ref], n_its, n_dcaz, n_dcaxy,
                          fPTREF[i_ref], posz_value))
               continue;
-            const float cut_weight =
-                GetEfficiencyWeight(fPT[i_jpsi], fEta[i_jpsi], hist.efficiency_setup);
+            const float cut_weight = use_efficiency_correction
+                                         ? GetEfficiencyWeight(fPT[i_jpsi], fEta[i_jpsi],
+                                                               hist.efficiency_setup)
+                                         : 1.f;
             hist.pair_hist->Fill(pair_values, cut_weight);
             if (!single_filled[i_hist]) {
               hist.single_hist->Fill(single_values, cut_weight);
@@ -414,10 +434,11 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
 }
 
 void JpsiAssoMEPoiEff(TString path_input_flow, TString path_input_extra, TString path_output_hist,
-                      TString path_output_index, TString path_config, TString only_cut = "") {
+                      TString path_output_index, TString path_config, TString only_cut = "",
+                      bool unit_efficiency = false) {
   EventMixingIndexGen(path_input_flow, path_input_extra, path_output_index);
   FillMixedEventHistograms(path_input_flow, path_output_index, path_output_hist, path_config,
-                           only_cut);
+                           only_cut, unit_efficiency);
 }
 
 int main(int argc, char** argv) {
@@ -427,6 +448,7 @@ int main(int argc, char** argv) {
   TString path_output_index = "output_mix_index.root";
   TString path_config = "config.yaml";
   TString only_cut = "";
+  bool unit_efficiency = false;
   if (argc > 1)
     path_input_flow = argv[1];
   if (argc > 2)
@@ -439,7 +461,9 @@ int main(int argc, char** argv) {
     path_config = argv[5];
   if (argc > 6)
     only_cut = argv[6];
+  if (argc > 7)
+    unit_efficiency = ParseBoolArg(argv[7]);
   JpsiAssoMEPoiEff(path_input_flow, path_input_extra, path_output_hist, path_output_index,
-                   path_config, only_cut);
+                   path_config, only_cut, unit_efficiency);
   return 0;
 }

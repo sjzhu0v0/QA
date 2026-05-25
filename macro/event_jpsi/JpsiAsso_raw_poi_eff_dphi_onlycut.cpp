@@ -10,18 +10,16 @@
 #include <TFile.h>
 #include <TH2D.h>
 #include <cstdint>
+#include <iostream>
+#include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 using ROOT::RVec;
 using ROOT::VecOps::Take;
 
 namespace {
-TH2D* g_eff_default = nullptr;
-TH2D* g_eff_pid1 = nullptr;
-TH2D* g_eff_pid2 = nullptr;
-TH2D* g_eff_pid3 = nullptr;
+TH2D* g_eff_exact = nullptr;
 
 RVec<int> CountSetBitsVec(const RVec<uint8_t>& values) {
   RVec<int> out;
@@ -65,15 +63,9 @@ RVec<float> DeltaPhiVec(const RVec<float>& phi1, const RVec<float>& phi2) {
 }
 
 float GetEfficiencyWeight(float pt, float eta, const std::string& setup) {
-  TH2D* hist = g_eff_default;
-  if (setup == "pid1" && g_eff_pid1)
-    hist = g_eff_pid1;
-  else if (setup == "pid2" && g_eff_pid2)
-    hist = g_eff_pid2;
-  else if (setup == "pid3" && g_eff_pid3)
-    hist = g_eff_pid3;
+  TH2D* hist = g_eff_exact;
   if (!hist)
-    return 1.f;
+    throw std::runtime_error("efficiency histogram was not loaded for exact setup: " + setup);
   const int pt_bin = hist->GetXaxis()->FindFixBin(pt);
   const int eta_bin = hist->GetYaxis()->FindFixBin(eta);
   if (pt_bin < 1 || pt_bin > hist->GetNbinsX() || eta_bin < 1 ||
@@ -105,35 +97,19 @@ RVec<float> EfficiencyWeightVec(const RVec<float>& pt, const RVec<float>& eta,
   return out;
 }
 
-void LoadEfficiency(const YAML::Node& config) {
+void LoadEfficiency(const YAML::Node& config, const std::string& setup) {
   const std::string path = config["efficiency_correction"]["file"].as<std::string>();
   auto file = TFile::Open(path.c_str());
   if (!file || file->IsZombie())
     throw std::runtime_error("cannot open efficiency file: " + path);
-  const std::unordered_map<std::string, std::string> names = {
-      {"default", "jpsi_reconstruction_efficiency_pt_eta_default_low_eff_removed"},
-      {"pid1", "jpsi_reconstruction_efficiency_pt_eta_pid1_low_eff_removed"},
-      {"pid2", "jpsi_reconstruction_efficiency_pt_eta_pid2_low_eff_removed"},
-      {"pid3", "jpsi_reconstruction_efficiency_pt_eta_pid3_low_eff_removed"}};
-  auto load = [&](const std::string& setup) {
-    auto* hist = dynamic_cast<TH2D*>(file->Get(names.at(setup).c_str()));
-    if (!hist)
-      throw std::runtime_error("missing efficiency histogram for " + setup);
-    auto* clone = dynamic_cast<TH2D*>(hist->Clone(("eff_" + setup).c_str()));
-    clone->SetDirectory(nullptr);
-    return clone;
-  };
-  g_eff_default = load("default");
-  g_eff_pid1 = load("pid1");
-  g_eff_pid2 = load("pid2");
-  g_eff_pid3 = load("pid3");
+  const std::string hist_name =
+      "jpsi_reconstruction_efficiency_pt_eta_" + setup + "_low_eff_removed";
+  auto* hist = dynamic_cast<TH2D*>(file->Get(hist_name.c_str()));
+  if (!hist)
+    throw std::runtime_error("missing exact efficiency histogram for " + setup + ": " + hist_name);
+  g_eff_exact = dynamic_cast<TH2D*>(hist->Clone(("eff_" + setup).c_str()));
+  g_eff_exact->SetDirectory(nullptr);
   file->Close();
-}
-
-std::string EfficiencySetupForCut(const std::string& cut) {
-  return cut == "default" || cut == "pid1" || cut == "pid2" || cut == "pid3"
-             ? cut
-             : "default";
 }
 
 bool ParseBoolArg(const char* value) {
@@ -153,9 +129,18 @@ void JpsiAssoRawPoiEff(TString path_input_flow,
                        TString only_cut = "",
                        bool unit_efficiency = false) {
   YAML::Node config = YAML::LoadFile(path_config.Data());
+  if (only_cut == "")
+    throw std::runtime_error("only_cut is required in JpsiAsso_raw_poi_eff_dphi_onlycut.cpp");
+  const std::string cut_name = only_cut.Data();
+  const auto cuts = config["cuts"];
+  if (!cuts || !cuts[cut_name])
+    throw std::runtime_error("missing requested only_cut in config cuts: " + cut_name);
+  const std::string cut_expr = cuts[cut_name].as<std::string>();
+  const std::string efficiency_setup = cut_name;
+
   const bool use_efficiency_correction = UseEfficiencyCorrection(config, unit_efficiency);
   if (use_efficiency_correction)
-    LoadEfficiency(config);
+    LoadEfficiency(config, efficiency_setup);
 
   TChain* tree_flow = MRootIO::OpenChain(path_input_flow.Data(), "O2dqflowvecd");
   TChain* tree_extra = MRootIO::OpenChain(path_input_extra.Data(), "ExtraInfo");
@@ -271,57 +256,48 @@ void JpsiAssoRawPoiEff(TString path_input_flow,
   vector<StrVar4Hist> pair_vars = {var_deta, var_dphi, var_posz, var_mass, var_pt, var_mult};
   vector<StrVar4Hist> single_vars = {var_posz, var_mass, var_pt, var_mult};
 
-  for (auto it = config["cuts"].begin(); it != config["cuts"].end(); ++it) {
-    const std::string cut_name = it->first.as<std::string>();
-    if (only_cut != "" && cut_name != only_cut.Data())
-      continue;
-    const std::string cut_expr = it->second.as<std::string>();
-    const std::string mask_name = "pair_mask_" + cut_name;
-    auto selected =
-        df_pairs.Define(mask_name, cut_expr)
-            .Redefine("DeltaEta", "DeltaEta[" + mask_name + "]")
-            .Redefine("DeltaPhi", "DeltaPhi[" + mask_name + "]")
-            .Redefine("fPosZ", "fPosZ[" + mask_name + "]")
-            .Redefine("jpsi_mass", "jpsi_mass[" + mask_name + "]")
-            .Redefine("jpsi_pt", "jpsi_pt[" + mask_name + "]")
-            .Redefine("jpsi_eta", "jpsi_eta[" + mask_name + "]")
-            .Redefine("jpsi_idx", "jpsi_idx[" + mask_name + "]")
-            .Redefine("NumContribCalib", "NumContribCalib[" + mask_name + "]")
-            .Define("jpsi_eff_weight",
-                    [use_efficiency_correction,
-                     setup = EfficiencySetupForCut(cut_name)](const RVec<float>& pt,
-                                                              const RVec<float>& eta) {
-                      return use_efficiency_correction ? EfficiencyWeightVec(pt, eta, setup)
-                                                       : UnitWeightVec(pt);
-                    },
-                    {"jpsi_pt", "jpsi_eta"});
-    auto model = GetTHnDModelWithTitle(pair_vars, "", cut_name.c_str());
-    auto vec_columns = get<1>(model);
-    vec_columns.push_back("jpsi_eff_weight");
-    gRResultHandles.push_back(
-        selected.HistoND(get<0>(model), vec_columns));
+  const std::string mask_name = "pair_mask_" + cut_name;
+  auto selected =
+      df_pairs.Define(mask_name, cut_expr)
+          .Redefine("DeltaEta", "DeltaEta[" + mask_name + "]")
+          .Redefine("DeltaPhi", "DeltaPhi[" + mask_name + "]")
+          .Redefine("fPosZ", "fPosZ[" + mask_name + "]")
+          .Redefine("jpsi_mass", "jpsi_mass[" + mask_name + "]")
+          .Redefine("jpsi_pt", "jpsi_pt[" + mask_name + "]")
+          .Redefine("jpsi_eta", "jpsi_eta[" + mask_name + "]")
+          .Redefine("jpsi_idx", "jpsi_idx[" + mask_name + "]")
+          .Redefine("NumContribCalib", "NumContribCalib[" + mask_name + "]")
+          .Define("jpsi_eff_weight",
+                  [use_efficiency_correction,
+                   efficiency_setup](const RVec<float>& pt, const RVec<float>& eta) {
+                    return use_efficiency_correction ? EfficiencyWeightVec(pt, eta, efficiency_setup)
+                                                     : UnitWeightVec(pt);
+                  },
+                  {"jpsi_pt", "jpsi_eta"});
+  auto model = GetTHnDModelWithTitle(pair_vars, "", cut_name.c_str());
+  auto vec_columns = get<1>(model);
+  vec_columns.push_back("jpsi_eff_weight");
+  gRResultHandles.push_back(selected.HistoND(get<0>(model), vec_columns));
 
-    auto selected_single =
-        selected
-            .Define("single_mask",
-                    [](const RVec<int>& idx) {
-                      RVec<bool> out(idx.size(), false);
-                      for (size_t i = 0; i < idx.size(); ++i)
-                        out[i] = i == 0 || idx[i] != idx[i - 1];
-                      return out;
-                    },
-                    {"jpsi_idx"})
-            .Redefine("fPosZ", "fPosZ[single_mask]")
-            .Redefine("jpsi_mass", "jpsi_mass[single_mask]")
-            .Redefine("jpsi_pt", "jpsi_pt[single_mask]")
-            .Redefine("NumContribCalib", "NumContribCalib[single_mask]")
-            .Redefine("jpsi_eff_weight", "jpsi_eff_weight[single_mask]");
-    auto single_model = GetTHnDModelWithTitle(single_vars, "Single", cut_name.c_str());
-    auto vec_columns_single = get<1>(single_model);
-    vec_columns_single.push_back("jpsi_eff_weight");
-    gRResultHandles.push_back(
-        selected_single.HistoND(get<0>(single_model), vec_columns_single));
-  }
+  auto selected_single =
+      selected
+          .Define("single_mask",
+                  [](const RVec<int>& idx) {
+                    RVec<bool> out(idx.size(), false);
+                    for (size_t i = 0; i < idx.size(); ++i)
+                      out[i] = i == 0 || idx[i] != idx[i - 1];
+                    return out;
+                  },
+                  {"jpsi_idx"})
+          .Redefine("fPosZ", "fPosZ[single_mask]")
+          .Redefine("jpsi_mass", "jpsi_mass[single_mask]")
+          .Redefine("jpsi_pt", "jpsi_pt[single_mask]")
+          .Redefine("NumContribCalib", "NumContribCalib[single_mask]")
+          .Redefine("jpsi_eff_weight", "jpsi_eff_weight[single_mask]");
+  auto single_model = GetTHnDModelWithTitle(single_vars, "Single", cut_name.c_str());
+  auto vec_columns_single = get<1>(single_model);
+  vec_columns_single.push_back("jpsi_eff_weight");
+  gRResultHandles.push_back(selected_single.HistoND(get<0>(single_model), vec_columns_single));
 
   ROOT::RDF::RunGraphs(gRResultHandles);
   TFile output(path_output, "RECREATE");
@@ -338,6 +314,12 @@ int main(int argc, char** argv) {
   unsigned int bootstrap_seed = 0;
   TString only_cut = "";
   bool unit_efficiency = false;
+  if (argc <= 7) {
+    std::cerr << "usage: " << argv[0]
+              << " input_flow.root input_extra.root output.root config.yaml "
+                 "bootstrap_probability bootstrap_seed only_cut [unit_efficiency]\n";
+    return 1;
+  }
   if (argc > 1)
     path_input_flow = argv[1];
   if (argc > 2)
