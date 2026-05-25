@@ -103,7 +103,7 @@ void LoadEfficiency(const YAML::Node& config, const std::string& setup) {
   if (!file || file->IsZombie())
     throw std::runtime_error("cannot open efficiency file: " + path);
   const std::string hist_name =
-      "jpsi_reconstruction_efficiency_pt_eta_" + setup + "_low_eff_removed";
+      setup+"/jpsi_reconstruction_efficiency_pt_eta_" + setup + "_low_eff_removed";
   auto* hist = dynamic_cast<TH2D*>(file->Get(hist_name.c_str()));
   if (!hist)
     throw std::runtime_error("missing exact efficiency histogram for " + setup + ": " + hist_name);
