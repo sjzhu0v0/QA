@@ -209,6 +209,10 @@ void JpsiAssoRawPoiEff(TString path_input_flow,
                   {"pair_indices"})
           .Define("jpsi_pt", [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fPT", "jpsi_idx"})
+          .Define("e1_pt", [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  {"fPt1", "jpsi_idx"})
+          .Define("e2_pt", [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
+                  {"fPt2", "jpsi_idx"})
           .Define("jpsi_eta", [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
                   {"fEta", "jpsi_idx"})
           .Define("jpsi_phi", [](const RVec<float>& v, const RVec<int>& i) { return Take(v, i); },
@@ -259,6 +263,9 @@ void JpsiAssoRawPoiEff(TString path_input_flow,
                     return RVec<float>(idx.size(), static_cast<float>(value));
                   },
                   {"NumContribCalib", "jpsi_idx"})
+          .Redefine("fPT", "jpsi_pt")
+          .Redefine("fPt1", "e1_pt")
+          .Redefine("fPt2", "e2_pt")
           .Redefine("fPosZ", "pair_fPosZ")
           .Redefine("NumContribCalib", "pair_NumContribCalib");
 

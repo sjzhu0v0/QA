@@ -194,7 +194,7 @@ struct HistSet {
 bool PassCut(const HistSet& hist, float e1_nsig_el, float e1_nsig_pi, float e1_nsig_pr,
              float e2_nsig_el, float e2_nsig_pi, float e2_nsig_pr, float ref_ITSChi2NCl,
              float ref_TPCNClsFound, int nITSCluster, float nDcaZ2Dev, float nDcaXY2Dev,
-             float ref_pt, float fPosZ) {
+             float ref_pt, float fPosZ, float fPT, float fPt1, float fPt2) {
   // The config uses a fixed family of scalar variables. Compile each expression
   // once through TFormula to preserve the existing YAML cut surface.
   static std::unordered_map<std::string, std::unique_ptr<TFormula>> formulas;
@@ -207,7 +207,8 @@ bool PassCut(const HistSet& hist, float e1_nsig_el, float e1_nsig_pi, float e1_n
                      e2_nsig_el,     e2_nsig_pi,       e2_nsig_pr,
                      ref_ITSChi2NCl, ref_TPCNClsFound, static_cast<double>(nITSCluster),
                      nDcaZ2Dev,      nDcaXY2Dev,       ref_pt,
-                     fPosZ};
+                     fPosZ,          fPT,              fPt1,
+                     fPt2};
   return it->second->EvalPar(values) != 0.;
 }
 
@@ -218,7 +219,8 @@ std::string FormulaExpr(const std::string& expr) {
       {"e2_nsig_el", "x[3]"},     {"e2_nsig_pi", "x[4]"},       {"e2_nsig_pr", "x[5]"},
       {"ref_ITSChi2NCl", "x[6]"}, {"ref_TPCNClsFound", "x[7]"}, {"nITSCluster", "x[8]"},
       {"nDcaZ2Dev", "x[9]"},      {"nDcaXY2Dev", "x[10]"},      {"ref_pt", "x[11]"},
-      {"fPosZ", "x[12]"},         {"abs(", "TMath::Abs("}};
+      {"fPosZ", "x[12]"},         {"fPT", "x[13]"},             {"fPt1", "x[14]"},
+      {"fPt2", "x[15]"},          {"abs(", "TMath::Abs("}};
   for (const auto& [from, to] : replacements) {
     size_t pos = 0;
     while ((pos = out.find(from, pos)) != std::string::npos) {
@@ -358,6 +360,8 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
   TTreeReaderArray<float> fEta(reader_a, "fEta");
   TTreeReaderArray<float> fPhi(reader_a, "fPhi");
   TTreeReaderArray<float> fMass(reader_a, "fMass");
+  TTreeReaderArray<float> fPt1(reader_a, "fPt1");
+  TTreeReaderArray<float> fPt2(reader_a, "fPt2");
   TTreeReaderArray<float> fTPCNSigmaEl1(reader_a, "fTPCNSigmaEl1");
   TTreeReaderArray<float> fTPCNSigmaPi1(reader_a, "fTPCNSigmaPi1");
   TTreeReaderArray<float> fTPCNSigmaPr1(reader_a, "fTPCNSigmaPr1");
@@ -407,7 +411,7 @@ void FillMixedEventHistograms(TString path_input_flow, TString path_input_index,
             if (!PassCut(hist, fTPCNSigmaEl1[i_jpsi], fTPCNSigmaPi1[i_jpsi], fTPCNSigmaPr1[i_jpsi],
                          fTPCNSigmaEl2[i_jpsi], fTPCNSigmaPi2[i_jpsi], fTPCNSigmaPr2[i_jpsi],
                          fITSChi2NCl[i_ref], fTPCNClsFound[i_ref], n_its, n_dcaz, n_dcaxy,
-                         fPTREF[i_ref], posz_value))
+                         fPTREF[i_ref], posz_value, fPT[i_jpsi], fPt1[i_jpsi], fPt2[i_jpsi]))
               continue;
             const float cut_weight = use_efficiency_correction
                                          ? GetEfficiencyWeight(fPT[i_jpsi], fEta[i_jpsi],
