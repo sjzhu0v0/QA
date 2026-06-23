@@ -104,9 +104,19 @@ void LoadEfficiency(const YAML::Node& config, const std::string& setup) {
     throw std::runtime_error("cannot open efficiency file: " + path);
   const std::string hist_name =
       setup+"/jpsi_reconstruction_efficiency_pt_eta_" + setup + "_low_eff_removed";
+  string hist_name_default = "default/jpsi_reconstruction_efficiency_pt_eta_default_low_eff_removed";
   auto* hist = dynamic_cast<TH2D*>(file->Get(hist_name.c_str()));
-  if (!hist)
-    throw std::runtime_error("missing exact efficiency histogram for " + setup + ": " + hist_name);
+  if (!hist) {
+    hist = dynamic_cast<TH2D*>(file->Get(hist_name_default.data()));
+    // output a warning if the default histogram is used
+    if (hist) {
+      std::cerr << "Warning: cannot find efficiency histogram: " << hist_name
+                << ", using default: " << hist_name_default << std::endl;
+    }
+    if (!hist)
+      throw std::runtime_error("cannot find efficiency histogram: " + hist_name +
+                               " or default: " + hist_name_default);
+  }
   g_eff_exact = dynamic_cast<TH2D*>(hist->Clone(("eff_" + setup).c_str()));
   g_eff_exact->SetDirectory(nullptr);
   file->Close();
