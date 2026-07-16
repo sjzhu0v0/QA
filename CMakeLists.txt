@@ -54,6 +54,7 @@ set(DICT_EXES
     macro/event_jpsi/JpsiAsso.cpp
     macro/event_jpsi/JpsiAsso_BS.cpp
     macro/event_jpsi/JpsiAsso_raw_poi_eff.cpp
+    macro/event_jpsi/JpsiAsso_raw_poi_eff_profile_pt.cpp
     macro/jpsi/JpsiQA.cpp
     macro/event_jpsi/EventMixingJpsiAsso.cpp
     macro/event_jpsi/MixEventReading.cpp
@@ -78,7 +79,8 @@ endforeach()
 set_target_properties(
     TrackInfoMC.exe MultRaw.exe MultCalib.exe MultPileupCut.exe
     MultQA_AllCut.exe MultREFRaw.exe NJpsiCandidatePerEvent.exe
-    JpsiAsso.exe JpsiAsso_BS.exe JpsiAsso_raw_poi_eff.exe JpsiQA.exe
+    JpsiAsso.exe JpsiAsso_BS.exe JpsiAsso_raw_poi_eff.exe
+    JpsiAsso_raw_poi_eff_profile_pt.exe JpsiQA.exe
     EventMixingJpsiAsso.exe MixEventReading.exe
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
@@ -88,7 +90,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set_target_properties(MRootDict PROPERTIES INSTALL_RPATH "$ORIGIN")
     foreach(tgt TrackInfoMC.exe MultRaw.exe MultCalib.exe MultPileupCut.exe
                 MultQA_AllCut.exe MultREFRaw.exe NJpsiCandidatePerEvent.exe
-                JpsiAsso.exe JpsiAsso_BS.exe JpsiAsso_raw_poi_eff.exe JpsiQA.exe
+                JpsiAsso.exe JpsiAsso_BS.exe JpsiAsso_raw_poi_eff.exe
+                JpsiAsso_raw_poi_eff_profile_pt.exe JpsiQA.exe
                 EventMixingJpsiAsso.exe MixEventReading.exe)
         set_target_properties(${tgt} PROPERTIES INSTALL_RPATH "$ORIGIN")
     endforeach()
