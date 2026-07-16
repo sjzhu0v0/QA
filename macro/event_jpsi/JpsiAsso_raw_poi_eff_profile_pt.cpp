@@ -318,6 +318,11 @@ void JpsiAssoRawPoiEffProfilePt(TString path_input_flow,
                     }, {"jpsi_pt", "jpsi_eta"});
 
     auto profile = MakeProfile(var_mass, var_pt, var_mult, cut_name);
+    auto hist_model = GetTH3DM(var_mass, var_pt, var_mult,
+                               Form("Histogram_%s", cut_name.c_str()),
+                               "J/#psi candidate yield");
+    gRResultHandles.push_back(selected.Histo3D(
+        hist_model, "jpsi_mass", "jpsi_pt", "NumContribCalib", "jpsi_eff_weight"));
     auto action = selected.Book<RVec<float>, RVec<float>, RVec<float>, RVec<float>,
                                 RVec<float>>(
         Profile3DFillHelper(profile, ROOT::GetThreadPoolSize()),
