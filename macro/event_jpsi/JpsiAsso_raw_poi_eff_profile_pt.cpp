@@ -326,7 +326,7 @@ void JpsiAssoRawPoiEffProfilePt(TString path_input_flow,
     auto action = selected.Book<RVec<float>, RVec<float>, RVec<float>, RVec<float>,
                                 RVec<float>>(
         Profile3DFillHelper(profile, ROOT::GetThreadPoolSize()),
-        {"jpsi_mass", "jpsi_pt", "NumContribCalib", "ref_pt", "jpsi_eff_weight"});
+        {"jpsi_mass", "jpsi_pt", "NumContribCalib", "jpsi_pt", "jpsi_eff_weight"});
     gRResultHandles.push_back(action);
   }
 
