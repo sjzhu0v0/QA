@@ -224,6 +224,14 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
     fitterPoly_mass.fitWithSignal();
     double nsignal_lowMult = fitterPoly_mass.fNSignal;
 
+    // An underconstrained mass fit reports a zero signal yield.  Keep the
+    // corresponding associated-yield point at zero rather than propagating a
+    // division by zero (or a non-finite value) to the output histogram.
+    const auto normalizeYield = [](double yield, double nsignal) {
+      if (!(nsignal > 0.) || !std::isfinite(yield)) return 0.;
+      return yield / nsignal;
+    };
+
     for (auto i_deltaEta : indexHistDeltaEtaUS)
       for (auto i_deltaPhi : indexHistDeltaPhiUS) {
         auto assoYield_lowMult_diff =
@@ -239,8 +247,8 @@ void AssoYieldEtagap(TString path_input = "/home/szhu/work/alice/analysis/QA/tes
         fitterPoly_asso.fitWithSignal();
         double nyield_lowmult = fitterPoly_asso.fNSignal;
 
-        double normalized_nyield_highmult = nyield_highmult / nsignal_highMult;
-        double normalized_nyield_lowmult = nyield_lowmult / nsignal_lowMult;
+        double normalized_nyield_highmult = normalizeYield(nyield_highmult, nsignal_highMult);
+        double normalized_nyield_lowmult = normalizeYield(nyield_lowmult, nsignal_lowMult);
 
         double normalized_nyield_sub = normalized_nyield_highmult - normalized_nyield_lowmult;
         vec_assoYield_sub.currentObject().SetBinInfo(normalized_nyield_sub, 0);
